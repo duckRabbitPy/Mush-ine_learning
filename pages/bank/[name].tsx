@@ -1,12 +1,12 @@
 import { Button, Container, Heading, SimpleGrid } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
-import { fetchFromEndpoint, getAllMushroomNames } from "../../utils/server";
+import { fetchFromEndpoint, getAllMushroomPaths } from "../../utils/server";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 export async function getStaticPaths() {
-  const paths = getAllMushroomNames();
+  const paths = getAllMushroomPaths();
   return {
     paths,
     fallback: false,
@@ -41,13 +41,19 @@ const InfoBank = ({
     (_, index) => index === expandIndex || expandIndex === null
   );
 
-  console.log(expandIndex);
   return (
     <Container mt={5}>
       <Heading>{mushroomName} mushroom</Heading>
-      <Link href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}>
-        More Info
-      </Link>
+      <Button m={2}>
+        <Link
+          href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}
+        >
+          More Info
+        </Link>
+      </Button>
+      <Button m={2}>
+        <Link href="/bank">Back to bank menu</Link>
+      </Button>
       {expandIndex === null && (
         <SimpleGrid columns={4} gap={1}>
           {visibleMushrooms?.map((imgSrc, index) => (

@@ -9,7 +9,7 @@ export async function fetchFromEndpoint(name: string | string[]) {
   );
 }
 
-export function getAllMushroomNames() {
+export function getAllMushroomPaths() {
   const mushroomDirectory = path.join(process.cwd(), "/public/mushroom_images");
   const fileNames = fs.readdirSync(mushroomDirectory);
 
@@ -20,4 +20,10 @@ export function getAllMushroomNames() {
       },
     };
   });
+}
+
+export function getAllMushroomNames() {
+  const mushroomDirectory = path.join(process.cwd(), "/public/mushroom_images");
+  const fileNames = fs.readdirSync(mushroomDirectory);
+  return fileNames;
 }
