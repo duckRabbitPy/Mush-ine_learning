@@ -55,16 +55,15 @@ const InfoBank = ({
   return (
     <Container mt={5}>
       <Heading>{mushroomName} mushroom</Heading>
-      <Button m={2}>
-        <Link
-          href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}
-        >
-          More Info
-        </Link>
-      </Button>
-      <Button m={2}>
-        <Link href="/bank">Back to bank menu</Link>
-      </Button>
+
+      <Link href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}>
+        <Button m={2}>More Info</Button>
+      </Link>
+
+      <Link href="/bank">
+        <Button m={2}>Back to bank menu </Button>
+      </Link>
+
       {expandIndex === null && (
         <SimpleGrid columns={4} gap={1}>
           {visibleMushrooms?.map((imgSrc, index) => (
@@ -76,6 +75,8 @@ const InfoBank = ({
               height={200}
               onClick={() => setExpandIndex(index)}
               style={{ cursor: "pointer" }}
+              placeholder="blur"
+              blurDataURL="/loading.gif"
             />
           ))}
         </SimpleGrid>
@@ -90,6 +91,8 @@ const InfoBank = ({
               alt="mushroom image"
               width={1000}
               height={1000}
+              placeholder="blur"
+              blurDataURL="/loading.gif"
             />
           ))}
         </Container>

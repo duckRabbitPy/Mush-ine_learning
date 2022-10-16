@@ -31,9 +31,9 @@ const Home: NextPage = () => {
           align="center"
           mt={5}
         >
-          <Button>
-            <Link href="/bank">Go to Mushroom bank</Link>
-          </Button>
+          <Link href="/bank">
+            <Button>Go to Mushroom bank</Button>
+          </Link>
         </Flex>
       </Flex>
     </>

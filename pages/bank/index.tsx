@@ -18,9 +18,11 @@ const BankMenu = ({ mushroomNames }: { mushroomNames: string[] }) => {
     <>
       <Flex direction="column" alignItems={"center"} mt={10}>
         <Heading mb={10}>Mushroom Info Bank</Heading>
-        <Button m={2}>
-          <Link href="/">Home</Link>
-        </Button>
+
+        <Link href="/">
+          <Button m={2}>Home </Button>
+        </Link>
+
         {mushroomNames.map((name) => (
           <Link key={name} href={`/bank/${name}`}>
             {name}
