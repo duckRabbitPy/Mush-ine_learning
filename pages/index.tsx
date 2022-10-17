@@ -14,7 +14,7 @@ const Home: NextPage = () => {
       </Head>
 
       <Flex direction={"column"} justifyContent="center" align="center" mt={10}>
-        <Heading as={"h1"} mb={2}>
+        <Heading as={"h1"} p={5} textAlign="center">
           Welcome to Mush-ine learning! 🍄
         </Heading>
 
@@ -32,7 +32,11 @@ const Home: NextPage = () => {
           mt={5}
         >
           <Link href="/bank">
-            <Button>Go to Mushroom bank</Button>
+            <Button m={2}>Go to Mushroom bank</Button>
+          </Link>
+
+          <Link href="/multiQuiz">
+            <Button m={2}>Go to Mushroom Quiz</Button>
           </Link>
         </Flex>
       </Flex>

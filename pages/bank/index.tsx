@@ -2,10 +2,10 @@ import { Button, Flex, Heading } from "@chakra-ui/react";
 import { GetStaticProps, NextPage } from "next";
 import Link from "next/link";
 import { getAllMushroomNames } from "../../utils/server";
+import HomeBtn from "../components/HomeBtn";
 
 export const getStaticProps: GetStaticProps = async () => {
   const mushroomNames = getAllMushroomNames();
-  console.log(mushroomNames);
   return {
     props: {
       mushroomNames,
@@ -19,9 +19,7 @@ const BankMenu = ({ mushroomNames }: { mushroomNames: string[] }) => {
       <Flex direction="column" alignItems={"center"} mt={10}>
         <Heading mb={10}>Mushroom Info Bank</Heading>
 
-        <Link href="/">
-          <Button m={2}>Home </Button>
-        </Link>
+        <HomeBtn />
 
         {mushroomNames.map((name) => (
           <Link key={name} href={`/bank/${name}`}>

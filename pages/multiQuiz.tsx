@@ -1,7 +1,9 @@
 import { Container, Heading } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import Image from "next/image";
+import { randomArrItem } from "../utils/client";
 import { getAllMushroomNames, getImageSrcArr } from "../utils/server";
+import HomeBtn from "./components/HomeBtn";
 
 export type TestMushroom = {
   name: string;
@@ -10,10 +12,13 @@ export type TestMushroom = {
 };
 
 async function buildTestMushrooms(
-  mushroomNames: string[]
+  mushroomNames: string[],
+  number: number
 ): Promise<TestMushroom[]> {
   let testMushroomArr = [];
+  let count = 0;
   for (const mushroomName of mushroomNames) {
+    if (count >= number) break;
     const srcArr = await getImageSrcArr(mushroomName);
 
     if (!srcArr) {
@@ -23,14 +28,14 @@ async function buildTestMushrooms(
         correctMatch: false,
       });
     } else {
-      const randomNum = Math.floor(Math.random() * (srcArr.length - 1) + 1);
-      const src = srcArr[randomNum];
+      const src = randomArrItem(srcArr);
       testMushroomArr.push({
         name: mushroomName,
         src,
         correctMatch: false,
       });
     }
+    count++;
   }
 
   return testMushroomArr;
@@ -42,7 +47,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const MushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
   );
-  const testMushrooms = await buildTestMushrooms(MushroomNamePool);
+  const unselectedMushrooms = await buildTestMushrooms(MushroomNamePool, 5);
+  const chosen = randomArrItem(unselectedMushrooms).name;
+  const testMushrooms = unselectedMushrooms.map((mushroom) => {
+    if (mushroom.name === chosen) {
+      return { ...mushroom, correctMatch: true };
+    }
+    return mushroom;
+  });
 
   return {
     props: {
@@ -54,6 +66,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const InfoBank = ({ testMushrooms }: { testMushrooms: TestMushroom[] }) => {
   return (
     <Container>
+      <HomeBtn />
       {testMushrooms.map((testMushroom) => {
         return (
           <Container key={testMushroom.name}>
@@ -64,7 +77,7 @@ const InfoBank = ({ testMushrooms }: { testMushrooms: TestMushroom[] }) => {
               height={200}
               width={200}
             />
-            <p>{testMushroom.correctMatch}</p>
+            <p> {testMushroom.correctMatch && "CHOSEN"}</p>
           </Container>
         );
       })}
