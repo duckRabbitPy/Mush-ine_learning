@@ -1,19 +1,17 @@
 import { Button, Container, Heading, SimpleGrid } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
-import fs from "fs";
-import { getImageSrcArr } from "../../utils/server";
+import { v2 as cloudinary } from "cloudinary";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import path from "path";
+import { storedMushrooms } from "../../storedMushrooms";
 
 export async function getStaticPaths() {
-  const mushroomDirectory = path.join(process.cwd(), "/public/mushroom_images");
-  const fileNames = fs.readdirSync(mushroomDirectory);
-  const paths = fileNames.map((fileName) => {
+  const mushroomNames = storedMushrooms;
+  const paths = mushroomNames.map((mushroomName) => {
     return {
       params: {
-        name: fileName,
+        name: mushroomName,
       },
     };
   });
@@ -31,7 +29,14 @@ export const getStaticProps: GetStaticProps = async (context) => {
     return { props: {} };
   }
 
-  const mushroomSrcList = await getImageSrcArr(mushroomName);
+  const images = await cloudinary.api.resources({
+    type: "upload",
+    prefix: `mushroom_images/${mushroomName}`,
+    max_results: 10,
+  });
+
+  const mushroomSrcList = images.resources.map((img: any) => img.url);
+
   return {
     props: {
       mushroomSrcList,
