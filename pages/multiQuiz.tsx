@@ -2,13 +2,32 @@ import { Container, Heading } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import Image from "next/image";
 import { randomArrItem } from "../utils/client";
-import { getAllMushroomNames, getImageSrcArr } from "../utils/server";
+import { getAllMushroomNames } from "../utils/server";
 import HomeBtn from "./components/HomeBtn";
+import { v2 as cloudinary } from "cloudinary";
 
 export type TestMushroom = {
   name: string;
   src: string;
   correctMatch: boolean;
+};
+
+export type StringIfPresent = string | null | undefined;
+export type NumIfPresent = number | null | undefined;
+
+export type CloudImage = {
+  asset_id: StringIfPresent;
+  public_id: StringIfPresent;
+  format: StringIfPresent;
+  version: NumIfPresent;
+  resource_type: StringIfPresent;
+  type: StringIfPresent;
+  created_at: StringIfPresent;
+  bytes: NumIfPresent;
+  width: NumIfPresent;
+  height: NumIfPresent;
+  folder: StringIfPresent;
+  url: StringIfPresent;
 };
 
 async function buildTestMushrooms(
@@ -19,7 +38,14 @@ async function buildTestMushrooms(
   let count = 0;
   for (const mushroomName of mushroomNames) {
     if (count >= number) break;
-    const srcArr = await getImageSrcArr(mushroomName);
+
+    const images = (await cloudinary.api.resources({
+      type: "upload",
+      prefix: `mushroom_images/${mushroomName}`,
+      max_results: 10,
+    })) as { resources: CloudImage[] };
+
+    const srcArr = images.resources.map((img: CloudImage) => img.url);
 
     if (!srcArr) {
       testMushroomArr.push({
@@ -31,7 +57,7 @@ async function buildTestMushrooms(
       const src = randomArrItem(srcArr);
       testMushroomArr.push({
         name: mushroomName,
-        src,
+        src: src || "/shroomschool.png",
         correctMatch: false,
       });
     }
