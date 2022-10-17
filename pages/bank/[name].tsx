@@ -1,19 +1,17 @@
 import { Button, Container, Heading, SimpleGrid } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
 import fs from "fs";
-import { getImageSrcArr } from "../../utils/server";
+import { getAllMushroomNames, getImageSrcArr } from "../../utils/server";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import path from "path";
 
 export async function getStaticPaths() {
-  const mushroomDirectory = path.join(process.cwd(), "/public/mushroom_images");
-  const fileNames = fs.readdirSync(mushroomDirectory);
-  const paths = fileNames.map((fileName) => {
+  const mushroomNames = await getAllMushroomNames();
+  const paths = mushroomNames.map((mushroomName) => {
     return {
       params: {
-        name: fileName,
+        name: mushroomName,
       },
     };
   });
