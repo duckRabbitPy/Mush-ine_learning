@@ -12,7 +12,7 @@ export async function getImageSrcArr(name: string | string[]) {
   return images;
 }
 
-export function getAllMushroomNames() {
+export function runGetAllMushroomNames() {
   const mushroomDirectory = path.join(
     process.cwd(),
     "/cloudMirror/mushroom_images"

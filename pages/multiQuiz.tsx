@@ -2,9 +2,9 @@ import { Container, Heading } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import Image from "next/image";
 import { randomArrItem } from "../utils/client";
-import { getAllMushroomNames } from "../utils/server";
 import HomeBtn from "./components/HomeBtn";
 import { v2 as cloudinary } from "cloudinary";
+import { storedMushrooms } from "../storedMushrooms";
 
 export type TestMushroom = {
   name: string;
@@ -69,7 +69,7 @@ async function buildTestMushrooms(
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const omitArr = ["medusa"];
-  const allMushroomNames = getAllMushroomNames();
+  const allMushroomNames = storedMushrooms;
   const MushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
   );

@@ -1,13 +1,13 @@
 import { Button, Container, Heading, SimpleGrid } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
-import { getAllMushroomNames } from "../../utils/server";
 import { v2 as cloudinary } from "cloudinary";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { storedMushrooms } from "../../storedMushrooms";
 
 export async function getStaticPaths() {
-  const mushroomNames = await getAllMushroomNames();
+  const mushroomNames = storedMushrooms;
   const paths = mushroomNames.map((mushroomName) => {
     return {
       params: {
