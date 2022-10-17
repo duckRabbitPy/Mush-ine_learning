@@ -1,8 +1,12 @@
-import { Button, Flex, Heading } from "@chakra-ui/react";
-import { GetStaticProps, NextPage } from "next";
+import { Flex, Heading } from "@chakra-ui/react";
+import { GetStaticProps } from "next";
 import Link from "next/link";
 import { getAllMushroomNames } from "../../utils/server";
 import HomeBtn from "../components/HomeBtn";
+
+export const config = {
+  unstable_excludeFiles: ["public/**/*"],
+};
 
 export const getStaticProps: GetStaticProps = async () => {
   const mushroomNames = getAllMushroomNames();

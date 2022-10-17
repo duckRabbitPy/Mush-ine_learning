@@ -5,6 +5,10 @@ import { randomArrItem } from "../utils/client";
 import { getAllMushroomNames, getImageSrcArr } from "../utils/server";
 import HomeBtn from "./components/HomeBtn";
 
+export const config = {
+  unstable_excludeFiles: ["public/**/*"],
+};
+
 export type TestMushroom = {
   name: string;
   src: string;

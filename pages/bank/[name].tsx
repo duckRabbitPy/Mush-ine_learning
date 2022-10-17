@@ -1,10 +1,13 @@
 import { Button, Container, Heading, SimpleGrid } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
-import fs from "fs";
 import { getAllMushroomNames, getImageSrcArr } from "../../utils/server";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+
+export const config = {
+  unstable_excludeFiles: ["public/**/*"],
+};
 
 export async function getStaticPaths() {
   const mushroomNames = await getAllMushroomNames();
