@@ -1,4 +1,4 @@
-import { Container, Heading } from "@chakra-ui/react";
+import { Container, Heading, SimpleGrid, Text } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import Image from "next/image";
 import { randomArrItem } from "../utils/client";
@@ -6,6 +6,7 @@ import HomeBtn from "./components/HomeBtn";
 import { v2 as cloudinary } from "cloudinary";
 import { storedMushrooms } from "../storedMushrooms";
 import { CloudImage } from "../types";
+import { useState } from "react";
 
 export type TestMushroom = {
   name: string;
@@ -50,7 +51,7 @@ async function buildTestMushrooms(
   return testMushroomArr;
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (_context) => {
   const omitArr = ["medusa"];
   const allMushroomNames = storedMushrooms;
   const MushroomNamePool = allMushroomNames.filter(
@@ -72,26 +73,46 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-const InfoBank = ({ testMushrooms }: { testMushrooms: TestMushroom[] }) => {
+const Forage = ({
+  testMushrooms,
+}: {
+  testMushrooms: TestMushroom[];
+  options: TestMushroom[];
+}) => {
+  const [inputAnswer, setInputAnswer] = useState<string | null>(null);
+  const correctMushroom = testMushrooms.filter((t) => t.correctMatch)[0];
   return (
     <Container>
       <HomeBtn />
-      {testMushrooms.map((testMushroom) => {
-        return (
-          <Container key={testMushroom.name}>
-            <Heading>{testMushroom.name}</Heading>
-            <Image
-              src={testMushroom.src}
-              alt="testMushroom"
-              height={200}
-              width={200}
-            />
-            <p> {testMushroom.correctMatch && "CHOSEN"}</p>
-          </Container>
-        );
-      })}
+      <Heading size={"md"} mb={2}>
+        Find the: {correctMushroom.name} mushroom{" "}
+        {inputAnswer === correctMushroom.name && "✅"}
+        {inputAnswer && inputAnswer !== correctMushroom.name && "❌"}
+      </Heading>
+      <SimpleGrid columns={2} gap={2}>
+        {testMushrooms.map((testMushroom) => {
+          return (
+            <Container key={testMushroom.name}>
+              <Image
+                onClick={() => {
+                  setInputAnswer(testMushroom.name);
+                }}
+                src={testMushroom.src}
+                alt="testMushroom"
+                height={200}
+                width={200}
+                style={{
+                  opacity:
+                    inputAnswer && !testMushroom.correctMatch ? "0.5" : 1,
+                }}
+              />
+              <Text>{inputAnswer ? testMushroom.name : ""}</Text>
+            </Container>
+          );
+        })}
+      </SimpleGrid>
     </Container>
   );
 };
 
-export default InfoBank;
+export default Forage;

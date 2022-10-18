@@ -1,5 +1,5 @@
 import { Flex, Heading } from "@chakra-ui/react";
-import { GetStaticProps, NextPage } from "next";
+import { GetStaticProps } from "next";
 import Link from "next/link";
 import { storedMushrooms } from "../../storedMushrooms";
 import HomeBtn from "../components/HomeBtn";
@@ -18,9 +18,7 @@ const BankMenu = ({ mushroomNames }: { mushroomNames: string[] }) => {
     <>
       <Flex direction="column" alignItems={"center"} mt={10}>
         <Heading mb={10}>Mushroom Info Bank</Heading>
-
         <HomeBtn />
-
         {mushroomNames.map((name) => (
           <Link key={name} href={`/bank/${name}`}>
             {name}
