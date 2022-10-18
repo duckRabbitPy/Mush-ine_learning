@@ -1,12 +1,11 @@
 import db from "./connection";
 
-
-function readTestString(){
-    return db
-    .query('SELECT * from mushineLearning')
-    .then((result) => {
+export function readTestString(): Promise<string> {
+  return db
+    .query("SELECT * from mushineLearning")
+    .then((result: any) => {
+      console.log(result.rows);
       return result.rows;
     })
-    .catch((error) => console.log(error));
-
+    .catch((error: Error) => console.log(error));
 }

@@ -17,6 +17,7 @@
     "@trpc/next": "^10.0.0-proxy-beta.21",
     "@trpc/react-query": "^10.0.0-proxy-beta.21",
     "@trpc/server": "^10.0.0-proxy-beta.21",
+    "@types/pg": "^8.6.5",
     "cloudinary": "^1.32.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "framer-motion": "^7.5.3",
