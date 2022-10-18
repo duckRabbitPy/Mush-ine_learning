@@ -4,9 +4,9 @@ import Image from "next/image";
 import { randomArrItem } from "../utils/client";
 import HomeBtn from "./components/HomeBtn";
 import { v2 as cloudinary } from "cloudinary";
-import { storedMushrooms } from "../storedMushrooms";
 import { CloudImage } from "../types";
 import { useState } from "react";
+import { storedMushrooms } from "../storedMushrooms";
 
 export type TestMushroom = {
   name: string;
@@ -80,17 +80,17 @@ const Forage = ({
   options: TestMushroom[];
 }) => {
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
-  const correctMushroom = testMushrooms.filter((t) => t.correctMatch)[0];
+  const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   return (
     <Container>
       <HomeBtn />
       <Heading size={"md"} mb={2}>
-        Find the: {correctMushroom.name} mushroom{" "}
-        {inputAnswer === correctMushroom.name && "✅"}
+        Find the: {correctMushroom?.name} mushroom{" "}
+        {inputAnswer === correctMushroom?.name && "✅"}
         {inputAnswer && inputAnswer !== correctMushroom.name && "❌"}
       </Heading>
       <SimpleGrid columns={2} gap={2}>
-        {testMushrooms.map((testMushroom) => {
+        {testMushrooms?.map((testMushroom) => {
           return (
             <Container key={testMushroom.name}>
               <Image
