@@ -35,8 +35,8 @@ const Home: NextPage = () => {
             <Button m={2}>Go to Mushroom bank</Button>
           </Link>
 
-          <Link href="/multiQuiz">
-            <Button m={2}>Go to Mushroom Quiz</Button>
+          <Link href="/forage">
+            <Button m={2}>Go to Mushroom Forage Quiz</Button>
           </Link>
         </Flex>
       </Flex>

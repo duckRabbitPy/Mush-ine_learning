@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { storedMushrooms } from "../../storedMushrooms";
+import { CloudImage } from "../../types";
 
 export async function getStaticPaths() {
   const mushroomNames = storedMushrooms;
@@ -35,7 +36,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     max_results: 10,
   });
 
-  const mushroomSrcList = images.resources.map((img: any) => img.url);
+  const mushroomSrcList = images.resources.map((img: CloudImage) => img.url);
 
   return {
     props: {
