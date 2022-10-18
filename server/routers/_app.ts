@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { readTestString } from "../database/model";
+import { writeTestString } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
 export const appRouter = router({
@@ -35,8 +35,7 @@ export const appRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      // do backend mutation here
-      const testString = await readTestString();
+      const testString = await writeTestString(input.testString);
       return {
         user: {
           name: input.name,
