@@ -73,12 +73,7 @@ export const getServerSideProps: GetServerSideProps = async (_context) => {
   };
 };
 
-const Forage = ({
-  testMushrooms,
-}: {
-  testMushrooms: TestMushroom[];
-  options: TestMushroom[];
-}) => {
+const Forage = ({ testMushrooms }: { testMushrooms: TestMushroom[] }) => {
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   return (

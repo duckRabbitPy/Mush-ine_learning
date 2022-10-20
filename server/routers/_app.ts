@@ -1,4 +1,5 @@
 import { z } from "zod";
+import getTestMushrooms from "../../utils/server";
 import { writeTestString } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
@@ -44,6 +45,17 @@ export const appRouter = router({
           testString: testString,
         },
       };
+    }),
+  testMushrooms: publicProcedure
+    .input(
+      z.object({
+        omitArr: z.array(z.string()),
+        number: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      const testMushrooms = await getTestMushrooms(input.omitArr, input.number);
+      return testMushrooms;
     }),
 });
 
