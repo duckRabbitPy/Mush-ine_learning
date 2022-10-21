@@ -33,6 +33,7 @@ const Forage = () => {
         }
         return arr;
       });
+      setInputAnswer(null);
     }
   };
 
@@ -44,7 +45,7 @@ const Forage = () => {
         {inputAnswer === correctMushroom?.name && "✅"}
         {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
       </Heading>
-      <Button onClick={handleNextBtn}>Start</Button>
+      <Button onClick={handleNextBtn}>Next</Button>
       {getTestMushrooms.isLoading ? (
         <Spinner />
       ) : (
