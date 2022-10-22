@@ -1,10 +1,12 @@
-import { Button, Flex, Heading } from "@chakra-ui/react";
+import { Button, Flex, Heading, Text } from "@chakra-ui/react";
 import type { NextPage } from "next";
+import { useUser } from "@auth0/nextjs-auth0";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
 const Home: NextPage = () => {
+  const user = useUser();
   return (
     <>
       <Head>
@@ -18,10 +20,22 @@ const Home: NextPage = () => {
           Welcome to Mush-ine learning! 🍄
         </Heading>
 
-        <Link href="/api/auth/login">
-          <Button m={2}>Log in</Button>
-        </Link>
-
+        {!user.user && (
+          <>
+            <Text color="red.400">Not signed in</Text>
+            <Link href="/api/auth/login">
+              <Button m={2}>Log in</Button>
+            </Link>
+          </>
+        )}
+        {user.user && (
+          <>
+            <Text color="green.400">Signed in as: {user.user?.name}</Text>
+            <Link href="/api/auth/logout">
+              <Button m={2}>Log out</Button>
+            </Link>
+          </>
+        )}
         <Image
           src="/shroomschool.png"
           alt="mushroom"

@@ -20,23 +20,28 @@ const Forage = () => {
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver = testMushrooms.length < 1 && omitArr.length > 0;
+  const [score, setScore] = useState(0);
   const { user } = useUser();
-  console.log(user);
   const getTestMushrooms = trpc.testMushrooms.useQuery({
     omitArr,
     max: 4,
   });
 
   const handleNextBtn = async () => {
+    const answerCorrect = inputAnswer === correctMushroom?.name;
+    if (answerCorrect) {
+      setScore(score + 10);
+    }
+    setOmitArr(() => {
+      if (omitArr && correctMushroom?.name) {
+        omitArr.push(correctMushroom.name);
+      }
+      return omitArr;
+    });
+
     const newTestMushrooms = getTestMushrooms.data;
     if (newTestMushrooms) {
       setTestMushrooms(newTestMushrooms);
-      setOmitArr((arr) => {
-        if (inputAnswer === correctMushroom?.name) {
-          arr.push(correctMushroom.name);
-        }
-        return arr;
-      });
       setInputAnswer(null);
     }
   };
@@ -49,9 +54,12 @@ const Forage = () => {
           {correctMushroom?.name
             ? `Find 🔎 the ${correctMushroom?.name} mushroom`
             : "Forage Game🍄"}
-
           {inputAnswer === correctMushroom?.name && "✅"}
           {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
+
+          <Text pt="2" fontWeight="light">
+            Score: {score}
+          </Text>
         </Heading>
         <Button onClick={handleNextBtn} w="-moz-fit-content" alignSelf="center">
           {!correctMushroom ? "Start" : "Next"}
