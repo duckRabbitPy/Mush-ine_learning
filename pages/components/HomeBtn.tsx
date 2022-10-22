@@ -1,9 +1,9 @@
-import { Button } from "@chakra-ui/react";
+import { Button, ButtonProps } from "@chakra-ui/react";
 import Link from "next/link";
 
-const HomeBtn = () => (
+const HomeBtn = (props: ButtonProps) => (
   <Link href="/">
-    <Button m={2}>Home </Button>
+    <Button {...props}>Home </Button>
   </Link>
 );
 
