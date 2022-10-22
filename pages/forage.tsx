@@ -12,6 +12,7 @@ import { useState } from "react";
 import { TestMushroom } from "../utils/server";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
+import { useUser } from "@auth0/nextjs-auth0";
 
 const Forage = () => {
   const [testMushrooms, setTestMushrooms] = useState<TestMushroom[] | []>([]);
@@ -19,7 +20,8 @@ const Forage = () => {
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver = testMushrooms.length < 1 && omitArr.length > 0;
-
+  const { user } = useUser();
+  console.log(user);
   const getTestMushrooms = trpc.testMushrooms.useQuery({
     omitArr,
     max: 4,
