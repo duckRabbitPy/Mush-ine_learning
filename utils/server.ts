@@ -68,18 +68,16 @@ async function buildTestMushrooms(
   return testMushroomArr;
 }
 
-export default async function getTestMushrooms(
-  omitArr: string[],
-  number: number
-) {
+export default async function getTestMushrooms(omitArr: string[], max: number) {
   const allMushroomNames = storedMushrooms;
   const MushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
   );
-  const unselectedMushrooms = await buildTestMushrooms(
-    MushroomNamePool,
-    number
-  );
+
+  if (!MushroomNamePool.length) {
+    return [];
+  }
+  const unselectedMushrooms = await buildTestMushrooms(MushroomNamePool, max);
   const chosen = randomArrItem(unselectedMushrooms).name;
   const testMushrooms = unselectedMushrooms.map((mushroom) => {
     if (mushroom.name === chosen) {

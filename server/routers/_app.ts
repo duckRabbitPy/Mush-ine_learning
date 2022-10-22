@@ -50,11 +50,11 @@ export const appRouter = router({
     .input(
       z.object({
         omitArr: z.array(z.string()),
-        number: z.number(),
+        max: z.number(),
       })
     )
     .query(async ({ input }) => {
-      const testMushrooms = await getTestMushrooms(input.omitArr, input.number);
+      const testMushrooms = await getTestMushrooms(input.omitArr, input.max);
       return testMushrooms;
     }),
 });
