@@ -9,23 +9,26 @@ import {
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useState } from "react";
-import { TestMushroom } from "../utils/server";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
 
 const Forage = () => {
-  const [testMushrooms, setTestMushrooms] = useState<TestMushroom[] | []>([]);
+  const [round, setRound] = useState(0);
   const [omitArr, setOmitArr] = useState<string[]>([]);
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
-  const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
-  const gameOver = testMushrooms.length < 1 && omitArr.length > 0;
+
   const [score, setScore] = useState(0);
   const { user } = useUser();
   const getTestMushrooms = trpc.testMushrooms.useQuery({
     omitArr,
     max: 4,
+    skip: round === 0,
   });
+  const testMushrooms = getTestMushrooms.data;
+  const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
+  const gameOver =
+    testMushrooms && testMushrooms?.length < 1 && omitArr.length > 0;
 
   const handleNextBtn = async () => {
     const answerCorrect = inputAnswer === correctMushroom?.name;
@@ -39,11 +42,8 @@ const Forage = () => {
       return omitArr;
     });
 
-    const newTestMushrooms = getTestMushrooms.data;
-    if (newTestMushrooms) {
-      setTestMushrooms(newTestMushrooms);
-      setInputAnswer(null);
-    }
+    setInputAnswer(null);
+    setRound(round + 1);
   };
 
   return (
@@ -56,7 +56,9 @@ const Forage = () => {
             : "Forage Game🍄"}
           {inputAnswer === correctMushroom?.name && "✅"}
           {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
-
+          <Text pt="2" fontWeight="medium">
+            Round: {round}
+          </Text>
           <Text pt="2" fontWeight="light">
             Score: {score}
           </Text>
@@ -70,7 +72,7 @@ const Forage = () => {
           <Spinner />
         ) : (
           <SimpleGrid columns={2} gap={2}>
-            {testMushrooms?.map((testMushroom) => {
+            {getTestMushrooms.data?.map((testMushroom) => {
               return (
                 <Container
                   key={testMushroom.name}
