@@ -15,7 +15,7 @@ const Profile = () => {
           <Spinner />
         ) : (
           <Text mt={5} fontSize="3xl">
-            XP: {xpQuery.data}
+            XP: {xpQuery.data ?? 0}
           </Text>
         )}
       </Flex>

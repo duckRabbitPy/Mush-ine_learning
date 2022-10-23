@@ -4,6 +4,7 @@ import {
   updateScore,
   getScoreByUserId,
   writeTestString,
+  createUser,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
@@ -42,7 +43,11 @@ export const appRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const xp = await getScoreByUserId(input.userId);
+      let xp = await getScoreByUserId(input.userId);
+      if (!xp) {
+        await createUser(input.userId);
+        xp = 0;
+      }
       const newXp = xp + input.score;
       const newScore = await updateScore(newXp, input.userId);
       return {

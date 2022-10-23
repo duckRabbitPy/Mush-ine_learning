@@ -17,11 +17,8 @@ const Forage = () => {
   const [round, setRound] = useState(0);
   const [omitArr, setOmitArr] = useState<string[]>([]);
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
-
   const [score, setScore] = useState(0);
   const { user } = useUser();
-
-  console.log(user?.sub);
   const getTestMushrooms = trpc.testMushrooms.useQuery(
     {
       omitArr,
@@ -116,7 +113,9 @@ const Forage = () => {
                   >
                     <Image
                       onClick={() => {
-                        setInputAnswer(testMushroom.name);
+                        if (!inputAnswer) {
+                          setInputAnswer(testMushroom.name);
+                        }
                       }}
                       src={testMushroom.src}
                       alt="testMushroom"
