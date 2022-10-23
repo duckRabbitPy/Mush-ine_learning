@@ -1,6 +1,10 @@
 import { z } from "zod";
 import getTestMushrooms from "../../utils/server";
-import updateScore, { writeTestString } from "../database/model";
+import {
+  updateScore,
+  getScoreByUserId,
+  writeTestString,
+} from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
 export const appRouter = router({
@@ -24,6 +28,12 @@ export const appRouter = router({
         },
       };
     }),
+  retrieveUserScore: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ input }) => {
+      const userScore = await getScoreByUserId(input.userId);
+      return userScore;
+    }),
   storeUserScore: publicProcedure
     .input(
       z.object({
@@ -32,11 +42,13 @@ export const appRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const testString = await updateScore(input.userId, input.score);
+      const xp = await getScoreByUserId(input.userId);
+      const newXp = xp + input.score;
+      const newScore = await updateScore(newXp, input.userId);
       return {
         user: {
           userId: input.userId,
-          score: input.score,
+          score: newScore,
         },
       };
     }),
@@ -45,11 +57,9 @@ export const appRouter = router({
       z.object({
         omitArr: z.array(z.string()),
         max: z.number(),
-        skip: z.boolean(),
       })
     )
     .query(async ({ input }) => {
-      if (input.skip) return [];
       const testMushrooms = await getTestMushrooms(input.omitArr, input.max);
       return testMushrooms;
     }),

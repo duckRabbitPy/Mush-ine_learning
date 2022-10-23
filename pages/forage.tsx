@@ -20,11 +20,16 @@ const Forage = () => {
 
   const [score, setScore] = useState(0);
   const { user } = useUser();
-  const getTestMushrooms = trpc.testMushrooms.useQuery({
-    omitArr,
-    max: 4,
-    skip: round === 0 || round === 4,
-  });
+
+  console.log(user?.sub);
+  const getTestMushrooms = trpc.testMushrooms.useQuery(
+    {
+      omitArr,
+      max: 4,
+    },
+    { enabled: round !== 0 && round !== 4 }
+  );
+  const saveScore = trpc.storeUserScore.useMutation();
   const testMushrooms = getTestMushrooms.data;
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
@@ -47,7 +52,14 @@ const Forage = () => {
     setRound(round + 1);
   };
 
-  const handleSaveBtn = async () => {};
+  const handleSaveBtn = async () => {
+    const userId = user?.sub;
+    if (userId) {
+      saveScore.mutate({ userId, score });
+    } else {
+      throw new Error("user object lacking sub property");
+    }
+  };
 
   return (
     <Flex gap={5} direction="column" alignItems="center">
@@ -88,7 +100,7 @@ const Forage = () => {
         )}
       </Flex>
       <Container>
-        {getTestMushrooms.isLoading ? (
+        {round !== 0 && round !== 4 && getTestMushrooms.isLoading ? (
           <Spinner />
         ) : (
           <SimpleGrid columns={2} gap={2}>

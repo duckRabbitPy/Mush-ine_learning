@@ -23,6 +23,27 @@ export function writeTestString(testString: string): Promise<string> {
     .catch((error: Error) => console.log(error));
 }
 
-export default async function updateScore(omitArr: string, max: number) {
-  return [];
+// create user function
+
+export async function updateScore(Score: number, userId: string) {
+  return db
+    .query(
+      "UPDATE mushinelearninguser SET xp = $1 where userId = $2 RETURNING xp;",
+      [Score, userId]
+    )
+    .then((result) => {
+      console.log(result.rows);
+      return result.rows[0].testStrings;
+    })
+    .catch((error: Error) => console.log(error));
+}
+
+export async function getScoreByUserId(userId: string) {
+  return db
+    .query("SELECT xp from mushineLearningUser where userId = $1", [userId])
+    .then((result) => {
+      console.log(result.rows);
+      return result.rows[0].xp;
+    })
+    .catch((error: Error) => console.log(error));
 }
