@@ -22,15 +22,6 @@ export async function getImageSrcArr(name: string | string[]) {
   return images;
 }
 
-export function runGetAllMushroomNames() {
-  const mushroomDirectory = path.join(
-    process.cwd(),
-    "/cloudMirror/mushroom_images"
-  );
-  const mushroomNames = fs.readdirSync(mushroomDirectory);
-  return mushroomNames;
-}
-
 async function buildTestMushrooms(
   mushroomNames: string[],
   number: number
