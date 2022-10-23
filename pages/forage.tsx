@@ -23,12 +23,13 @@ const Forage = () => {
   const getTestMushrooms = trpc.testMushrooms.useQuery({
     omitArr,
     max: 4,
-    skip: round === 0,
+    skip: round === 0 || round === 4,
   });
   const testMushrooms = getTestMushrooms.data;
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
-    testMushrooms && testMushrooms?.length < 1 && omitArr.length > 0;
+    (testMushrooms && testMushrooms?.length < 1 && omitArr.length > 0) ||
+    round > 3;
 
   const handleNextBtn = async () => {
     const answerCorrect = inputAnswer === correctMushroom?.name;
@@ -46,61 +47,81 @@ const Forage = () => {
     setRound(round + 1);
   };
 
+  const handleSaveBtn = async () => {};
+
   return (
     <Flex gap={5} direction="column" alignItems="center">
       <HomeBtn w="-moz-fit-content" mt={3} />
       <Flex direction="column" gap={5}>
-        <Heading size={"md"} mb={2} pl={2} pr={2}>
-          {correctMushroom?.name
-            ? `Find 🔎 the ${correctMushroom?.name} mushroom`
-            : "Forage Game🍄"}
-          {inputAnswer === correctMushroom?.name && "✅"}
-          {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
-          <Text pt="2" fontWeight="medium">
-            Round: {round}
-          </Text>
-          <Text pt="2" fontWeight="light">
-            Score: {score}
-          </Text>
-        </Heading>
-        <Button onClick={handleNextBtn} w="-moz-fit-content" alignSelf="center">
-          {!correctMushroom ? "Start" : "Next"}
-        </Button>
+        {!gameOver && (
+          <>
+            <Heading size={"md"} mb={2} pl={2} pr={2}>
+              {correctMushroom?.name
+                ? `Find 🔎 the ${correctMushroom?.name} mushroom`
+                : "Forage Game🍄"}
+              {inputAnswer === correctMushroom?.name && "✅"}
+              {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
+              <Text pt="2" fontWeight="medium">
+                Round: {round}
+              </Text>
+              <Text pt="2" fontWeight="light">
+                Score: {score}
+              </Text>
+            </Heading>
+            <Button
+              onClick={handleNextBtn}
+              w="-moz-fit-content"
+              alignSelf="center"
+            >
+              {round === 0 ? "Start" : "Next"}
+            </Button>
+          </>
+        )}
+        {gameOver && (
+          <Button
+            onClick={handleSaveBtn}
+            w="-moz-fit-content"
+            alignSelf="center"
+          >
+            Save score
+          </Button>
+        )}
       </Flex>
       <Container>
         {getTestMushrooms.isLoading ? (
           <Spinner />
         ) : (
           <SimpleGrid columns={2} gap={2}>
-            {getTestMushrooms.data?.map((testMushroom) => {
-              return (
-                <Container
-                  key={testMushroom.name}
-                  p={0}
-                  display="flex"
-                  justifyContent="center"
-                  flexDirection="column"
-                >
-                  <Image
-                    onClick={() => {
-                      setInputAnswer(testMushroom.name);
-                    }}
-                    src={testMushroom.src}
-                    alt="testMushroom"
-                    height={250}
-                    width={250}
-                    style={{
-                      borderRadius: "5px",
-                      opacity:
-                        inputAnswer && !testMushroom.correctMatch ? "0.5" : 1,
-                    }}
-                  />
-                  <Text fontSize="small">
-                    {inputAnswer ? testMushroom.name : ""}
-                  </Text>
-                </Container>
-              );
-            })}
+            {!gameOver &&
+              getTestMushrooms.data?.map((testMushroom) => {
+                return (
+                  <Container
+                    key={testMushroom.name}
+                    p={0}
+                    display="flex"
+                    justifyContent="center"
+                    flexDirection="column"
+                  >
+                    <Image
+                      onClick={() => {
+                        setInputAnswer(testMushroom.name);
+                      }}
+                      src={testMushroom.src}
+                      alt="testMushroom"
+                      height={250}
+                      width={250}
+                      style={{
+                        borderRadius: "5px",
+                        opacity:
+                          inputAnswer && !testMushroom.correctMatch ? "0.5" : 1,
+                      }}
+                    />
+                    <Text fontSize="small">
+                      {inputAnswer ? testMushroom.name : ""}
+                    </Text>
+                  </Container>
+                );
+              })}
             {gameOver && <Text>Game over!</Text>}
           </SimpleGrid>
         )}

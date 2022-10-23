@@ -1,31 +1,9 @@
 import { z } from "zod";
 import getTestMushrooms from "../../utils/server";
-import { writeTestString } from "../database/model";
+import updateScore, { writeTestString } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
 export const appRouter = router({
-  hello: publicProcedure
-    .input(
-      z.object({
-        text: z.string(),
-      })
-    )
-    .query(({ input }) => {
-      return {
-        greeting: `hello ${input?.text ?? "world"}`,
-      };
-    }),
-  goodBye: publicProcedure
-    .input(
-      z.object({
-        text: z.string().nullish(),
-      })
-    )
-    .query(({ input }) => {
-      return {
-        farewell: `goodbye ${input?.text ?? "world"}`,
-      };
-    }),
   getUserInfo: publicProcedure
     .input(
       z.object({
@@ -43,6 +21,22 @@ export const appRouter = router({
           score: input.score,
           ranking: input.ranking,
           testString: testString,
+        },
+      };
+    }),
+  storeUserScore: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        score: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const testString = await updateScore(input.userId, input.score);
+      return {
+        user: {
+          userId: input.userId,
+          score: input.score,
         },
       };
     }),

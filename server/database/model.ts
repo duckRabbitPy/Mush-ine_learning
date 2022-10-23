@@ -22,3 +22,7 @@ export function writeTestString(testString: string): Promise<string> {
     })
     .catch((error: Error) => console.log(error));
 }
+
+export default async function updateScore(omitArr: string, max: number) {
+  return [];
+}
