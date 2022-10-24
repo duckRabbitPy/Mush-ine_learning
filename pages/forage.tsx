@@ -95,9 +95,9 @@ const Forage = () => {
   };
 
   const handleSaveBtn = async () => {
-    const userId = user?.sub;
-    if (userId) {
-      saveScore.mutate({ userId, score });
+    const user_id = user?.sub;
+    if (user_id) {
+      saveScore.mutate({ user_id, score });
     } else {
       throw new Error("user object lacking sub property");
     }

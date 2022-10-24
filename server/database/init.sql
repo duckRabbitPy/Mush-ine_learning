@@ -8,6 +8,9 @@ CREATE TABLE mushineLearning (
 );
 
 
-INSERT INTO mushineLearning (testStrings) VALUES 
-('hello world');
+CREATE TABLE mushine_learning_user (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR (50),
+    xp INTEGER
+);
 

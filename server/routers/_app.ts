@@ -30,29 +30,29 @@ export const appRouter = router({
       };
     }),
   retrieveUserScore: publicProcedure
-    .input(z.object({ userId: z.string() }))
+    .input(z.object({ user_id: z.string() }))
     .query(async ({ input }) => {
-      const userScore = await getScoreByUserId(input.userId);
-      return userScore;
+      const userScore = await getScoreByUserId(input.user_id);
+      return userScore ?? 0;
     }),
   storeUserScore: publicProcedure
     .input(
       z.object({
-        userId: z.string(),
+        user_id: z.string(),
         score: z.number(),
       })
     )
     .mutation(async ({ input }) => {
-      let xp = await getScoreByUserId(input.userId);
+      let xp = await getScoreByUserId(input.user_id);
       if (!xp) {
-        await createUser(input.userId);
+        await createUser(input.user_id);
         xp = 0;
       }
       const newXp = xp + input.score;
-      const newScore = await updateScore(newXp, input.userId);
+      const newScore = await updateScore(newXp, input.user_id);
       return {
         user: {
-          userId: input.userId,
+          user_id: input.user_id,
           score: newScore,
         },
       };
