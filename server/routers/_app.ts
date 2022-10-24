@@ -1,31 +1,14 @@
 import { z } from "zod";
 import getTestMushrooms from "../../utils/server";
-import { writeTestString } from "../database/model";
+import {
+  updateScore,
+  getScoreByUserId,
+  writeTestString,
+  createUser,
+} from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
 export const appRouter = router({
-  hello: publicProcedure
-    .input(
-      z.object({
-        text: z.string(),
-      })
-    )
-    .query(({ input }) => {
-      return {
-        greeting: `hello ${input?.text ?? "world"}`,
-      };
-    }),
-  goodBye: publicProcedure
-    .input(
-      z.object({
-        text: z.string().nullish(),
-      })
-    )
-    .query(({ input }) => {
-      return {
-        farewell: `goodbye ${input?.text ?? "world"}`,
-      };
-    }),
   getUserInfo: publicProcedure
     .input(
       z.object({
@@ -43,6 +26,34 @@ export const appRouter = router({
           score: input.score,
           ranking: input.ranking,
           testString: testString,
+        },
+      };
+    }),
+  retrieveUserScore: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ input }) => {
+      const userScore = await getScoreByUserId(input.userId);
+      return userScore;
+    }),
+  storeUserScore: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        score: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      let xp = await getScoreByUserId(input.userId);
+      if (!xp) {
+        await createUser(input.userId);
+        xp = 0;
+      }
+      const newXp = xp + input.score;
+      const newScore = await updateScore(newXp, input.userId);
+      return {
+        user: {
+          userId: input.userId,
+          score: newScore,
         },
       };
     }),

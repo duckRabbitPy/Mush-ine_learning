@@ -9,29 +9,80 @@ import {
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useState } from "react";
-import { TestMushroom } from "../utils/server";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
+import { TestMushroom } from "../utils/server";
+
+type TrainingData = {
+  misidentified: string | undefined;
+  weightingData: Record<string, number> | undefined;
+};
+
+function extractTrainingData(
+  testMushrooms: TestMushroom[],
+  trainingData: TrainingData[] | undefined
+) {
+  const trainingDataCopy = trainingData?.slice() ?? [];
+  const trainingResult: TrainingData = {
+    misidentified: undefined,
+    weightingData: undefined,
+  };
+
+  const weightingObj: Record<string, number> = {};
+  const testMushroomSlice = testMushrooms && testMushrooms.slice();
+  testMushroomSlice?.forEach((mushroom) => {
+    if (!mushroom.correctMatch) {
+      weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
+    }
+  });
+  trainingResult.misidentified = testMushrooms?.filter(
+    (m) => m.correctMatch
+  )[0].name;
+
+  trainingResult.weightingData = weightingObj;
+  trainingDataCopy.push(trainingResult);
+
+  return trainingDataCopy;
+}
 
 const Forage = () => {
-  const [testMushrooms, setTestMushrooms] = useState<TestMushroom[] | []>([]);
+  const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
+  const [round, setRound] = useState(0);
   const [omitArr, setOmitArr] = useState<string[]>([]);
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
-  const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
-  const gameOver = testMushrooms.length < 1 && omitArr.length > 0;
   const [score, setScore] = useState(0);
   const { user } = useUser();
-  const getTestMushrooms = trpc.testMushrooms.useQuery({
-    omitArr,
-    max: 4,
-  });
+  const getTestMushrooms = trpc.testMushrooms.useQuery(
+    {
+      omitArr,
+      max: 4,
+    },
+    { enabled: round !== 0 && round !== 4 }
+  );
+
+  console.log(trainingResult);
+
+  const saveScore = trpc.storeUserScore.useMutation();
+  const testMushrooms = getTestMushrooms.data;
+  const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
+  const gameOver =
+    (testMushrooms && testMushrooms?.length < 1 && omitArr.length > 0) ||
+    round > 3;
+  const answerCorrect = inputAnswer === correctMushroom?.name;
 
   const handleNextBtn = async () => {
-    const answerCorrect = inputAnswer === correctMushroom?.name;
     if (answerCorrect) {
       setScore(score + 10);
     }
+
+    if (!answerCorrect) {
+      const trainingData = testMushrooms
+        ? extractTrainingData(testMushrooms, trainingResult)
+        : [];
+      setTrainingResult(trainingData);
+    }
+
     setOmitArr(() => {
       if (omitArr && correctMushroom?.name) {
         omitArr.push(correctMushroom.name);
@@ -39,10 +90,16 @@ const Forage = () => {
       return omitArr;
     });
 
-    const newTestMushrooms = getTestMushrooms.data;
-    if (newTestMushrooms) {
-      setTestMushrooms(newTestMushrooms);
-      setInputAnswer(null);
+    setInputAnswer(null);
+    setRound(round + 1);
+  };
+
+  const handleSaveBtn = async () => {
+    const userId = user?.sub;
+    if (userId) {
+      saveScore.mutate({ userId, score });
+    } else {
+      throw new Error("user object lacking sub property");
     }
   };
 
@@ -50,55 +107,78 @@ const Forage = () => {
     <Flex gap={5} direction="column" alignItems="center">
       <HomeBtn w="-moz-fit-content" mt={3} />
       <Flex direction="column" gap={5}>
-        <Heading size={"md"} mb={2} pl={2} pr={2}>
-          {correctMushroom?.name
-            ? `Find 🔎 the ${correctMushroom?.name} mushroom`
-            : "Forage Game🍄"}
-          {inputAnswer === correctMushroom?.name && "✅"}
-          {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
-
-          <Text pt="2" fontWeight="light">
-            Score: {score}
-          </Text>
-        </Heading>
-        <Button onClick={handleNextBtn} w="-moz-fit-content" alignSelf="center">
-          {!correctMushroom ? "Start" : "Next"}
-        </Button>
+        {!gameOver && (
+          <>
+            <Heading size={"md"} mb={2} pl={2} pr={2}>
+              {correctMushroom?.name
+                ? `Find 🔎 the ${correctMushroom?.name} mushroom`
+                : "Forage Game🍄"}
+              {inputAnswer === correctMushroom?.name && "✅"}
+              {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
+              <Text pt="2" fontWeight="medium">
+                Round: {round}
+              </Text>
+              <Text pt="2" fontWeight="light">
+                Score: {score}
+              </Text>
+            </Heading>
+            <Button
+              onClick={handleNextBtn}
+              w="-moz-fit-content"
+              alignSelf="center"
+            >
+              {round === 0 ? "Start" : "Next"}
+            </Button>
+          </>
+        )}
+        {gameOver && !saveScore.isSuccess && (
+          <Button
+            onClick={handleSaveBtn}
+            w="-moz-fit-content"
+            alignSelf="center"
+            backgroundColor={saveScore?.isLoading ? "green.300" : ""}
+          >
+            Save score
+          </Button>
+        )}
       </Flex>
       <Container>
-        {getTestMushrooms.isLoading ? (
+        {round !== 0 && round !== 4 && getTestMushrooms.isLoading ? (
           <Spinner />
         ) : (
           <SimpleGrid columns={2} gap={2}>
-            {testMushrooms?.map((testMushroom) => {
-              return (
-                <Container
-                  key={testMushroom.name}
-                  p={0}
-                  display="flex"
-                  justifyContent="center"
-                  flexDirection="column"
-                >
-                  <Image
-                    onClick={() => {
-                      setInputAnswer(testMushroom.name);
-                    }}
-                    src={testMushroom.src}
-                    alt="testMushroom"
-                    height={250}
-                    width={250}
-                    style={{
-                      borderRadius: "5px",
-                      opacity:
-                        inputAnswer && !testMushroom.correctMatch ? "0.5" : 1,
-                    }}
-                  />
-                  <Text fontSize="small">
-                    {inputAnswer ? testMushroom.name : ""}
-                  </Text>
-                </Container>
-              );
-            })}
+            {!gameOver &&
+              getTestMushrooms.data?.map((testMushroom) => {
+                return (
+                  <Container
+                    key={testMushroom.name}
+                    p={0}
+                    display="flex"
+                    justifyContent="center"
+                    flexDirection="column"
+                  >
+                    <Image
+                      onClick={() => {
+                        if (!inputAnswer) {
+                          setInputAnswer(testMushroom.name);
+                        }
+                      }}
+                      src={testMushroom.src}
+                      alt="testMushroom"
+                      height={250}
+                      width={250}
+                      style={{
+                        borderRadius: "5px",
+                        opacity:
+                          inputAnswer && !testMushroom.correctMatch ? "0.5" : 1,
+                      }}
+                    />
+                    <Text fontSize="small">
+                      {inputAnswer ? testMushroom.name : ""}
+                    </Text>
+                  </Container>
+                );
+              })}
             {gameOver && <Text>Game over!</Text>}
           </SimpleGrid>
         )}
