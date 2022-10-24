@@ -12,8 +12,41 @@ import { useState } from "react";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
+import { TestMushroom } from "../utils/server";
+
+type TrainingData = {
+  misidentified: string | undefined;
+  weightingData: Record<string, number> | undefined;
+};
+
+function extractTrainingData(
+  testMushrooms: TestMushroom[],
+  trainingResult: TrainingData | undefined
+) {
+  const trainingData = trainingResult
+    ? { ...trainingResult }
+    : { misidentified: undefined, weightingData: undefined };
+
+  const weightingObj: Record<string, number> = {};
+  const testMushroomSlice = testMushrooms && testMushrooms.slice();
+  testMushroomSlice?.forEach((mushroom) => {
+    if (!mushroom.correctMatch) {
+      weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
+    }
+  });
+  trainingData.misidentified = testMushrooms?.filter(
+    (m) => m.correctMatch
+  )[0].name;
+
+  trainingData.weightingData = weightingObj;
+
+  return trainingData;
+}
 
 const Forage = () => {
+  const [trainingResult, setTrainingResult] = useState<
+    TrainingData | undefined
+  >(undefined);
   const [round, setRound] = useState(0);
   const [omitArr, setOmitArr] = useState<string[]>([]);
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
@@ -26,18 +59,29 @@ const Forage = () => {
     },
     { enabled: round !== 0 && round !== 4 }
   );
+
+  console.log(trainingResult);
+
   const saveScore = trpc.storeUserScore.useMutation();
   const testMushrooms = getTestMushrooms.data;
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
     (testMushrooms && testMushrooms?.length < 1 && omitArr.length > 0) ||
     round > 3;
+  const answerCorrect = inputAnswer === correctMushroom?.name;
 
   const handleNextBtn = async () => {
-    const answerCorrect = inputAnswer === correctMushroom?.name;
     if (answerCorrect) {
       setScore(score + 10);
     }
+
+    if (!answerCorrect) {
+      const trainingData = testMushrooms
+        ? extractTrainingData(testMushrooms, trainingResult)
+        : undefined;
+      setTrainingResult(trainingData);
+    }
+
     setOmitArr(() => {
       if (omitArr && correctMushroom?.name) {
         omitArr.push(correctMushroom.name);
@@ -86,11 +130,12 @@ const Forage = () => {
             </Button>
           </>
         )}
-        {gameOver && (
+        {gameOver && !saveScore.isSuccess && (
           <Button
             onClick={handleSaveBtn}
             w="-moz-fit-content"
             alignSelf="center"
+            backgroundColor={saveScore?.isLoading ? "green.300" : ""}
           >
             Save score
           </Button>
