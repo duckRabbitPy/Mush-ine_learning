@@ -5,6 +5,7 @@ import {
   getScoreByUserId,
   writeTestString,
   createUser,
+  updateTrainingData,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
@@ -56,6 +57,25 @@ export const appRouter = router({
           score: newScore,
         },
       };
+    }),
+  storeTrainingData: publicProcedure
+    .input(
+      z.object({
+        user_id: z.string(),
+        trainingData: z.array(
+          z.object({
+            misidentified: z.string().nullable(),
+            weightingData: z.record(z.string(), z.number()).nullable(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const lastSession = await updateTrainingData(
+        input.trainingData,
+        input.user_id
+      );
+      return lastSession;
     }),
   testMushrooms: publicProcedure
     .input(

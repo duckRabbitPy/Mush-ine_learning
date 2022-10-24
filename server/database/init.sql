@@ -14,3 +14,23 @@ CREATE TABLE mushine_learning_user (
     xp INTEGER
 );
 
+CREATE TABLE mushine_training_mushrooms (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR (50),
+    mushroom_id UUID
+);
+
+
+CREATE TABLE mushine_training_weightings (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR (50),
+    name VARCHAR (50),
+    mushroom_id UUID,
+    misidentified_as UUID,
+    weight integer
+)
+
+'SUM( JOIN mushine_training_mushrooms and mushine_training_weightings ON mushroom_id === misidentifiedAs and userId === userId returning weight)'
+
+
+

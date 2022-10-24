@@ -14,9 +14,9 @@ import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
 import { TestMushroom } from "../utils/server";
 
-type TrainingData = {
-  misidentified: string | undefined;
-  weightingData: Record<string, number> | undefined;
+export type TrainingData = {
+  misidentified: string | null;
+  weightingData: Record<string, number> | null;
 };
 
 function extractTrainingData(
@@ -25,8 +25,8 @@ function extractTrainingData(
 ) {
   const trainingDataCopy = trainingData?.slice() ?? [];
   const trainingResult: TrainingData = {
-    misidentified: undefined,
-    weightingData: undefined,
+    misidentified: null,
+    weightingData: null,
   };
 
   const weightingObj: Record<string, number> = {};
@@ -62,6 +62,7 @@ const Forage = () => {
   );
 
   const saveScore = trpc.storeUserScore.useMutation();
+  const saveTrainingData = trpc.storeTrainingData.useMutation();
   const testMushrooms = getTestMushrooms.data;
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
@@ -97,6 +98,7 @@ const Forage = () => {
     const user_id = user?.sub;
     if (user_id) {
       saveScore.mutate({ user_id, score });
+      saveTrainingData.mutate(trainingResult, user_id);
     } else {
       throw new Error("user object lacking sub property");
     }
