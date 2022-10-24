@@ -61,8 +61,6 @@ const Forage = () => {
     { enabled: round !== 0 && round !== 4 }
   );
 
-  console.log(trainingResult);
-
   const saveScore = trpc.storeUserScore.useMutation();
   const testMushrooms = getTestMushrooms.data;
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
@@ -83,11 +81,12 @@ const Forage = () => {
       setTrainingResult(trainingData);
     }
 
-    setOmitArr(() => {
+    setOmitArr((prev) => {
       if (omitArr && correctMushroom?.name) {
-        omitArr.push(correctMushroom.name);
+        const newOmitArr = [...prev, correctMushroom.name];
+        return newOmitArr;
       }
-      return omitArr;
+      return prev;
     });
 
     setInputAnswer(null);
