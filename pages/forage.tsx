@@ -21,11 +21,13 @@ type TrainingData = {
 
 function extractTrainingData(
   testMushrooms: TestMushroom[],
-  trainingResult: TrainingData | undefined
+  trainingData: TrainingData[] | undefined
 ) {
-  const trainingData = trainingResult
-    ? { ...trainingResult }
-    : { misidentified: undefined, weightingData: undefined };
+  const trainingDataCopy = trainingData?.slice() ?? [];
+  const trainingResult: TrainingData = {
+    misidentified: undefined,
+    weightingData: undefined,
+  };
 
   const weightingObj: Record<string, number> = {};
   const testMushroomSlice = testMushrooms && testMushrooms.slice();
@@ -34,19 +36,18 @@ function extractTrainingData(
       weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
     }
   });
-  trainingData.misidentified = testMushrooms?.filter(
+  trainingResult.misidentified = testMushrooms?.filter(
     (m) => m.correctMatch
   )[0].name;
 
-  trainingData.weightingData = weightingObj;
+  trainingResult.weightingData = weightingObj;
+  trainingDataCopy.push(trainingResult);
 
-  return trainingData;
+  return trainingDataCopy;
 }
 
 const Forage = () => {
-  const [trainingResult, setTrainingResult] = useState<
-    TrainingData | undefined
-  >(undefined);
+  const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
   const [round, setRound] = useState(0);
   const [omitArr, setOmitArr] = useState<string[]>([]);
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
@@ -78,7 +79,7 @@ const Forage = () => {
     if (!answerCorrect) {
       const trainingData = testMushrooms
         ? extractTrainingData(testMushrooms, trainingResult)
-        : undefined;
+        : [];
       setTrainingResult(trainingData);
     }
 
