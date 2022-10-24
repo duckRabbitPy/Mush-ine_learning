@@ -4,7 +4,7 @@ import db from "./connection";
 type mushineLearningUser = {
   id: number;
   user_id: string;
-  xp: string;
+  xp: number;
 };
 
 export function readTestString(): Promise<string> {
