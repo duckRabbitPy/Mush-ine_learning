@@ -98,7 +98,7 @@ const Forage = () => {
     const user_id = user?.sub;
     if (user_id) {
       saveScore.mutate({ user_id, score });
-      saveTrainingData.mutate(trainingResult, user_id);
+      saveTrainingData.mutate({ trainingData: trainingResult, user_id });
     } else {
       throw new Error("user object lacking sub property");
     }
