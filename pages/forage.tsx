@@ -14,9 +14,9 @@ import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
 import { TestMushroom } from "../utils/server";
 
-type TrainingData = {
-  misidentified: string | undefined;
-  weightingData: Record<string, number> | undefined;
+export type TrainingData = {
+  misidentified_as: string | null;
+  weightingData: Record<string, number> | null;
 };
 
 function extractTrainingData(
@@ -25,8 +25,8 @@ function extractTrainingData(
 ) {
   const trainingDataCopy = trainingData?.slice() ?? [];
   const trainingResult: TrainingData = {
-    misidentified: undefined,
-    weightingData: undefined,
+    misidentified_as: null,
+    weightingData: null,
   };
 
   const weightingObj: Record<string, number> = {};
@@ -36,7 +36,7 @@ function extractTrainingData(
       weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
     }
   });
-  trainingResult.misidentified = testMushrooms?.filter(
+  trainingResult.misidentified_as = testMushrooms?.filter(
     (m) => m.correctMatch
   )[0].name;
 
@@ -61,9 +61,8 @@ const Forage = () => {
     { enabled: round !== 0 && round !== 4 }
   );
 
-  console.log(trainingResult);
-
   const saveScore = trpc.storeUserScore.useMutation();
+  const saveTrainingData = trpc.storeTrainingData.useMutation();
   const testMushrooms = getTestMushrooms.data;
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
@@ -83,11 +82,12 @@ const Forage = () => {
       setTrainingResult(trainingData);
     }
 
-    setOmitArr(() => {
+    setOmitArr((prev) => {
       if (omitArr && correctMushroom?.name) {
-        omitArr.push(correctMushroom.name);
+        const newOmitArr = [...prev, correctMushroom.name];
+        return newOmitArr;
       }
-      return omitArr;
+      return prev;
     });
 
     setInputAnswer(null);
@@ -95,9 +95,10 @@ const Forage = () => {
   };
 
   const handleSaveBtn = async () => {
-    const userId = user?.sub;
-    if (userId) {
-      saveScore.mutate({ userId, score });
+    const user_id = user?.sub;
+    if (user_id) {
+      saveScore.mutate({ user_id, score });
+      saveTrainingData.mutate({ trainingData: trainingResult, user_id });
     } else {
       throw new Error("user object lacking sub property");
     }
