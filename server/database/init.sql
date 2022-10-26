@@ -27,7 +27,8 @@ CREATE TABLE mushine_training_weightings (
     name VARCHAR (50),
     mushroom_id UUID,
     misidentified_as UUID,
-    weight integer
+    weight integer,
+    timestamp TIMESTAMP
 )
 
 'SUM( JOIN mushine_training_mushrooms and mushine_training_weightings ON mushroom_id === misidentifiedAs and userId === userId returning weight)'
