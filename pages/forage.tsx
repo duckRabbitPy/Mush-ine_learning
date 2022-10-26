@@ -15,7 +15,7 @@ import { useUser } from "@auth0/nextjs-auth0";
 import { TestMushroom } from "../utils/server";
 
 export type TrainingData = {
-  misidentified: string | null;
+  misidentified_as: string | null;
   weightingData: Record<string, number> | null;
 };
 
@@ -25,7 +25,7 @@ function extractTrainingData(
 ) {
   const trainingDataCopy = trainingData?.slice() ?? [];
   const trainingResult: TrainingData = {
-    misidentified: null,
+    misidentified_as: null,
     weightingData: null,
   };
 
@@ -36,7 +36,7 @@ function extractTrainingData(
       weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
     }
   });
-  trainingResult.misidentified = testMushrooms?.filter(
+  trainingResult.misidentified_as = testMushrooms?.filter(
     (m) => m.correctMatch
   )[0].name;
 

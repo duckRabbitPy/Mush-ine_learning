@@ -64,7 +64,7 @@ export const appRouter = router({
         user_id: z.string(),
         trainingData: z.array(
           z.object({
-            misidentified: z.string().nullable(),
+            misidentified_as: z.string().nullable(),
             weightingData: z.record(z.string(), z.number()).nullable(),
           })
         ),

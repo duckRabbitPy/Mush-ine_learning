@@ -1,7 +1,5 @@
 import { QueryResult } from "pg";
-import { randomUUID } from "crypto";
 import { TrainingData } from "../../pages/forage";
-import { storedMushrooms } from "../../storedMushrooms";
 import db from "./connection";
 
 export function readTestString(): Promise<string> {
@@ -44,22 +42,6 @@ export function createUser(user_id: string) {
     .catch((error: Error) => console.log(error));
 }
 
-// run on first migration, todo only do once
-export async function initTrainingMushroomSet() {
-  const trainingMushrooms = storedMushrooms;
-
-  for (const mushroomName of trainingMushrooms) {
-    const uuid = randomUUID();
-    console.log(mushroomName, uuid);
-    await db
-      .query(
-        "INSERT INTO mushine_training_mushrooms (name, mushroom_id) VALUES ($1, $2) RETURNING *",
-        [mushroomName, uuid]
-      )
-      .catch((error: Error) => console.log(error));
-  }
-}
-
 export async function updateScore(Score: number, user_id: string) {
   return db
     .query(
@@ -81,32 +63,69 @@ export async function getScoreByUserId(user_id: string) {
     .catch((error: Error) => console.log(error));
 }
 
+type mushine_training_weightings = {
+  id: number;
+  name: string;
+  mushroom_id: string;
+};
+
 export async function updateTrainingData(
   trainingData: TrainingData[],
   user_id: string
 ) {
+  console.log(trainingData, "trainingData");
   for (const lesson of trainingData) {
     if (lesson.weightingData) {
-      //use async await functions
-      Object.entries(lesson.weightingData).map((weightEntry) => {
-        const misidentified = lesson.misidentified;
+      const weightEntries = Object.entries(lesson.weightingData);
+
+      for (const weightEntry of weightEntries) {
+        const misidentifiedAs = lesson.misidentified_as;
         const name = weightEntry[0];
         const weight = weightEntry[1];
+        const mushroom_id = await db
+          .query(
+            "SELECT mushroom_id from mushine_training_mushrooms WHERE name = $1",
+            [name]
+          )
+          .then(
+            (
+              result: QueryResult<
+                Pick<mushine_training_weightings, "mushroom_id">
+              >
+            ) => {
+              return result.rows[0].mushroom_id;
+            }
+          )
+          .catch((error: Error) => console.log(error));
 
-        const mushroom_id = db.query(
-          "SELECT mushroom_id from mushine_training_mushrooms WHERE name = $1",
-          [name]
-        );
-        const misidentified_as = db.query(
-          "SELECT mushroom_id from mushine_training_mushrooms WHERE name = $1",
-          [misidentified]
-        );
+        const misidentified_as = await db
+          .query(
+            "SELECT mushroom_id from mushine_training_mushrooms WHERE name = $1",
+            [misidentifiedAs]
+          )
+          .then(
+            (
+              result: QueryResult<
+                Pick<mushine_training_weightings, "mushroom_id">
+              >
+            ) => {
+              console.log(result);
+              return result.rows[0].mushroom_id;
+            }
+          )
+          .catch((error: Error) => console.log(error));
 
-        db.query(
-          "INSERT INTO mushine_training_weightings (user_id, name, mushroom_id, misidentified_as, weight) VALUES ($1, $2, $3, $4, $5, $6)",
-          [user_id, name, mushroom_id, misidentified_as, weight]
-        ).catch((error: Error) => console.log(error));
-      });
+        // insert into mushine_training_weightings
+        await db
+          .query(
+            "INSERT INTO mushine_training_weightings (user_id, name, mushroom_id, misidentified_as, weight) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [user_id, name, mushroom_id, misidentified_as, weight]
+          )
+          .then((result: QueryResult<mushine_training_weightings>) => {
+            return result.rows[0];
+          })
+          .catch((error: Error) => console.log(error));
+      }
     }
   }
 
