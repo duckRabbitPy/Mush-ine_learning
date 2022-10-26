@@ -1,3 +1,4 @@
+import { uniqBy } from "lodash";
 import { QueryResult } from "pg";
 import { TrainingData } from "../../pages/forage";
 import db from "./connection";
@@ -6,7 +7,6 @@ export function readTestString(): Promise<string> {
   return db
     .query("SELECT * from mushineLearning")
     .then((result) => {
-      console.log(result.rows);
       return result.rows[0].testStrings;
     })
     .catch((error: Error) => console.log(error));
@@ -68,6 +68,13 @@ type mushine_training_weightings = {
   name: string;
   mushroom_id: string;
   timestamp: string;
+  misidentified_as: string;
+};
+
+type mushine_training_mushrooms = {
+  id: number;
+  name: string;
+  mushroom_id: string;
 };
 
 export async function updateTrainingData(
@@ -119,7 +126,7 @@ export async function updateTrainingData(
 
         await db
           .query(
-            `INSERT INTO mushine_training_weightings (user_id, name, mushroom_id, misidentified_as, weight, timestamp) VALUES ($1, $2, $3, $4, $5, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
+            `SELECT mushine_training_weightings (user_id, name, mushroom_id, misidentified_as, weight, timestamp) VALUES ($1, $2, $3, $4, $5, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
             [user_id, name, mushroom_id, misidentified_as, weight]
           )
           .then((result: QueryResult<mushine_training_weightings>) => {
@@ -131,4 +138,42 @@ export async function updateTrainingData(
   }
 
   return trainingData;
+}
+
+export default async function getCommonConfusions(
+  name: string,
+  user_id: string
+) {
+  const misidentifiedArr = await db
+    .query(
+      `select misidentified_as, name from mushine_training_weightings where name = $1 AND user_id = $2`,
+      [name, user_id]
+    )
+    .then((result: QueryResult<mushine_training_weightings>) => {
+      return result.rows;
+    })
+    .catch((error: Error) => console.log(error));
+
+  if (!misidentifiedArr) return [];
+
+  const misidentifiedIds = uniqBy(
+    misidentifiedArr,
+    (x) => x.misidentified_as
+  ).map((m) => m.misidentified_as);
+
+  let commonConfusions: string[] = [];
+
+  for (const id of misidentifiedIds) {
+    await db
+      .query(
+        "select name from mushine_training_mushrooms where mushroom_id = $1",
+        [id]
+      )
+      .then((result: QueryResult<Pick<mushine_training_mushrooms, "name">>) => {
+        commonConfusions.push(result.rows[0].name);
+      })
+      .catch((error: Error) => console.log(error));
+  }
+
+  return commonConfusions.slice(0, 3);
 }

@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { storedMushrooms } from "../../storedMushrooms";
 import { CloudImage } from "../../types";
+import { trpc } from "../../utils/trpc";
+import { useUser } from "@auth0/nextjs-auth0";
 
 export async function getStaticPaths() {
   const mushroomNames = storedMushrooms;
@@ -53,9 +55,18 @@ const InfoBank = ({
   mushroomSrcList: string[] | undefined;
   mushroomName: string;
 }) => {
+  const { user } = useUser();
   const [expandIndex, setExpandIndex] = useState<number | null>(null);
   const visibleMushrooms = mushroomSrcList?.filter(
     (_, index) => index === expandIndex || expandIndex === null
+  );
+
+  const lookalikes = trpc.trainingData.useQuery(
+    {
+      name: mushroomName,
+      user_id: user?.sub ?? null,
+    },
+    { enabled: !!user?.sub }
   );
 
   return (
@@ -103,6 +114,17 @@ const InfoBank = ({
           ))}
         </Container>
       )}
+
+      <Heading as={"h2"} fontSize={"large"} mt={5}>
+        Training data
+      </Heading>
+      <p>You most commonly commonly confuse {mushroomName} with: </p>
+
+      <ol>
+        {lookalikes.data?.map((mushroom) => (
+          <li key={mushroom}>{mushroom}</li>
+        ))}
+      </ol>
     </Container>
   );
 };

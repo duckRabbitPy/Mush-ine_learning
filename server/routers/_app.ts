@@ -1,6 +1,6 @@
 import { z } from "zod";
 import getTestMushrooms from "../../utils/server";
-import {
+import getCommonConfusions, {
   updateScore,
   getScoreByUserId,
   writeTestString,
@@ -76,6 +76,18 @@ export const appRouter = router({
         input.user_id
       );
       return lastSession;
+    }),
+  trainingData: publicProcedure
+    .input(
+      z.object({
+        user_id: z.string().nullable(),
+        name: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      if (!input.user_id) return null;
+      const confusions = await getCommonConfusions(input.name, input.user_id);
+      return confusions;
     }),
   testMushrooms: publicProcedure
     .input(
