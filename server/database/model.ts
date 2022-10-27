@@ -116,17 +116,15 @@ export async function updateTrainingData(
                 Pick<mushine_training_weightings, "mushroom_id">
               >
             ) => {
-              console.log(result);
               return result.rows[0].mushroom_id;
             }
           )
           .catch((error: Error) => console.log(error));
 
         // insert into mushine_training_weightings
-
         await db
           .query(
-            `SELECT mushine_training_weightings (user_id, name, mushroom_id, misidentified_as, weight, timestamp) VALUES ($1, $2, $3, $4, $5, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
+            `INSERT INTO mushine_training_weightings (user_id, name, mushroom_id, misidentified_as, weight, timestamp) VALUES ($1, $2, $3, $4, $5, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
             [user_id, name, mushroom_id, misidentified_as, weight]
           )
           .then((result: QueryResult<mushine_training_weightings>) => {

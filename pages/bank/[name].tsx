@@ -118,7 +118,7 @@ const InfoBank = ({
       <Heading as={"h2"} fontSize={"large"} mt={5}>
         Training data
       </Heading>
-      <p>You most commonly commonly confuse {mushroomName} with: </p>
+      <p>You most commonly confuse {mushroomName} with: </p>
 
       <ol>
         {lookalikes.data?.map((mushroom) => (
