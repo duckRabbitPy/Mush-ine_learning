@@ -69,6 +69,7 @@ type mushine_training_weightings = {
   mushroom_id: string;
   timestamp: string;
   misidentified_as: string;
+  weight: string;
 };
 
 type mushine_training_mushrooms = {
@@ -100,7 +101,10 @@ export async function updateTrainingData(
                 Pick<mushine_training_weightings, "mushroom_id">
               >
             ) => {
-              return result.rows[0].mushroom_id;
+              if (result.rows[0]) {
+                return result.rows[0].mushroom_id;
+              }
+              return null;
             }
           )
           .catch((error: Error) => console.log(error));
@@ -120,6 +124,10 @@ export async function updateTrainingData(
             }
           )
           .catch((error: Error) => console.log(error));
+
+        if (!mushroom_id || mushroom_id?.length < 1) {
+          return;
+        }
 
         // insert into mushine_training_weightings
         await db
@@ -164,7 +172,7 @@ export default async function getCommonConfusions(
   for (const id of misidentifiedIds) {
     await db
       .query(
-        "select name from mushine_training_mushrooms where mushroom_id = $1",
+        "select name from mushine_training_mushrooms WHERE mushroom_id = $1",
         [id]
       )
       .then((result: QueryResult<Pick<mushine_training_mushrooms, "name">>) => {
@@ -174,4 +182,68 @@ export default async function getCommonConfusions(
   }
 
   return commonConfusions.slice(0, 3);
+}
+
+type summedWeight = Record<string, number>;
+type snapshotType = Record<string, summedWeight>;
+
+export async function saveLevelSnapshot(
+  storedMushrooms: string[],
+  user_id: string
+) {
+  let snapshot: snapshotType = {};
+
+  for (const mushroomName of storedMushrooms) {
+    const shroomAndWeighting = await db
+      .query(
+        "SELECT mushine_training_weightings.weight, mushine_training_mushrooms.name FROM mushine_training_mushrooms LEFT JOIN mushine_training_weightings ON mushine_training_mushrooms.mushroom_id = mushine_training_weightings.misidentified_as WHERE mushine_training_weightings.name = $1 and user_id = $2",
+        [mushroomName, user_id]
+      )
+      .then(
+        (
+          result: QueryResult<
+            Pick<
+              mushine_training_weightings & mushine_training_mushrooms,
+              "weight" | "name"
+            >
+          >
+        ) => {
+          return result.rows.reduce((acc: any, curr) => {
+            if (acc[curr.name] && acc[curr.name].weight) {
+              acc[curr.name].weight += curr.weight;
+            } else {
+              acc[curr.name] = curr.weight;
+            }
+            return acc;
+          }, {});
+        }
+      )
+      .catch((error: Error) => console.log(error));
+
+    snapshot[mushroomName as keyof typeof snapshot] = shroomAndWeighting;
+  }
+
+  const savedSnapShot = await db.query(
+    `INSERT into mushine_level_snapshots (level, user_id, snapshot) VALUES ($1, $2, $3) RETURNING level, snapshot`,
+    ["1", user_id, snapshot]
+  );
+
+  return savedSnapShot.rows[0];
+}
+
+type levelSnapshot = {
+  user_id: string;
+  level: number;
+  snapshot: Record<string, snapshotType>;
+};
+export async function getLevelSnapshot(level: number, user_id: string) {
+  return await db
+    .query(
+      `SELECT * from mushine_level_snapshots WHERE level = $1 AND user_id = $2`,
+      [level, user_id]
+    )
+    .then((result: QueryResult<levelSnapshot>) => {
+      return result.rows[0];
+    })
+    .catch((error: Error) => console.log(error));
 }

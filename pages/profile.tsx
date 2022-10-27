@@ -6,6 +6,11 @@ import HomeBtn from "./components/HomeBtn";
 const Profile = () => {
   const { user } = useUser();
   const xpQuery = trpc.retrieveUserScore.useQuery({ user_id: user?.sub ?? "" });
+  const snapshot = trpc.downloadLevelSnapShot.useQuery({
+    level: 1,
+    user_id: user?.sub ?? "",
+  });
+  console.log(snapshot.data);
   return (
     <>
       <Flex direction="column" alignItems={"center"} mt={10}>

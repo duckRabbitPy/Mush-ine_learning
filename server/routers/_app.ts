@@ -1,4 +1,5 @@
-import { z } from "zod";
+import { number, string, z } from "zod";
+import { storedMushrooms } from "../../storedMushrooms";
 import getTestMushrooms from "../../utils/server";
 import getCommonConfusions, {
   updateScore,
@@ -6,6 +7,8 @@ import getCommonConfusions, {
   writeTestString,
   createUser,
   updateTrainingData,
+  getLevelSnapshot,
+  saveLevelSnapshot,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
@@ -99,6 +102,28 @@ export const appRouter = router({
     .query(async ({ input }) => {
       const testMushrooms = await getTestMushrooms(input.omitArr, input.max);
       return testMushrooms;
+    }),
+  saveLevelSnapShot: publicProcedure
+    .input(
+      z.object({
+        user_id: string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const mushrooms = storedMushrooms;
+      const snapshot = await saveLevelSnapshot(mushrooms, input.user_id);
+      return snapshot;
+    }),
+  downloadLevelSnapShot: publicProcedure
+    .input(
+      z.object({
+        level: number(),
+        user_id: string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const snapshot = await getLevelSnapshot(input.level, input.user_id);
+      return snapshot;
     }),
 });
 
