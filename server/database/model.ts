@@ -239,10 +239,10 @@ type levelSnapshot = {
 export async function getLevelSnapshot(level: number, user_id: string) {
   return await db
     .query(
-      `SELECT * from mushine_level_snapshots WHERE level = $1 AND user_id = $2`,
+      `SELECT snapshot, level from mushine_level_snapshots WHERE level = $1 AND user_id = $2`,
       [level, user_id]
     )
-    .then((result: QueryResult<levelSnapshot>) => {
+    .then((result: QueryResult<Pick<levelSnapshot, "snapshot" | "level">>) => {
       return result.rows[0];
     })
     .catch((error: Error) => console.log(error));
