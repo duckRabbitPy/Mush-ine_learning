@@ -13,7 +13,7 @@ export async function initTables() {
   );
 
   await db.query(
-    "CREATE TABLE mushine_training_weightings (id SERIAL PRIMARY KEY, user_id VARCHAR (50), name VARCHAR (50), mushroom_id UUID, misidentified_as UUID, weight integer, timestamp TIMESTAMP)"
+    "CREATE TABLE mushine_training_weightings (id SERIAL PRIMARY KEY, user_id VARCHAR (50), correct_mushroom VARCHAR (50), misidentified_as VARCHAR (50), weight integer, timestamp TIMESTAMP)"
   );
 
   await db.query(
@@ -27,12 +27,13 @@ export async function initTrainingMushroomSet() {
     const uuid = randomUUID();
     await db
       .query(
-        "INSERT INTO mushine_training_mushrooms3 (name, mushroom_id) VALUES ($1, $2) RETURNING *",
+        "INSERT INTO mushine_training_mushrooms (name, mushroom_id) VALUES ($1, $2) RETURNING *",
         [mushroomName, uuid]
       )
       .catch((error: Error) => console.log(error));
   }
 }
 
-initTables();
-initTrainingMushroomSet();
+initTables().then(() => {
+  initTrainingMushroomSet();
+});

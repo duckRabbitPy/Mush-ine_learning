@@ -1,5 +1,6 @@
 import { useUser } from "@auth0/nextjs-auth0";
 import {
+  Button,
   Flex,
   Heading,
   Spinner,
@@ -19,12 +20,23 @@ import HomeBtn from "./components/HomeBtn";
 
 const Profile = () => {
   const { user } = useUser();
-  const xpQuery = trpc.retrieveUserScore.useQuery({ user_id: user?.sub ?? "" });
-  const snapshot = trpc.downloadLevelSnapShot.useQuery({
-    level: 1,
-    user_id: user?.sub ?? "",
+  const xpQuery = trpc.retrieveUserScore.useQuery({
+    user_id: user?.sub ?? null,
   });
-  console.log(snapshot?.data);
+
+  const snapshot = trpc.downloadLevelSnapShot.useQuery({
+    level: 2,
+    user_id: user?.sub ?? null,
+  });
+
+  console.log(snapshot.data);
+
+  const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
+
+  const levelHandler = () => {
+    saveSnapShot.mutate({ user_id: user?.sub ?? null });
+  };
+
   return (
     <>
       <Flex direction="column" alignItems={"center"} mt={10}>
@@ -37,6 +49,8 @@ const Profile = () => {
             XP: {xpQuery.data ?? 0}
           </Text>
         )}
+
+        <Button onClick={levelHandler}>Progress to next level</Button>
 
         <TableContainer>
           <Table variant="striped" colorScheme="teal">
