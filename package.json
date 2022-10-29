@@ -1,13 +1,12 @@
 {
-  "name": "sporecle",
+  "name": "mushine_learning",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "names": "node ./scripts/getMushroomNames.mjs"
+    "lint": "next lint"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^1.9.2",

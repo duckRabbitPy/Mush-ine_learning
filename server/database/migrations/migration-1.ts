@@ -33,6 +33,3 @@ export async function initTrainingMushroomSet() {
       .catch((error: Error) => console.log(error));
   }
 }
-
-initTables();
-initTrainingMushroomSet();

@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudImage, SubfolderResult } from "../types";
 import { randomArrItem } from "./client";
@@ -9,17 +7,6 @@ export type TestMushroom = {
   src: string;
   correctMatch: boolean;
 };
-
-export async function getImageSrcArr(name: string | string[]) {
-  if (Array.isArray(name)) return null;
-  const dirRelativeToPublicFolder = `mushroom_images/${name}`;
-  const dir = path.resolve("./cloudMirror", dirRelativeToPublicFolder);
-  const mushroomNames = fs.readdirSync(dir);
-  const images = mushroomNames.map((name) =>
-    path.join("/", dirRelativeToPublicFolder, name)
-  );
-  return images;
-}
 
 export async function getCloudMushrooms() {
   const images = (await cloudinary.api.sub_folders("mushroom_images")) as
