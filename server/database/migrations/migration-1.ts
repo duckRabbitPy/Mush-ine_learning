@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { getCloudMushrooms } from "../../../utils/server";
 import db from "../connection";
 
 // ts-node migration-1.ts
@@ -21,7 +22,7 @@ export async function initTables() {
 }
 
 export async function initTrainingMushroomSet() {
-  const trainingMushrooms = storedMushrooms;
+  const trainingMushrooms = await getCloudMushrooms();
   for (const mushroomName of trainingMushrooms) {
     const uuid = randomUUID();
     await db
