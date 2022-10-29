@@ -24,7 +24,7 @@ const Profile = () => {
     level: 1,
     user_id: user?.sub ?? "",
   });
-  console.log(snapshot.data);
+  console.log(snapshot?.data);
   return (
     <>
       <Flex direction="column" alignItems={"center"} mt={10}>

@@ -1,5 +1,4 @@
 import { randomUUID } from "crypto";
-import { storedMushrooms } from "../../../storedMushrooms";
 import db from "../connection";
 
 // ts-node migration-1.ts

@@ -4,13 +4,13 @@ import { v2 as cloudinary } from "cloudinary";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { storedMushrooms } from "../../storedMushrooms";
 import { CloudImage } from "../../types";
 import { trpc } from "../../utils/trpc";
 import { useUser } from "@auth0/nextjs-auth0";
+import { getCloudMushrooms } from "../../utils/server";
 
 export async function getStaticPaths() {
-  const mushroomNames = storedMushrooms;
+  const mushroomNames = await getCloudMushrooms();
   const paths = mushroomNames.map((mushroomName) => {
     return {
       params: {

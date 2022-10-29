@@ -1,6 +1,5 @@
 import { number, string, z } from "zod";
-import { storedMushrooms } from "../../storedMushrooms";
-import getTestMushrooms from "../../utils/server";
+import getTestMushrooms, { getCloudMushrooms } from "../../utils/server";
 import getCommonConfusions, {
   updateScore,
   getScoreByUserId,
@@ -110,7 +109,7 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const mushrooms = storedMushrooms;
+      const mushrooms = await getCloudMushrooms();
       const snapshot = await saveLevelSnapshot(mushrooms, input.user_id);
       return snapshot;
     }),
