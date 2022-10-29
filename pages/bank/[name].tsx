@@ -122,7 +122,7 @@ const InfoBank = ({
 
       <ol>
         {lookalikes.data?.map((mushroom) => (
-          <li key={mushroom}>{mushroom}</li>
+          <li key={mushroom.misidentified_as}>{mushroom.misidentified_as}</li>
         ))}
       </ol>
     </Container>

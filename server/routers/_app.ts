@@ -33,8 +33,11 @@ export const appRouter = router({
       };
     }),
   retrieveUserScore: publicProcedure
-    .input(z.object({ user_id: z.string() }))
+    .input(z.object({ user_id: z.string().nullable() }))
     .query(async ({ input }) => {
+      if (!input.user_id) {
+        return 0;
+      }
       const userScore = await getScoreByUserId(input.user_id);
       return userScore ?? 0;
     }),
@@ -105,10 +108,13 @@ export const appRouter = router({
   saveLevelSnapShot: publicProcedure
     .input(
       z.object({
-        user_id: string(),
+        user_id: string().nullable(),
       })
     )
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
+      if (!input.user_id) {
+        return null;
+      }
       const mushrooms = await getCloudMushrooms();
       const snapshot = await saveLevelSnapshot(mushrooms, input.user_id);
       return snapshot;
@@ -117,11 +123,18 @@ export const appRouter = router({
     .input(
       z.object({
         level: number(),
-        user_id: string(),
+        user_id: string().nullable(),
       })
     )
     .query(async ({ input }) => {
+      if (!input.user_id) {
+        return null;
+      }
       const snapshot = await getLevelSnapshot(input.level, input.user_id);
+
+      if (!snapshot) {
+        return null;
+      }
       return snapshot;
     }),
 });

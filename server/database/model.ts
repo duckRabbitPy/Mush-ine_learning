@@ -1,4 +1,3 @@
-import { uniqBy } from "lodash";
 import { QueryResult } from "pg";
 import { TrainingData } from "../../pages/forage";
 import db from "./connection";
@@ -65,17 +64,10 @@ export async function getScoreByUserId(user_id: string) {
 
 type mushine_training_weightings = {
   id: number;
-  name: string;
-  mushroom_id: string;
+  correct_mushroom: string;
   timestamp: string;
   misidentified_as: string;
   weight: string;
-};
-
-type mushine_training_mushrooms = {
-  id: number;
-  name: string;
-  mushroom_id: string;
 };
 
 export async function updateTrainingData(
@@ -87,53 +79,13 @@ export async function updateTrainingData(
       const weightEntries = Object.entries(lesson.weightingData);
 
       for (const weightEntry of weightEntries) {
-        const misidentifiedAs = lesson.misidentified_as;
-        const name = weightEntry[0];
+        const misidentified_as = lesson.misidentified_as;
+        const correct_mushroom = weightEntry[0];
         const weight = weightEntry[1];
-        const mushroom_id = await db
-          .query(
-            "SELECT mushroom_id from mushine_training_mushrooms WHERE name = $1",
-            [name]
-          )
-          .then(
-            (
-              result: QueryResult<
-                Pick<mushine_training_weightings, "mushroom_id">
-              >
-            ) => {
-              if (result.rows[0]) {
-                return result.rows[0].mushroom_id;
-              }
-              return null;
-            }
-          )
-          .catch((error: Error) => console.log(error));
-
-        const misidentified_as = await db
-          .query(
-            "SELECT mushroom_id from mushine_training_mushrooms WHERE name = $1",
-            [misidentifiedAs]
-          )
-          .then(
-            (
-              result: QueryResult<
-                Pick<mushine_training_weightings, "mushroom_id">
-              >
-            ) => {
-              return result.rows[0].mushroom_id;
-            }
-          )
-          .catch((error: Error) => console.log(error));
-
-        if (!mushroom_id || mushroom_id?.length < 1) {
-          return;
-        }
-
-        // insert into mushine_training_weightings
         await db
           .query(
-            `INSERT INTO mushine_training_weightings (user_id, name, mushroom_id, misidentified_as, weight, timestamp) VALUES ($1, $2, $3, $4, $5, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
-            [user_id, name, mushroom_id, misidentified_as, weight]
+            `INSERT INTO mushine_training_weightings (user_id, correct_mushroom, misidentified_as, weight, timestamp) VALUES ($1, $2, $3, $4, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
+            [user_id, correct_mushroom, misidentified_as, weight]
           )
           .then((result: QueryResult<mushine_training_weightings>) => {
             return result.rows[0];
@@ -152,7 +104,7 @@ export default async function getCommonConfusions(
 ) {
   const misidentifiedArr = await db
     .query(
-      `select misidentified_as, name from mushine_training_weightings where name = $1 AND user_id = $2`,
+      `select misidentified_as from mushine_training_weightings where correct_mushroom = $1 AND user_id = $2`,
       [name, user_id]
     )
     .then((result: QueryResult<mushine_training_weightings>) => {
@@ -162,26 +114,7 @@ export default async function getCommonConfusions(
 
   if (!misidentifiedArr) return [];
 
-  const misidentifiedIds = uniqBy(
-    misidentifiedArr,
-    (x) => x.misidentified_as
-  ).map((m) => m.misidentified_as);
-
-  let commonConfusions: string[] = [];
-
-  for (const id of misidentifiedIds) {
-    await db
-      .query(
-        "select name from mushine_training_mushrooms WHERE mushroom_id = $1",
-        [id]
-      )
-      .then((result: QueryResult<Pick<mushine_training_mushrooms, "name">>) => {
-        commonConfusions.push(result.rows[0].name);
-      })
-      .catch((error: Error) => console.log(error));
-  }
-
-  return commonConfusions.slice(0, 3);
+  return misidentifiedArr.slice(0, 3);
 }
 
 type summedWeight = Record<string, number>;
@@ -192,27 +125,28 @@ export async function saveLevelSnapshot(
   user_id: string
 ) {
   let snapshot: snapshotType = {};
+  console.log("snapshotting");
 
   for (const mushroomName of storedMushrooms) {
     const shroomAndWeighting = await db
       .query(
-        "SELECT mushine_training_weightings.weight, mushine_training_mushrooms.name FROM mushine_training_mushrooms LEFT JOIN mushine_training_weightings ON mushine_training_mushrooms.mushroom_id = mushine_training_weightings.misidentified_as WHERE mushine_training_weightings.name = $1 and user_id = $2",
+        "SELECT weight, misidentified_as FROM mushine_training_weightings WHERE mushine_training_weightings.correct_mushroom = $1 and user_id = $2",
         [mushroomName, user_id]
       )
       .then(
         (
           result: QueryResult<
-            Pick<
-              mushine_training_weightings & mushine_training_mushrooms,
-              "weight" | "name"
-            >
+            Pick<mushine_training_weightings, "weight" | "misidentified_as">
           >
         ) => {
           return result.rows.reduce((acc: any, curr) => {
-            if (acc[curr.name] && acc[curr.name].weight) {
-              acc[curr.name].weight += curr.weight;
+            if (
+              acc[curr.misidentified_as] &&
+              acc[curr.misidentified_as].weight
+            ) {
+              acc[curr.misidentified_as].weight += curr.weight;
             } else {
-              acc[curr.name] = curr.weight;
+              acc[curr.misidentified_as] = curr.weight;
             }
             return acc;
           }, {});
