@@ -11,7 +11,7 @@ const AuthStatus = () => {
   return (
     <Flex align="center">
       <Text color={textColor}>{message}</Text>
-      <Link href="/api/auth/login">
+      <Link href={user ? "/api/auth/logout" : "/api/auth/login"}>
         <Button m={2}>{user ? "Log Out" : "Log in"}</Button>
       </Link>
     </Flex>

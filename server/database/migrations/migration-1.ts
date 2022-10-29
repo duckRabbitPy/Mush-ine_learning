@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { storedMushrooms } from "../../../storedMushrooms";
+import { getCloudMushrooms } from "../../../utils/server";
 import db from "../connection";
 
 // ts-node migration-1.ts
@@ -15,10 +15,14 @@ export async function initTables() {
   await db.query(
     "CREATE TABLE mushine_training_weightings (id SERIAL PRIMARY KEY, user_id VARCHAR (50), name VARCHAR (50), mushroom_id UUID, misidentified_as UUID, weight integer, timestamp TIMESTAMP)"
   );
+
+  await db.query(
+    "CREATE TABLE mushine_level_snapshots (level SERIAL PRIMARY KEY,user_id VARCHAR (50),snapshot JSONB);"
+  );
 }
 
 export async function initTrainingMushroomSet() {
-  const trainingMushrooms = storedMushrooms;
+  const trainingMushrooms = await getCloudMushrooms();
   for (const mushroomName of trainingMushrooms) {
     const uuid = randomUUID();
     await db

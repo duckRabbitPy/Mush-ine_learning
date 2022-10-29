@@ -15,3 +15,8 @@ export type CloudImage = {
   folder: StringIfPresent;
   url: StringIfPresent;
 };
+
+export type SubfolderResult = {
+  name: string;
+  path: string;
+};
