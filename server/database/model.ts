@@ -2,6 +2,32 @@ import { QueryResult } from "pg";
 import { TrainingData } from "../../pages/forage";
 import db from "./connection";
 
+type mushine_learning_user = {
+  id: number;
+  user_id: string;
+  xp: number;
+};
+
+type mushine_training_weightings = {
+  id: number;
+  correct_mushroom: string;
+  timestamp: string;
+  misidentified_as: string;
+  weight: string;
+};
+
+type mushine_level_snapshots = {
+  level: number;
+  user_id: string;
+  snapshot: levelSnapshot;
+};
+
+type levelSnapshot = {
+  user_id: string;
+  level: number;
+  snapshot: Record<string, snapshotType>;
+};
+
 export function readTestString(): Promise<string> {
   return db
     .query("SELECT * from mushineLearning")
@@ -22,12 +48,6 @@ export function writeTestString(testString: string): Promise<string> {
     })
     .catch((error: Error) => console.log(error));
 }
-
-type mushine_learning_user = {
-  id: number;
-  user_id: string;
-  xp: number;
-};
 
 export function createUser(user_id: string) {
   return db
@@ -61,14 +81,6 @@ export async function getScoreByUserId(user_id: string) {
     })
     .catch((error: Error) => console.log(error));
 }
-
-type mushine_training_weightings = {
-  id: number;
-  correct_mushroom: string;
-  timestamp: string;
-  misidentified_as: string;
-  weight: string;
-};
 
 export async function updateTrainingData(
   trainingData: TrainingData[],
@@ -157,19 +169,25 @@ export async function saveLevelSnapshot(
     snapshot[mushroomName as keyof typeof snapshot] = shroomAndWeighting;
   }
 
+  const currLevel = await db
+    .query(`SELECT level from mushine_level_snapshots WHERE user_id = $1`, [
+      user_id,
+    ])
+    .then((result: QueryResult<Pick<mushine_level_snapshots, "level">>) => {
+      return result.rows[0].level;
+    })
+    .catch((error: Error) => console.log(error));
+
+  const newLevel = currLevel ? currLevel + 1 : 1;
+
   const savedSnapShot = await db.query(
     `INSERT into mushine_level_snapshots (level, user_id, snapshot) VALUES ($1, $2, $3) RETURNING level, snapshot`,
-    ["1", user_id, snapshot]
+    [newLevel, user_id, snapshot]
   );
 
   return savedSnapShot.rows[0];
 }
 
-type levelSnapshot = {
-  user_id: string;
-  level: number;
-  snapshot: Record<string, snapshotType>;
-};
 export async function getLevelSnapshot(level: number, user_id: string) {
   return await db
     .query(

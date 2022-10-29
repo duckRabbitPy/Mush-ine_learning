@@ -25,9 +25,11 @@ const Profile = () => {
   });
 
   const snapshot = trpc.downloadLevelSnapShot.useQuery({
-    level: 1,
+    level: 2,
     user_id: user?.sub ?? null,
   });
+
+  console.log(snapshot.data);
 
   const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
 
