@@ -18,8 +18,6 @@ const Multi = () => {
     }
   );
 
-  console.log(omitArr);
-
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
 

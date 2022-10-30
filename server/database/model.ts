@@ -32,27 +32,6 @@ type levelSnapshot = {
 type summedWeight = Record<string, number>;
 type snapshotType = Record<string, summedWeight>;
 
-export function readTestString(): Promise<string> {
-  return db
-    .query("SELECT * from mushineLearning")
-    .then((result) => {
-      return result.rows[0].testStrings;
-    })
-    .catch((error: Error) => console.log(error));
-}
-
-export function writeTestString(testString: string): Promise<string> {
-  return db
-    .query(
-      "INSERT INTO mushineLearning (testStrings) VALUES ($1) RETURNING *",
-      [testString]
-    )
-    .then((result) => {
-      return result.rows[0].testStrings;
-    })
-    .catch((error: Error) => console.log(error));
-}
-
 export function createUser(user_id: string) {
   return db
     .query(

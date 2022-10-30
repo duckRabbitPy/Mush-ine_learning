@@ -29,7 +29,7 @@ const Profile = () => {
     user_id: user?.sub ?? null,
   });
 
-  console.log(snapshot.data);
+  console.log("snapshot", snapshot.data);
 
   const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
 
