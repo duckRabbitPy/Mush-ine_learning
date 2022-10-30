@@ -1,4 +1,4 @@
-import { Button, Flex, SimpleGrid, Text } from "@chakra-ui/react";
+import { Button, Flex, SimpleGrid, Spinner, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
@@ -12,7 +12,6 @@ const Multi = () => {
   const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
   const saveScore = trpc.storeUserScore.useMutation();
   const saveTrainingData = trpc.storeTrainingData.useMutation();
-  const [inputAnswer, setInputAnswer] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const { user } = useUser();
   const getMushroomSet = trpc.mushroomSet.useQuery(
@@ -28,25 +27,41 @@ const Multi = () => {
 
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
+  const gameOver = round > 3;
+
+  const handleSaveBtn = async () => {
+    const user_id = user?.sub;
+    if (user_id) {
+      saveScore.mutate({ user_id, score });
+      saveTrainingData.mutate({ trainingData: trainingResult, user_id });
+    } else {
+      throw new Error("user object lacking sub property");
+    }
+  };
 
   return (
     <Flex gap={5} direction="column" alignItems="center">
       <HomeBtn w="-moz-fit-content" mt={3} />
       Multi Quiz
       <Flex gap={2}>
-        <SimpleGrid columns={3} gap={1}>
-          {getMushroomSet.data?.mushroomSet.map((src) => {
-            return (
-              <Image
-                key={src}
-                src={src}
-                alt="testMushroom"
-                height={150}
-                width={150}
-              />
-            );
-          })}
-        </SimpleGrid>
+        {getMushroomSet.isLoading ? (
+          <Spinner />
+        ) : (
+          <SimpleGrid columns={3} gap={1}>
+            {getMushroomSet.data?.mushroomSet.map((src) => {
+              return (
+                <Image
+                  key={src}
+                  src={src}
+                  alt="testMushroom"
+                  height={150}
+                  width={150}
+                />
+              );
+            })}
+          </SimpleGrid>
+        )}
+
         <Flex gap={2} direction={"column"}>
           {round < 1 ? (
             <Button onClick={() => setRound(round + 1)}>Start</Button>
@@ -55,6 +70,16 @@ const Multi = () => {
               <Text>Score: {score}</Text>
               <Text>Round: {round}</Text>
             </Flex>
+          )}
+          {gameOver && !saveScore.isSuccess && (
+            <Button
+              onClick={handleSaveBtn}
+              w="-moz-fit-content"
+              alignSelf="center"
+              backgroundColor={saveScore?.isLoading ? "green.300" : ""}
+            >
+              Save score
+            </Button>
           )}
           {options?.map((name) => (
             <Button
@@ -67,8 +92,8 @@ const Multi = () => {
                 if (name !== correctMushroom) {
                   const trainingDataCopy = trainingResult?.slice() ?? [];
                   const newResult: TrainingData = {
-                    misidentifiedMushroom: name,
-                    weightingData: {},
+                    misidentifiedMushroom: correctMushroom ?? null,
+                    weightingData: { [name]: 20 },
                   };
                   trainingDataCopy.push(newResult);
                   setTrainingResult(trainingDataCopy);
