@@ -1,5 +1,6 @@
 import { QueryResult } from "pg";
-import { TrainingData } from "../../pages/forage";
+import { TrainingData } from "../../utils/server";
+
 import db from "./connection";
 
 type mushine_learning_user = {

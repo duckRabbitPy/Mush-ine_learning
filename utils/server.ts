@@ -1,11 +1,15 @@
 import { v2 as cloudinary } from "cloudinary";
 import { CloudImage, SubfolderResult } from "../types";
-import { randomArrItem } from "./client";
 
 export type TestMushroom = {
   name: string;
   src: string;
   correctMatch: boolean;
+};
+
+export type TrainingData = {
+  misidentified_as: string | null;
+  weightingData: Record<string, number> | null;
 };
 
 export async function getCloudMushrooms() {
@@ -100,10 +104,45 @@ export async function getMushroomSet(omitArr: string[]) {
   }
   const correctMushroom = randomArrItem(mushroomNamePool);
   const mushroomSet = await getAllMushroomImgPaths(correctMushroom);
-  const otherOptions = allMushroomNames
-    .filter((m) => m !== correctMushroom)
-    .map((m, _, arr) => randomArrItem(arr))
-    .slice(0, 3);
 
-  return { correctMushroom, mushroomSet, otherOptions };
+  const correctIndex = mushroomNamePool.findIndex((x) => x === correctMushroom);
+  mushroomNamePool.splice(correctIndex, 1);
+
+  let optionsArr: string[] = [];
+  let count = 0;
+
+  for (const _ of mushroomNamePool) {
+    if (count > 2) {
+      break;
+    } else {
+      const item = randomArrItem(mushroomNamePool);
+      optionsArr.push(item);
+      const index = mushroomNamePool.findIndex((x) => x === item);
+      mushroomNamePool.splice(index, 1);
+      count++;
+    }
+  }
+  optionsArr.push(correctMushroom);
+  const options = shuffleArrayCopy(optionsArr);
+
+  return { correctMushroom, mushroomSet, options };
+}
+
+export function randomArrItem<Type>(arr: Type[]) {
+  const min = 0;
+  const max = Math.floor(arr.length - 1);
+  const index = Math.floor(Math.random() * (max - min + 1)) + min;
+  return arr[index];
+}
+
+export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
+  const arr = unshuffledArr.slice();
+  let currIndex = 0;
+  for (const _item in arr) {
+    let randomIndex = Math.floor(Math.random() * (currIndex + 1));
+    [arr[currIndex], arr[randomIndex]] = [arr[randomIndex], arr[currIndex]];
+    currIndex++;
+  }
+
+  return arr;
 }

@@ -12,39 +12,8 @@ import { useState } from "react";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
-import { TestMushroom } from "../utils/server";
-
-export type TrainingData = {
-  misidentified_as: string | null;
-  weightingData: Record<string, number> | null;
-};
-
-function extractTrainingData(
-  testMushrooms: TestMushroom[],
-  trainingData: TrainingData[] | undefined
-) {
-  const trainingDataCopy = trainingData?.slice() ?? [];
-  const trainingResult: TrainingData = {
-    misidentified_as: null,
-    weightingData: null,
-  };
-
-  const weightingObj: Record<string, number> = {};
-  const testMushroomSlice = testMushrooms && testMushrooms.slice();
-  testMushroomSlice?.forEach((mushroom) => {
-    if (!mushroom.correctMatch) {
-      weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
-    }
-  });
-  trainingResult.misidentified_as = testMushrooms?.filter(
-    (m) => m.correctMatch
-  )[0].name;
-
-  trainingResult.weightingData = weightingObj;
-  trainingDataCopy.push(trainingResult);
-
-  return trainingDataCopy;
-}
+import { TrainingData } from "../utils/server";
+import { extractTrainingData } from "../utils/client";
 
 const Forage = () => {
   const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
@@ -58,7 +27,7 @@ const Forage = () => {
       omitArr,
       max: 4,
     },
-    { enabled: round !== 0 && round !== 4 }
+    { enabled: round !== 0 && round !== 4, refetchOnMount: false }
   );
 
   const saveScore = trpc.storeUserScore.useMutation();
