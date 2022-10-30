@@ -10,6 +10,7 @@ const Multi = () => {
   const [round, setRound] = useState(0);
   const [omitArr, setOmitArr] = useState<string[]>([]);
   const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
+  const [progress, setProgress] = useState<boolean[]>([]);
   const saveScore = trpc.storeUserScore.useMutation();
   const saveTrainingData = trpc.storeTrainingData.useMutation();
   const [score, setScore] = useState(0);
@@ -43,77 +44,83 @@ const Multi = () => {
     <Flex gap={5} direction="column" alignItems="center">
       <HomeBtn w="-moz-fit-content" mt={3} />
       Multi Quiz
-      <Flex gap={2}>
-        {getMushroomSet.isLoading ? (
-          <Spinner />
-        ) : (
-          <SimpleGrid columns={3} gap={1}>
-            {getMushroomSet.data?.mushroomSet.map((src) => {
-              return (
-                <Image
-                  key={src}
-                  src={src}
-                  alt="testMushroom"
-                  height={150}
-                  width={150}
-                />
-              );
-            })}
-          </SimpleGrid>
+      <Flex gap={2} direction={"column"}>
+        {round < 1 && (
+          <Button onClick={() => setRound(round + 1)}>Start</Button>
         )}
+        {round > 0 && (
+          <Flex gap={2}>
+            {getMushroomSet.isLoading && <Spinner />}
 
-        <Flex gap={2} direction={"column"}>
-          {round < 1 ? (
-            <Button onClick={() => setRound(round + 1)}>Start</Button>
-          ) : (
-            <Flex gap={5}>
-              <Text>Score: {score}</Text>
-              <Text>Round: {round}</Text>
+            <SimpleGrid columns={3} gap={1}>
+              {getMushroomSet.data?.mushroomSet.map((src) => {
+                return (
+                  <Image
+                    key={src}
+                    src={src}
+                    alt="testMushroom"
+                    height={150}
+                    width={150}
+                  />
+                );
+              })}
+            </SimpleGrid>
+
+            <Flex direction={"column"} gap={1}>
+              <Flex gap={5}>
+                <Text>Score: {score}</Text>
+                <Text>Round: {round}</Text>
+              </Flex>
+
+              {gameOver && !saveScore.isSuccess && (
+                <Button
+                  onClick={handleSaveBtn}
+                  w="-moz-fit-content"
+                  alignSelf="center"
+                >
+                  Save score
+                </Button>
+              )}
+              {round > 0 &&
+                options?.map((name) => (
+                  <Button
+                    key={name}
+                    onClick={() => {
+                      if (name === correctMushroom) {
+                        setScore(score + 10);
+                        setProgress((prev) => {
+                          return prev.concat(true);
+                        });
+                      } else if (name !== correctMushroom) {
+                        const trainingDataCopy = trainingResult?.slice() ?? [];
+                        const newResult: TrainingData = {
+                          misidentifiedMushroom: correctMushroom ?? null,
+                          weightingData: { [name]: 20 },
+                        };
+                        trainingDataCopy.push(newResult);
+                        setTrainingResult(trainingDataCopy);
+                        setProgress((prev) => {
+                          return prev.concat(false);
+                        });
+                      }
+
+                      setRound(round + 1);
+                      setOmitArr((prev) => {
+                        if (omitArr && correctMushroom) {
+                          const newOmitArr = [...prev, correctMushroom];
+                          return newOmitArr;
+                        }
+                        return prev;
+                      });
+                    }}
+                  >
+                    {name}
+                  </Button>
+                ))}
+              {progress.map((r) => (r ? <Text>🍄</Text> : <Text>❌</Text>))}
             </Flex>
-          )}
-          {gameOver && !saveScore.isSuccess && (
-            <Button
-              onClick={handleSaveBtn}
-              w="-moz-fit-content"
-              alignSelf="center"
-              backgroundColor={saveScore?.isLoading ? "green.300" : ""}
-            >
-              Save score
-            </Button>
-          )}
-          {options?.map((name) => (
-            <Button
-              key={name}
-              onClick={() => {
-                if (name === correctMushroom) {
-                  setScore(score + 10);
-                }
-
-                if (name !== correctMushroom) {
-                  const trainingDataCopy = trainingResult?.slice() ?? [];
-                  const newResult: TrainingData = {
-                    misidentifiedMushroom: correctMushroom ?? null,
-                    weightingData: { [name]: 20 },
-                  };
-                  trainingDataCopy.push(newResult);
-                  setTrainingResult(trainingDataCopy);
-                }
-
-                setRound(round + 1);
-
-                setOmitArr((prev) => {
-                  if (omitArr && correctMushroom) {
-                    const newOmitArr = [...prev, correctMushroom];
-                    return newOmitArr;
-                  }
-                  return prev;
-                });
-              }}
-            >
-              {name}
-            </Button>
-          ))}
-        </Flex>
+          </Flex>
+        )}
       </Flex>
     </Flex>
   );
