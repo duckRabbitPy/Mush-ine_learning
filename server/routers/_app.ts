@@ -14,6 +14,12 @@ import getCommonConfusions, {
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
+export const reactQueryConfig = {
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+};
+
 export const appRouter = router({
   retrieveUserScore: publicProcedure
     .input(z.object({ user_id: z.string().nullable() }))

@@ -6,6 +6,7 @@ import HomeBtn from "./components/HomeBtn";
 import { TrainingData } from "../utils/server";
 import { useUser } from "@auth0/nextjs-auth0";
 import { ProgressIndicator } from "./components/Progress";
+import { reactQueryConfig } from "../server/routers/_app";
 
 const Multi = () => {
   const [round, setRound] = useState(0);
@@ -22,8 +23,7 @@ const Multi = () => {
     },
     {
       enabled: round !== 0 && round !== 4,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
+      ...reactQueryConfig,
     }
   );
 

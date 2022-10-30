@@ -47,7 +47,7 @@ export function createUser(user_id: string) {
 export async function updateScore(Score: number, user_id: string) {
   return db
     .query(
-      "UPDATE mushine_learning_user SET xp = $1 where user_id = $2 RETURNING xp;",
+      "UPDATE mushine_learning_user SET xp = $1 WHERE user_id = $2 RETURNING xp;",
       [Score, user_id]
     )
     .then((result: QueryResult<Pick<mushine_learning_user, "xp">>) => {
@@ -58,7 +58,7 @@ export async function updateScore(Score: number, user_id: string) {
 
 export async function getScoreByUserId(user_id: string) {
   return db
-    .query("SELECT xp from mushine_learning_user where user_id = $1", [user_id])
+    .query("SELECT xp from mushine_learning_user WHERE user_id = $1", [user_id])
     .then((result: QueryResult<Pick<mushine_learning_user, "xp">>) => {
       return result.rows[0].xp;
     })
@@ -99,7 +99,7 @@ export default async function getCommonConfusions(
 ) {
   const misidentifiedArr = await db
     .query(
-      `select weight, misidentified_as from mushine_training_weightings where correct_mushroom = $1 AND user_id = $2`,
+      `SELECT weight, misidentified_as FROM mushine_training_weightings WHERE correct_mushroom = $1 AND user_id = $2`,
       [name, user_id]
     )
     .then((result: QueryResult<mushine_training_weightings>) => {
@@ -125,7 +125,7 @@ export async function saveLevelSnapshot(
   for (const mushroomName of storedMushrooms) {
     const shroomAndWeighting = await db
       .query(
-        "SELECT weight, misidentified_as FROM mushine_training_weightings WHERE mushine_training_weightings.correct_mushroom = $1 and user_id = $2",
+        "SELECT weight, misidentified_as FROM mushine_training_weightings WHERE mushine_training_weightings.correct_mushroom = $1 AND user_id = $2",
         [mushroomName, user_id]
       )
       .then(
@@ -143,10 +143,12 @@ export async function saveLevelSnapshot(
   }
 
   const currLevel = await db
-    .query(`SELECT level from mushine_level_snapshots WHERE user_id = $1`, [
-      user_id,
-    ])
+    .query(
+      `SELECT level from mushine_level_snapshots WHERE user_id = $1 ORDER BY level DESC`,
+      [user_id]
+    )
     .then((result: QueryResult<Pick<mushine_level_snapshots, "level">>) => {
+      console.log(result.rows);
       return result.rows[0].level;
     })
     .catch((error: Error) => console.log(error));

@@ -15,6 +15,7 @@ import { useUser } from "@auth0/nextjs-auth0";
 import { TrainingData } from "../utils/server";
 import { extractTrainingData } from "../utils/client";
 import { ProgressIndicator } from "./components/Progress";
+import { reactQueryConfig } from "../server/routers/_app";
 
 const Forage = () => {
   const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
@@ -31,8 +32,7 @@ const Forage = () => {
     },
     {
       enabled: round !== 0 && round !== 4,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
+      ...reactQueryConfig,
     }
   );
 
