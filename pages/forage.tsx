@@ -51,7 +51,7 @@ const Forage = () => {
       setProgress((prev) => {
         return prev.concat(true);
       });
-    } else if (!answerCorrect) {
+    } else if (!answerCorrect && round !== 0) {
       const trainingData = testMushrooms
         ? extractTrainingData(testMushrooms, trainingResult)
         : [];
@@ -84,32 +84,34 @@ const Forage = () => {
   };
 
   return (
-    <Flex gap={5} direction="column" alignItems="center">
+    <Flex gap={2} direction="column" alignItems="center">
       <HomeBtn w="-moz-fit-content" mt={3} />
-      <Flex direction="column" gap={5}>
+      <Flex direction="column" gap={2}>
         {!gameOver && (
           <>
             <Heading size={"md"} mb={2} pl={2} pr={2}>
               {correctMushroom?.name
                 ? `Find 🔎 the ${correctMushroom?.name} mushroom`
                 : "Forage Game🍄"}
-              {inputAnswer === correctMushroom?.name && "✅"}
+              {inputAnswer === correctMushroom?.name && " ✅"}
               {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
-              <ProgressIndicator
-                round={round}
-                score={score}
-                progress={progress}
-              />
             </Heading>
+            <ProgressIndicator
+              round={round}
+              score={score}
+              progress={progress}
+            />
             <Button
               onClick={handleNextBtn}
               w="-moz-fit-content"
               alignSelf="center"
+              disabled={round !== 0 && !inputAnswer}
             >
               {round === 0 ? "Start" : "Next"}
             </Button>
           </>
         )}
+        {gameOver && <Text>Game over!</Text>}
         {gameOver && !saveScore.isSuccess && (
           <Button
             onClick={handleSaveBtn}
@@ -147,6 +149,7 @@ const Forage = () => {
                       height={250}
                       width={250}
                       style={{
+                        cursor: "pointer",
                         borderRadius: "5px",
                         opacity:
                           inputAnswer && !testMushroom.correctMatch ? "0.5" : 1,
@@ -158,7 +161,6 @@ const Forage = () => {
                   </Container>
                 );
               })}
-            {gameOver && <Text>Game over!</Text>}
           </SimpleGrid>
         )}
       </Container>

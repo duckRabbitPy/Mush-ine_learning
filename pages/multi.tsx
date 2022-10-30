@@ -31,6 +31,35 @@ const Multi = () => {
   const options = getMushroomSet.data?.options;
   const gameOver = round > 3;
 
+  const handleSelection = async (name: string) => {
+    if (name === correctMushroom) {
+      setScore(score + 10);
+      setProgress((prev) => {
+        return prev.concat(true);
+      });
+    } else if (name !== correctMushroom) {
+      const trainingDataCopy = trainingResult?.slice() ?? [];
+      const newResult: TrainingData = {
+        misidentifiedMushroom: correctMushroom ?? null,
+        weightingData: { [name]: 20 },
+      };
+      trainingDataCopy.push(newResult);
+      setTrainingResult(trainingDataCopy);
+      setProgress((prev) => {
+        return prev.concat(false);
+      });
+    }
+
+    setRound(round + 1);
+    setOmitArr((prev) => {
+      if (omitArr && correctMushroom) {
+        const newOmitArr = [...prev, correctMushroom];
+        return newOmitArr;
+      }
+      return prev;
+    });
+  };
+
   const handleSaveBtn = async () => {
     const user_id = user?.sub;
     if (user_id) {
@@ -85,37 +114,7 @@ const Multi = () => {
               )}
               {round > 0 &&
                 options?.map((name) => (
-                  <Button
-                    key={name}
-                    onClick={() => {
-                      if (name === correctMushroom) {
-                        setScore(score + 10);
-                        setProgress((prev) => {
-                          return prev.concat(true);
-                        });
-                      } else if (name !== correctMushroom) {
-                        const trainingDataCopy = trainingResult?.slice() ?? [];
-                        const newResult: TrainingData = {
-                          misidentifiedMushroom: correctMushroom ?? null,
-                          weightingData: { [name]: 20 },
-                        };
-                        trainingDataCopy.push(newResult);
-                        setTrainingResult(trainingDataCopy);
-                        setProgress((prev) => {
-                          return prev.concat(false);
-                        });
-                      }
-
-                      setRound(round + 1);
-                      setOmitArr((prev) => {
-                        if (omitArr && correctMushroom) {
-                          const newOmitArr = [...prev, correctMushroom];
-                          return newOmitArr;
-                        }
-                        return prev;
-                      });
-                    }}
-                  >
+                  <Button key={name} onClick={() => handleSelection(name)}>
                     {name}
                   </Button>
                 ))}
