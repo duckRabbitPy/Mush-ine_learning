@@ -43,6 +43,8 @@ const Forage = () => {
     round > 3;
   const answerCorrect = inputAnswer === correctMushroom?.name;
 
+  console.log(trainingResult);
+
   const handleNextBtn = async () => {
     if (answerCorrect) {
       setScore(score + 10);
