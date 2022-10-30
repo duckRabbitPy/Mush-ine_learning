@@ -1,19 +1,16 @@
-export type StringIfPresent = string | null | undefined;
-export type NumIfPresent = number | null | undefined;
-
 export type CloudImage = {
-  asset_id: StringIfPresent;
-  public_id: StringIfPresent;
-  format: StringIfPresent;
-  version: NumIfPresent;
-  resource_type: StringIfPresent;
-  type: StringIfPresent;
-  created_at: StringIfPresent;
-  bytes: NumIfPresent;
-  width: NumIfPresent;
-  height: NumIfPresent;
-  folder: StringIfPresent;
-  url: StringIfPresent;
+  asset_id: string | null | undefined;
+  public_id: string | null | undefined;
+  format: string | null | undefined;
+  version: number | null | undefined;
+  resource_type: string | null | undefined;
+  type: string | null | undefined;
+  created_at: string | null | undefined;
+  bytes: number | null | undefined;
+  width: number | null | undefined;
+  height: number | null | undefined;
+  folder: string | null | undefined;
+  url: string | null | undefined;
 };
 
 export type SubfolderResult = {

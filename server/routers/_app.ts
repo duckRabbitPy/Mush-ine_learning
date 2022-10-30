@@ -1,5 +1,9 @@
 import { number, string, z } from "zod";
-import getTestMushrooms, { getCloudMushrooms } from "../../utils/server";
+import {
+  getTestMushrooms,
+  getCloudMushrooms,
+  getMushroomSet,
+} from "../../utils/server";
 import getCommonConfusions, {
   updateScore,
   getScoreByUserId,
@@ -104,6 +108,16 @@ export const appRouter = router({
     .query(async ({ input }) => {
       const testMushrooms = await getTestMushrooms(input.omitArr, input.max);
       return testMushrooms;
+    }),
+  mushroomSet: publicProcedure
+    .input(
+      z.object({
+        omitArr: z.array(z.string()),
+      })
+    )
+    .query(async ({ input }) => {
+      const mushroomSet = await getMushroomSet(input.omitArr);
+      return mushroomSet;
     }),
   saveLevelSnapShot: publicProcedure
     .input(

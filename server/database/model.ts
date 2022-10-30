@@ -28,6 +28,9 @@ type levelSnapshot = {
   snapshot: Record<string, snapshotType>;
 };
 
+type summedWeight = Record<string, number>;
+type snapshotType = Record<string, summedWeight>;
+
 export function readTestString(): Promise<string> {
   return db
     .query("SELECT * from mushineLearning")
@@ -132,9 +135,6 @@ export default async function getCommonConfusions(
 
   return ranked.slice(0, 3);
 }
-
-type summedWeight = Record<string, number>;
-type snapshotType = Record<string, summedWeight>;
 
 export async function saveLevelSnapshot(
   storedMushrooms: string[],
