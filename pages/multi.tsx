@@ -11,8 +11,14 @@ const Multi = () => {
     {
       omitArr,
     },
-    { enabled: round !== 0 && round !== 4, refetchOnMount: false }
+    {
+      enabled: round !== 0 && round !== 4,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
   );
+
+  console.log(omitArr);
 
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;

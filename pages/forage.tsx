@@ -27,7 +27,11 @@ const Forage = () => {
       omitArr,
       max: 4,
     },
-    { enabled: round !== 0 && round !== 4, refetchOnMount: false }
+    {
+      enabled: round !== 0 && round !== 4,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
   );
 
   const saveScore = trpc.storeUserScore.useMutation();
