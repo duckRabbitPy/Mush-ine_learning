@@ -14,12 +14,14 @@ import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
 import { TrainingData } from "../utils/server";
 import { extractTrainingData } from "../utils/client";
+import { ProgressIndicator } from "./components/Progress";
 
 const Forage = () => {
   const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
   const [round, setRound] = useState(0);
   const [omitArr, setOmitArr] = useState<string[]>([]);
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
+  const [progress, setProgress] = useState<boolean[]>([]);
   const [score, setScore] = useState(0);
   const { user } = useUser();
   const getTestMushrooms = trpc.testMushrooms.useQuery(
@@ -43,18 +45,20 @@ const Forage = () => {
     round > 3;
   const answerCorrect = inputAnswer === correctMushroom?.name;
 
-  console.log(trainingResult);
-
   const handleNextBtn = async () => {
     if (answerCorrect) {
       setScore(score + 10);
-    }
-
-    if (!answerCorrect) {
+      setProgress((prev) => {
+        return prev.concat(true);
+      });
+    } else if (!answerCorrect) {
       const trainingData = testMushrooms
         ? extractTrainingData(testMushrooms, trainingResult)
         : [];
       setTrainingResult(trainingData);
+      setProgress((prev) => {
+        return prev.concat(false);
+      });
     }
 
     setOmitArr((prev) => {
@@ -91,12 +95,11 @@ const Forage = () => {
                 : "Forage Game🍄"}
               {inputAnswer === correctMushroom?.name && "✅"}
               {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
-              <Text pt="2" fontWeight="medium">
-                Round: {round}
-              </Text>
-              <Text pt="2" fontWeight="light">
-                Score: {score}
-              </Text>
+              <ProgressIndicator
+                round={round}
+                score={score}
+                progress={progress}
+              />
             </Heading>
             <Button
               onClick={handleNextBtn}

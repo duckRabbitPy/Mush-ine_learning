@@ -1,10 +1,11 @@
-import { Button, Flex, SimpleGrid, Spinner, Text } from "@chakra-ui/react";
+import { Button, Flex, SimpleGrid, Spinner } from "@chakra-ui/react";
 import { useState } from "react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { TrainingData } from "../utils/server";
 import { useUser } from "@auth0/nextjs-auth0";
+import { ProgressIndicator } from "./components/Progress";
 
 const Multi = () => {
   const [round, setRound] = useState(0);
@@ -50,7 +51,7 @@ const Multi = () => {
         )}
         {round > 0 && (
           <Flex gap={2}>
-            {getMushroomSet.isLoading && <Spinner />}
+            {getMushroomSet.isLoading && !gameOver && <Spinner />}
 
             <SimpleGrid columns={3} gap={1}>
               {getMushroomSet.data?.mushroomSet.map((src) => {
@@ -67,10 +68,11 @@ const Multi = () => {
             </SimpleGrid>
 
             <Flex direction={"column"} gap={1}>
-              <Flex gap={5}>
-                <Text>Score: {score}</Text>
-                <Text>Round: {round}</Text>
-              </Flex>
+              <ProgressIndicator
+                round={round}
+                score={score}
+                progress={progress}
+              />
 
               {gameOver && !saveScore.isSuccess && (
                 <Button
@@ -117,7 +119,6 @@ const Multi = () => {
                     {name}
                   </Button>
                 ))}
-              {progress.map((r) => (r ? <Text>🍄</Text> : <Text>❌</Text>))}
             </Flex>
           </Flex>
         )}
