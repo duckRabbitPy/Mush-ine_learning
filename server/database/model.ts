@@ -13,7 +13,7 @@ type mushine_training_weightings = {
   correct_mushroom: string;
   timestamp: string;
   misidentified_as: string;
-  weight: string;
+  weight: number;
 };
 
 type mushine_level_snapshots = {
@@ -116,7 +116,7 @@ export default async function getCommonConfusions(
 ) {
   const misidentifiedArr = await db
     .query(
-      `select misidentified_as from mushine_training_weightings where correct_mushroom = $1 AND user_id = $2`,
+      `select weight, misidentified_as from mushine_training_weightings where correct_mushroom = $1 AND user_id = $2`,
       [name, user_id]
     )
     .then((result: QueryResult<mushine_training_weightings>) => {
@@ -126,7 +126,11 @@ export default async function getCommonConfusions(
 
   if (!misidentifiedArr) return [];
 
-  return misidentifiedArr.slice(0, 3);
+  const ranked = Object.entries(aggregateWeightings(misidentifiedArr))
+    .sort((a, b) => b[1] - a[1])
+    .map(([name]) => ({ misidentified_as: name }));
+
+  return ranked.slice(0, 3);
 }
 
 type summedWeight = Record<string, number>;
@@ -137,7 +141,6 @@ export async function saveLevelSnapshot(
   user_id: string
 ) {
   let snapshot: snapshotType = {};
-  console.log("snapshotting");
 
   for (const mushroomName of storedMushrooms) {
     const shroomAndWeighting = await db
@@ -151,22 +154,12 @@ export async function saveLevelSnapshot(
             Pick<mushine_training_weightings, "weight" | "misidentified_as">
           >
         ) => {
-          return result.rows.reduce((acc: any, curr) => {
-            if (
-              acc[curr.misidentified_as] &&
-              acc[curr.misidentified_as].weight
-            ) {
-              acc[curr.misidentified_as].weight += curr.weight;
-            } else {
-              acc[curr.misidentified_as] = curr.weight;
-            }
-            return acc;
-          }, {});
+          return aggregateWeightings(result.rows);
         }
       )
       .catch((error: Error) => console.log(error));
 
-    snapshot[mushroomName as keyof typeof snapshot] = shroomAndWeighting;
+    snapshot[mushroomName as keyof typeof snapshot] = shroomAndWeighting ?? {};
   }
 
   const currLevel = await db
@@ -198,4 +191,22 @@ export async function getLevelSnapshot(level: number, user_id: string) {
       return result.rows[0];
     })
     .catch((error: Error) => console.log(error));
+}
+
+function aggregateWeightings(
+  trainingWeightings: Pick<
+    mushine_training_weightings,
+    "weight" | "misidentified_as"
+  >[]
+) {
+  const aggregated = trainingWeightings.reduce((acc: summedWeight, curr) => {
+    if (acc[curr.misidentified_as] && acc[curr.misidentified_as]) {
+      acc[curr.misidentified_as] += curr.weight;
+    } else {
+      acc[curr.misidentified_as] = curr.weight;
+    }
+    return acc;
+  }, {});
+
+  return aggregated;
 }
