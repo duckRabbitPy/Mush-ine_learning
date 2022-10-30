@@ -67,7 +67,7 @@ const Multi = () => {
                 if (name !== correctMushroom) {
                   const trainingDataCopy = trainingResult?.slice() ?? [];
                   const newResult: TrainingData = {
-                    misidentified_as: name,
+                    misidentifiedMushroom: name,
                     weightingData: {},
                   };
                   trainingDataCopy.push(newResult);

@@ -6,7 +6,7 @@ export function extractTrainingData(
 ) {
   const trainingDataCopy = trainingData?.slice() ?? [];
   const trainingResult: TrainingData = {
-    misidentified_as: null,
+    misidentifiedMushroom: null,
     weightingData: null,
   };
 
@@ -17,7 +17,7 @@ export function extractTrainingData(
       weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
     }
   });
-  trainingResult.misidentified_as = testMushrooms?.filter(
+  trainingResult.misidentifiedMushroom = testMushrooms?.filter(
     (m) => m.correctMatch
   )[0].name;
 

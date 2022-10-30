@@ -8,7 +8,7 @@ export type TestMushroom = {
 };
 
 export type TrainingData = {
-  misidentified_as: string | null;
+  misidentifiedMushroom: string | null;
   weightingData: Record<string, number> | null;
 };
 

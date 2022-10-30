@@ -74,8 +74,8 @@ export async function updateTrainingData(
       const weightEntries = Object.entries(lesson.weightingData);
 
       for (const weightEntry of weightEntries) {
-        const misidentified_as = lesson.misidentified_as;
-        const correct_mushroom = weightEntry[0];
+        const misidentified_as = weightEntry[0];
+        const correct_mushroom = lesson.misidentifiedMushroom;
         const weight = weightEntry[1];
         await db
           .query(
