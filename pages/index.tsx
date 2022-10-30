@@ -35,15 +35,19 @@ const Home: NextPage = () => {
           mt={5}
         >
           <Link href="/profile">
-            <Button m={2}>Go to Profile</Button>
+            <Button m={2}>Profile</Button>
           </Link>
 
           <Link href="/bank">
-            <Button m={2}>Go to Mushroom bank</Button>
+            <Button m={2}>Mushroom bank</Button>
           </Link>
 
           <Link href="/forage">
-            <Button m={2}>Go to Mushroom Forage Quiz</Button>
+            <Button m={2}>Forage Game</Button>
+          </Link>
+
+          <Link href="/multi">
+            <Button m={2}>MultiChoice Game</Button>
           </Link>
         </Flex>
       </Flex>

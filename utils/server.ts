@@ -54,16 +54,30 @@ async function buildTestMushrooms(
   return testMushroomArr;
 }
 
-export default async function getTestMushrooms(omitArr: string[], max: number) {
+async function getAllMushroomImgPaths(mushroomName: string): Promise<string[]> {
+  const images = (await cloudinary.api.resources({
+    type: "upload",
+    prefix: `mushroom_images/${mushroomName}`,
+    max_results: 9,
+  })) as { resources: CloudImage[] };
+
+  const srcArr = images.resources
+    .map((img: CloudImage) => img.url)
+    .flatMap((f) => (f ? [f] : []));
+
+  return srcArr;
+}
+
+export async function getTestMushrooms(omitArr: string[], max: number) {
   const allMushroomNames = await getCloudMushrooms();
-  const MushroomNamePool = allMushroomNames.filter(
+  const mushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
   );
 
-  if (!MushroomNamePool.length) {
+  if (!mushroomNamePool.length) {
     return [];
   }
-  const unselectedMushrooms = await buildTestMushrooms(MushroomNamePool, max);
+  const unselectedMushrooms = await buildTestMushrooms(mushroomNamePool, max);
   const chosen = randomArrItem(unselectedMushrooms).name;
   const testMushrooms = unselectedMushrooms.map((mushroom) => {
     if (mushroom.name === chosen) {
@@ -73,4 +87,23 @@ export default async function getTestMushrooms(omitArr: string[], max: number) {
   });
 
   return testMushrooms;
+}
+
+export async function getMushroomSet(omitArr: string[]) {
+  const allMushroomNames = await getCloudMushrooms();
+  const mushroomNamePool = allMushroomNames.filter(
+    (mushroomName) => !omitArr.includes(mushroomName)
+  );
+
+  if (!mushroomNamePool.length) {
+    return null;
+  }
+  const correctMushroom = randomArrItem(mushroomNamePool);
+  const mushroomSet = await getAllMushroomImgPaths(correctMushroom);
+  const otherOptions = allMushroomNames
+    .filter((m) => m !== correctMushroom)
+    .map((m, _, arr) => randomArrItem(arr))
+    .slice(0, 3);
+
+  return { correctMushroom, mushroomSet, otherOptions };
 }
