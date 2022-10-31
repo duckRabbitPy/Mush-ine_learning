@@ -3,18 +3,18 @@ import {
   Button,
   Flex,
   Heading,
+  Progress,
   Spinner,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
   Text,
-  Tfoot,
   Th,
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import Link from "next/link";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 
@@ -25,11 +25,9 @@ const Profile = () => {
   });
 
   const snapshot = trpc.downloadLevelSnapShot.useQuery({
-    level: 2,
+    level: 4,
     user_id: user?.sub ?? null,
   });
-
-  console.log("snapshot", snapshot.data);
 
   const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
 
@@ -42,50 +40,62 @@ const Profile = () => {
       <Flex direction="column" alignItems={"center"} mt={10}>
         <Heading mb={10}>Profile - {user?.name}</Heading>
         <HomeBtn />
-        {xpQuery.isLoading ? (
+
+        {xpQuery.isLoading || snapshot.isLoading ? (
           <Spinner />
         ) : (
-          <Text mt={5} fontSize="3xl">
-            XP: {xpQuery.data ?? 0}
-          </Text>
+          <>
+            <Text mt={5} fontSize="2xl">
+              Level {snapshot.data?.level}
+            </Text>
+            <Text mt={5} fontSize="2xl">
+              XP: {xpQuery.data ?? 0}
+            </Text>
+          </>
         )}
+
+        <Progress
+          m={3}
+          hasStripe
+          value={Number(String(xpQuery.data).slice(-2))}
+          height={5}
+          width="80%"
+        />
 
         <Button onClick={levelHandler}>Progress to next level</Button>
 
-        <TableContainer>
-          <Table variant="striped" colorScheme="teal">
-            <TableCaption>Imperial to metric conversion factors</TableCaption>
+        <TableContainer maxWidth={"60%"} mt={5} whiteSpace="break-spaces">
+          <Table colorScheme="blue">
             <Thead>
               <Tr>
-                <Th>To convert</Th>
-                <Th>into</Th>
-                <Th isNumeric>multiply by</Th>
+                <Th>Mushroom</Th>
+                <Th>Misidentified as</Th>
               </Tr>
             </Thead>
-            <Tbody>
-              <Tr>
-                <Td>inches</Td>
-                <Td>millimetres (mm)</Td>
-                <Td isNumeric>25.4</Td>
-              </Tr>
-              <Tr>
-                <Td>feet</Td>
-                <Td>centimetres (cm)</Td>
-                <Td isNumeric>30.48</Td>
-              </Tr>
-              <Tr>
-                <Td>yards</Td>
-                <Td>metres (m)</Td>
-                <Td isNumeric>0.91444</Td>
-              </Tr>
-            </Tbody>
-            <Tfoot>
-              <Tr>
-                <Th>To convert</Th>
-                <Th>into</Th>
-                <Th isNumeric>multiply by</Th>
-              </Tr>
-            </Tfoot>
+            {snapshot.data?.snapshot &&
+              Object.entries(snapshot.data?.snapshot).map((kvp) => {
+                const mushroom = kvp[0];
+                const misIdentifiedAs = kvp[1];
+                return (
+                  <Tbody key={mushroom}>
+                    <Td p={3} textTransform="capitalize">
+                      🍄 {mushroom}
+                    </Td>
+                    <Td p={3} wordBreak={"break-word"}>
+                      {Object.keys(misIdentifiedAs).map((name, i, arr) => {
+                        return (
+                          <>
+                            <Link key={name} href={`/bank/${name}`} passHref>
+                              <a style={{ color: "blue" }}>{name}</a>
+                            </Link>
+                            {i === arr.length - 1 ? "" : ", "}
+                          </>
+                        );
+                      })}
+                    </Td>
+                  </Tbody>
+                );
+              })}
           </Table>
         </TableContainer>
       </Flex>
