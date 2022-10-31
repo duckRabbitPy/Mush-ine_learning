@@ -93,7 +93,7 @@ export async function getTestMushrooms(omitArr: string[], max: number) {
   return testMushrooms;
 }
 
-export async function getMushroomSet(omitArr: string[]) {
+export async function getMushroomSet(omitArr: string[], numOptions: number) {
   const allMushroomNames = await getCloudMushrooms();
   const mushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
@@ -112,7 +112,7 @@ export async function getMushroomSet(omitArr: string[]) {
   let count = 0;
 
   for (const _ of mushroomNamePool) {
-    if (count > 2) {
+    if (count > numOptions - 1) {
       break;
     } else {
       const item = randomArrItem(mushroomNamePool);
