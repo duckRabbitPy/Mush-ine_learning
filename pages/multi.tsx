@@ -78,7 +78,7 @@ const Multi = () => {
         {round < 1 && (
           <Button onClick={() => setRound(round + 1)}>Start</Button>
         )}
-        {round > 0 && (
+        {round > 0 && !getMushroomSet.isRefetching && (
           <Flex gap={2}>
             {getMushroomSet.isLoading && !gameOver && <Spinner />}
 

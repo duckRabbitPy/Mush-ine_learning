@@ -49,6 +49,10 @@ const Home: NextPage = () => {
           <Link href="/multi">
             <Button m={2}>MultiChoice Game</Button>
           </Link>
+
+          <Link href="/tile">
+            <Button m={2}>Tile Game</Button>
+          </Link>
         </Flex>
       </Flex>
     </>

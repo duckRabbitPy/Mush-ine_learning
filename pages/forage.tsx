@@ -92,7 +92,7 @@ const Forage = () => {
     <Flex gap={2} direction="column" alignItems="center">
       <HomeBtn w="-moz-fit-content" mt={3} />
       <Flex direction="column" gap={2}>
-        {!gameOver && (
+        {!gameOver && !getTestMushrooms.isRefetching && (
           <>
             <Heading size={"md"} mb={2} pl={2} pr={2}>
               {correctMushroom?.name
@@ -110,7 +110,7 @@ const Forage = () => {
               onClick={handleNextBtn}
               w="-moz-fit-content"
               alignSelf="center"
-              disabled={round !== 0 && !inputAnswer}
+              visibility={round !== 0 && !inputAnswer ? "hidden" : "visible"}
             >
               {round === 0 ? "Start" : "Next"}
             </Button>
@@ -157,7 +157,7 @@ const Forage = () => {
                         cursor: "pointer",
                         borderRadius: "5px",
                         opacity:
-                          inputAnswer && !testMushroom.correctMatch ? "0.5" : 1,
+                          inputAnswer && !testMushroom.correctMatch ? "0.6" : 1,
                       }}
                     />
                     <Text fontSize="small">
