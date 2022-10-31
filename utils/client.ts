@@ -1,18 +1,28 @@
-export function randomArrItem<Type>(arr: Type[]) {
-  const min = 0;
-  const max = Math.floor(arr.length - 1);
-  const index = Math.floor(Math.random() * (max - min + 1)) + min;
-  return arr[index];
-}
+import { TestMushroom, TrainingData } from "./server";
 
-export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
-  const arr = unshuffledArr.slice();
-  let currIndex = 0;
-  for (const _item in arr) {
-    let randomIndex = Math.floor(Math.random() * (currIndex + 1));
-    [arr[currIndex], arr[randomIndex]] = [arr[randomIndex], arr[currIndex]];
-    currIndex++;
-  }
+export function extractTrainingData(
+  testMushrooms: TestMushroom[],
+  trainingData: TrainingData[] | undefined
+) {
+  const trainingDataCopy = trainingData?.slice() ?? [];
+  const trainingResult: TrainingData = {
+    misidentifiedMushroom: null,
+    weightingData: null,
+  };
 
-  return arr;
+  const weightingObj: Record<string, number> = {};
+  const testMushroomSlice = testMushrooms && testMushrooms.slice();
+  testMushroomSlice?.forEach((mushroom) => {
+    if (!mushroom.correctMatch) {
+      weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
+    }
+  });
+  trainingResult.misidentifiedMushroom = testMushrooms?.filter(
+    (m) => m.correctMatch
+  )[0].name;
+
+  trainingResult.weightingData = weightingObj;
+  trainingDataCopy.push(trainingResult);
+
+  return trainingDataCopy;
 }

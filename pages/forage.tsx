@@ -12,45 +12,16 @@ import { useState } from "react";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
-import { TestMushroom } from "../utils/server";
-
-export type TrainingData = {
-  misidentified_as: string | null;
-  weightingData: Record<string, number> | null;
-};
-
-function extractTrainingData(
-  testMushrooms: TestMushroom[],
-  trainingData: TrainingData[] | undefined
-) {
-  const trainingDataCopy = trainingData?.slice() ?? [];
-  const trainingResult: TrainingData = {
-    misidentified_as: null,
-    weightingData: null,
-  };
-
-  const weightingObj: Record<string, number> = {};
-  const testMushroomSlice = testMushrooms && testMushrooms.slice();
-  testMushroomSlice?.forEach((mushroom) => {
-    if (!mushroom.correctMatch) {
-      weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
-    }
-  });
-  trainingResult.misidentified_as = testMushrooms?.filter(
-    (m) => m.correctMatch
-  )[0].name;
-
-  trainingResult.weightingData = weightingObj;
-  trainingDataCopy.push(trainingResult);
-
-  return trainingDataCopy;
-}
+import { TrainingData } from "../utils/server";
+import { extractTrainingData } from "../utils/client";
+import { ProgressIndicator } from "./components/Progress";
 
 const Forage = () => {
   const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
   const [round, setRound] = useState(0);
   const [omitArr, setOmitArr] = useState<string[]>([]);
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
+  const [progress, setProgress] = useState<boolean[]>([]);
   const [score, setScore] = useState(0);
   const { user } = useUser();
   const getTestMushrooms = trpc.testMushrooms.useQuery(
@@ -58,7 +29,11 @@ const Forage = () => {
       omitArr,
       max: 4,
     },
-    { enabled: round !== 0 && round !== 4 }
+    {
+      enabled: round !== 0 && round !== 4,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
   );
 
   const saveScore = trpc.storeUserScore.useMutation();
@@ -73,13 +48,17 @@ const Forage = () => {
   const handleNextBtn = async () => {
     if (answerCorrect) {
       setScore(score + 10);
-    }
-
-    if (!answerCorrect) {
+      setProgress((prev) => {
+        return prev.concat(true);
+      });
+    } else if (!answerCorrect && round !== 0) {
       const trainingData = testMushrooms
         ? extractTrainingData(testMushrooms, trainingResult)
         : [];
       setTrainingResult(trainingData);
+      setProgress((prev) => {
+        return prev.concat(false);
+      });
     }
 
     setOmitArr((prev) => {
@@ -105,33 +84,34 @@ const Forage = () => {
   };
 
   return (
-    <Flex gap={5} direction="column" alignItems="center">
+    <Flex gap={2} direction="column" alignItems="center">
       <HomeBtn w="-moz-fit-content" mt={3} />
-      <Flex direction="column" gap={5}>
+      <Flex direction="column" gap={2}>
         {!gameOver && (
           <>
             <Heading size={"md"} mb={2} pl={2} pr={2}>
               {correctMushroom?.name
                 ? `Find 🔎 the ${correctMushroom?.name} mushroom`
                 : "Forage Game🍄"}
-              {inputAnswer === correctMushroom?.name && "✅"}
+              {inputAnswer === correctMushroom?.name && " ✅"}
               {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
-              <Text pt="2" fontWeight="medium">
-                Round: {round}
-              </Text>
-              <Text pt="2" fontWeight="light">
-                Score: {score}
-              </Text>
             </Heading>
+            <ProgressIndicator
+              round={round}
+              score={score}
+              progress={progress}
+            />
             <Button
               onClick={handleNextBtn}
               w="-moz-fit-content"
               alignSelf="center"
+              disabled={round !== 0 && !inputAnswer}
             >
               {round === 0 ? "Start" : "Next"}
             </Button>
           </>
         )}
+        {gameOver && <Text>Game over!</Text>}
         {gameOver && !saveScore.isSuccess && (
           <Button
             onClick={handleSaveBtn}
@@ -169,6 +149,7 @@ const Forage = () => {
                       height={250}
                       width={250}
                       style={{
+                        cursor: "pointer",
                         borderRadius: "5px",
                         opacity:
                           inputAnswer && !testMushroom.correctMatch ? "0.5" : 1,
@@ -180,7 +161,6 @@ const Forage = () => {
                   </Container>
                 );
               })}
-            {gameOver && <Text>Game over!</Text>}
           </SimpleGrid>
         )}
       </Container>

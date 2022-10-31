@@ -1,5 +1,6 @@
 import { QueryResult } from "pg";
-import { TrainingData } from "../../pages/forage";
+import { TrainingData } from "../../utils/server";
+
 import db from "./connection";
 
 type mushine_learning_user = {
@@ -30,27 +31,6 @@ type levelSnapshot = {
 
 type summedWeight = Record<string, number>;
 type snapshotType = Record<string, summedWeight>;
-
-export function readTestString(): Promise<string> {
-  return db
-    .query("SELECT * from mushineLearning")
-    .then((result) => {
-      return result.rows[0].testStrings;
-    })
-    .catch((error: Error) => console.log(error));
-}
-
-export function writeTestString(testString: string): Promise<string> {
-  return db
-    .query(
-      "INSERT INTO mushineLearning (testStrings) VALUES ($1) RETURNING *",
-      [testString]
-    )
-    .then((result) => {
-      return result.rows[0].testStrings;
-    })
-    .catch((error: Error) => console.log(error));
-}
 
 export function createUser(user_id: string) {
   return db
@@ -94,8 +74,8 @@ export async function updateTrainingData(
       const weightEntries = Object.entries(lesson.weightingData);
 
       for (const weightEntry of weightEntries) {
-        const misidentified_as = lesson.misidentified_as;
-        const correct_mushroom = weightEntry[0];
+        const misidentified_as = weightEntry[0];
+        const correct_mushroom = lesson.misidentifiedMushroom;
         const weight = weightEntry[1];
         await db
           .query(

@@ -7,7 +7,6 @@ import {
 import getCommonConfusions, {
   updateScore,
   getScoreByUserId,
-  writeTestString,
   createUser,
   updateTrainingData,
   getLevelSnapshot,
@@ -16,26 +15,6 @@ import getCommonConfusions, {
 import { publicProcedure, router } from "../trpc";
 
 export const appRouter = router({
-  getUserInfo: publicProcedure
-    .input(
-      z.object({
-        name: z.string(),
-        score: z.number().nullish(),
-        ranking: z.number(),
-        testString: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      const testString = await writeTestString(input.testString);
-      return {
-        user: {
-          name: input.name,
-          score: input.score,
-          ranking: input.ranking,
-          testString: testString,
-        },
-      };
-    }),
   retrieveUserScore: publicProcedure
     .input(z.object({ user_id: z.string().nullable() }))
     .query(async ({ input }) => {
@@ -73,7 +52,7 @@ export const appRouter = router({
         user_id: z.string(),
         trainingData: z.array(
           z.object({
-            misidentified_as: z.string().nullable(),
+            misidentifiedMushroom: z.string().nullable(),
             weightingData: z.record(z.string(), z.number()).nullable(),
           })
         ),
