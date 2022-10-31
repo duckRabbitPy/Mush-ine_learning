@@ -16,6 +16,12 @@ import { TrainingData } from "../utils/server";
 import { extractTrainingData } from "../utils/client";
 import { ProgressIndicator } from "./components/Progress";
 
+export const reactQueryConfig = {
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+};
+
 const Forage = () => {
   const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
   const [round, setRound] = useState(0);
@@ -31,8 +37,7 @@ const Forage = () => {
     },
     {
       enabled: round !== 0 && round !== 4,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
+      ...reactQueryConfig,
     }
   );
 
