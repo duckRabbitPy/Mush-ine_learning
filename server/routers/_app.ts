@@ -92,10 +92,14 @@ export const appRouter = router({
     .input(
       z.object({
         omitArr: z.array(z.string()),
+        numOptions: z.number().optional(),
       })
     )
     .query(async ({ input }) => {
-      const mushroomSet = await getMushroomSet(input.omitArr);
+      const mushroomSet = await getMushroomSet(
+        input.omitArr,
+        input.numOptions ?? 3
+      );
       return mushroomSet;
     }),
   saveLevelSnapShot: publicProcedure
