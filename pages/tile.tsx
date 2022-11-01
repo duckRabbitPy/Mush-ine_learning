@@ -3,7 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { TrainingData } from "../utils/server";
+import { RoundMetadata, TrainingData } from "../utils/server";
 import { useUser } from "@auth0/nextjs-auth0";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
@@ -13,9 +13,11 @@ const Tile = () => {
   const [roundOver, setRoundOver] = useState(false);
   const [omitArr, setOmitArr] = useState<string[]>([]);
   const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
+  const [roundMetaData, setRoundMetaData] = useState<RoundMetadata[] | []>([]);
   const [progress, setProgress] = useState<boolean[]>([]);
   const saveScore = trpc.storeUserScore.useMutation();
   const saveTrainingData = trpc.storeTrainingData.useMutation();
+  const saveRoundMetaData = trpc.storeRoundMetadata.useMutation();
   const [score, setScore] = useState(0);
   const { user } = useUser();
   const getMushroomSet = trpc.mushroomSet.useQuery(
@@ -42,11 +44,31 @@ const Tile = () => {
       };
       trainingDataCopy.push(newResult);
       setTrainingResult(trainingDataCopy);
+
+      correctMushroom &&
+        setRoundMetaData((prev: RoundMetadata[]) => {
+          return prev.concat({
+            correct_mushroom: correctMushroom,
+            correct_answer: false,
+            game_type: "forage",
+          });
+        });
+
       setProgress((prev) => {
         return prev.concat(false);
       });
     } else {
       setRoundOver(true);
+
+      correctMushroom &&
+        setRoundMetaData((prev: RoundMetadata[]) => {
+          return prev.concat({
+            correct_mushroom: correctMushroom,
+            correct_answer: true,
+            game_type: "forage",
+          });
+        });
+
       setProgress((prev) => {
         return prev.concat(true);
       });
@@ -76,6 +98,8 @@ const Tile = () => {
     if (user_id) {
       saveScore.mutate({ user_id, score });
       saveTrainingData.mutate({ trainingData: trainingResult, user_id });
+      roundMetaData.length > 1 &&
+        saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
     } else {
       throw new Error("user object lacking sub property");
     }
@@ -125,12 +149,11 @@ const Tile = () => {
                   Save score
                 </Button>
               )}
-              <SimpleGrid columns={3} gap={1} height={200}>
+              <SimpleGrid columns={3} gap={1} height="fit-content">
                 {round > 0 &&
                   options?.map((name) => (
                     <Button
                       disabled={roundOver}
-                      height="100%"
                       key={name}
                       onClick={() => handleSelection(name)}
                     >
