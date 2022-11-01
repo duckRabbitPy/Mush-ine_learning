@@ -16,7 +16,11 @@ export async function initTables() {
     "CREATE TABLE mushine_training_weightings (id SERIAL PRIMARY KEY, user_id VARCHAR (50), correct_mushroom VARCHAR (50), misidentified_as VARCHAR (50), weight integer, timestamp TIMESTAMP)"
   );
   await db.query(
-    "CREATE TABLE mushine_level_snapshots (level SERIAL PRIMARY KEY,user_id VARCHAR (50),snapshot JSONB);"
+    "CREATE TABLE mushine_level_snapshots (level SERIAL PRIMARY KEY, user_id VARCHAR (50),snapshot JSONB);"
+  );
+
+  await db.query(
+    "CREATE TABLE mushine_round_metadata (id SERIAL PRIMARY KEY, user_id VARCHAR (50), game_type VARCHAR (50), current_level INTEGER, correct_mushroom VARCHAR (50), correct_answer BOOLEAN, timestamp TIMESTAMP);"
   );
 }
 

@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
+import { game_types, name_string } from "../server/database/model";
 import { CloudImage, SubfolderResult } from "../types";
 
 export type TestMushroom = {
@@ -10,6 +11,12 @@ export type TestMushroom = {
 export type TrainingData = {
   misidentifiedMushroom: string | null;
   weightingData: Record<string, number> | null;
+};
+
+export type RoundMetadata = {
+  game_type: game_types;
+  correct_answer: boolean;
+  correct_mushroom: name_string;
 };
 
 export async function getCloudMushrooms() {
@@ -36,7 +43,9 @@ async function buildTestMushrooms(
       max_results: 10,
     })) as { resources: CloudImage[] };
 
-    const srcArr = images.resources.map((img: CloudImage) => img.url);
+    const srcArr = images.resources.map((img: CloudImage) => {
+      return img.url?.replace("upload", "upload/q_80");
+    });
 
     if (!srcArr) {
       testMushroomArr.push({
@@ -66,7 +75,9 @@ async function getAllMushroomImgPaths(mushroomName: string): Promise<string[]> {
   })) as { resources: CloudImage[] };
 
   const srcArr = images.resources
-    .map((img: CloudImage) => img.url)
+    .map((img: CloudImage) => {
+      return img.url?.replace("upload", "upload/q_80");
+    })
     .flatMap((f) => (f ? [f] : []));
 
   return srcArr;

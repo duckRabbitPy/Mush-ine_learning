@@ -3,34 +3,47 @@ import { TrainingData } from "../../utils/server";
 
 import db from "./connection";
 
-type mushine_learning_user = {
+export type name_string = string;
+
+export type game_types = "forage" | "multi" | "tile";
+
+export type mushine_learning_user = {
   id: number;
   user_id: string;
   xp: number;
 };
 
-type mushine_training_weightings = {
+export type mushine_training_weightings = {
   id: number;
-  correct_mushroom: string;
+  correct_mushroom: name_string;
   timestamp: string;
-  misidentified_as: string;
+  misidentified_as: name_string;
   weight: number;
 };
 
-type mushine_level_snapshots = {
+export type mushine_round_metadata = {
+  id: number;
+  game_type: game_types;
+  current_level: number;
+  correct_mushroom: name_string;
+  correct_answer: boolean;
+  timestamp: string;
+};
+
+export type mushine_level_snapshots = {
   level: number;
   user_id: string;
   snapshot: levelSnapshot;
 };
 
-type levelSnapshot = {
+export type levelSnapshot = {
   user_id: string;
   level: number;
-  snapshot: Record<string, snapshotType>;
+  snapshot: Record<name_string, snapshotType>;
 };
 
-type summedWeight = Record<string, number>;
-type snapshotType = Record<string, summedWeight>;
+export type summedWeight = Record<name_string, number>;
+export type snapshotType = Record<name_string, summedWeight>;
 
 export function createUser(user_id: string) {
   return db
@@ -93,10 +106,29 @@ export async function updateTrainingData(
   return trainingData;
 }
 
-export default async function getCommonConfusions(
-  name: string,
-  user_id: string
+export async function updateRoundMetaData(
+  user_id: string,
+  current_level: number,
+  metadataInput: Pick<
+    mushine_round_metadata,
+    "correct_answer" | "game_type" | "correct_mushroom"
+  >[]
 ) {
+  for (const roundData of metadataInput) {
+    const { correct_answer, correct_mushroom, game_type } = roundData;
+    await db
+      .query(
+        `INSERT INTO mushine_round_metadata (user_id, game_type, current_level, correct_mushroom, correct_answer, timestamp) VALUES ($1, $2, $3, $4, $5, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
+        [user_id, game_type, current_level, correct_mushroom, correct_answer]
+      )
+      .then((result: QueryResult<mushine_round_metadata>) => {
+        return result.rows[0];
+      })
+      .catch((error: Error) => console.log(error));
+  }
+}
+
+export async function getCommonConfusions(name: string, user_id: string) {
   const misidentifiedArr = await db
     .query(
       `SELECT weight, misidentified_as FROM mushine_training_weightings WHERE correct_mushroom = $1 AND user_id = $2`,
@@ -142,6 +174,19 @@ export async function saveLevelSnapshot(
     snapshot[mushroomName as keyof typeof snapshot] = shroomAndWeighting ?? {};
   }
 
+  const currLevel = await getCurrentLevel(user_id);
+
+  const newLevel = currLevel ? currLevel + 1 : 1;
+
+  const savedSnapShot = await db.query(
+    `INSERT into mushine_level_snapshots (level, user_id, snapshot) VALUES ($1, $2, $3) RETURNING level, snapshot`,
+    [newLevel, user_id, snapshot]
+  );
+
+  return savedSnapShot.rows[0];
+}
+
+export async function getCurrentLevel(user_id: string) {
   const currLevel = await db
     .query(
       `SELECT level FROM mushine_level_snapshots WHERE user_id = $1 ORDER BY level DESC`,
@@ -152,14 +197,7 @@ export async function saveLevelSnapshot(
     })
     .catch((error: Error) => console.log(error));
 
-  const newLevel = currLevel ? currLevel + 1 : 1;
-
-  const savedSnapShot = await db.query(
-    `INSERT into mushine_level_snapshots (level, user_id, snapshot) VALUES ($1, $2, $3) RETURNING level, snapshot`,
-    [newLevel, user_id, snapshot]
-  );
-
-  return savedSnapShot.rows[0];
+  return currLevel;
 }
 
 export async function getLevelSnapshot(level: number, user_id: string) {

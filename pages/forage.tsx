@@ -12,7 +12,7 @@ import { useState } from "react";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
-import { TrainingData } from "../utils/server";
+import { RoundMetadata, TrainingData } from "../utils/server";
 import { extractTrainingData } from "../utils/client";
 import { ProgressIndicator } from "./components/Progress";
 
@@ -24,6 +24,7 @@ export const reactQueryConfig = {
 
 const Forage = () => {
   const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
+  const [roundMetaData, setRoundMetaData] = useState<RoundMetadata[] | []>([]);
   const [round, setRound] = useState(0);
   const [omitArr, setOmitArr] = useState<string[]>([]);
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
@@ -43,6 +44,7 @@ const Forage = () => {
 
   const saveScore = trpc.storeUserScore.useMutation();
   const saveTrainingData = trpc.storeTrainingData.useMutation();
+  const saveRoundMetaData = trpc.storeRoundMetadata.useMutation();
   const testMushrooms = getTestMushrooms.data;
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
@@ -60,11 +62,21 @@ const Forage = () => {
       const trainingData = testMushrooms
         ? extractTrainingData(testMushrooms, trainingResult)
         : [];
+
       setTrainingResult(trainingData);
       setProgress((prev) => {
         return prev.concat(false);
       });
     }
+
+    correctMushroom &&
+      setRoundMetaData((prev: RoundMetadata[]) => {
+        return prev.concat({
+          correct_mushroom: correctMushroom.name,
+          correct_answer: answerCorrect,
+          game_type: "forage",
+        });
+      });
 
     setOmitArr((prev) => {
       if (omitArr && correctMushroom?.name) {
@@ -83,6 +95,9 @@ const Forage = () => {
     if (user_id) {
       saveScore.mutate({ user_id, score });
       saveTrainingData.mutate({ trainingData: trainingResult, user_id });
+
+      roundMetaData.length > 1 &&
+        saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
     } else {
       throw new Error("user object lacking sub property");
     }
