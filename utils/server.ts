@@ -36,7 +36,9 @@ async function buildTestMushrooms(
       max_results: 10,
     })) as { resources: CloudImage[] };
 
-    const srcArr = images.resources.map((img: CloudImage) => img.url);
+    const srcArr = images.resources.map((img: CloudImage) => {
+      return img.url?.replace("upload", "upload/q_auto:eco");
+    });
 
     if (!srcArr) {
       testMushroomArr.push({
@@ -66,7 +68,9 @@ async function getAllMushroomImgPaths(mushroomName: string): Promise<string[]> {
   })) as { resources: CloudImage[] };
 
   const srcArr = images.resources
-    .map((img: CloudImage) => img.url)
+    .map((img: CloudImage) => {
+      return img.url?.replace("upload", "upload/q_auto:eco");
+    })
     .flatMap((f) => (f ? [f] : []));
 
   return srcArr;
