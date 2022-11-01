@@ -4,13 +4,16 @@ import {
   getCloudMushrooms,
   getMushroomSet,
 } from "../../utils/server";
-import getCommonConfusions, {
+import {
+  getCommonConfusions,
   updateScore,
   getScoreByUserId,
   createUser,
   updateTrainingData,
   getLevelSnapshot,
   saveLevelSnapshot,
+  updateRoundMetaData,
+  getCurrentLevel,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
@@ -64,6 +67,28 @@ export const appRouter = router({
         input.user_id
       );
       return lastSession;
+    }),
+  storeRoundMetadata: publicProcedure
+    .input(
+      z.object({
+        user_id: z.string(),
+        roundMetadata: z.array(
+          z.object({
+            game_type: z.enum(["forage", "tile", "multi"]),
+            correct_answer: z.boolean(),
+            correct_mushroom: z.string(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const current_level = await getCurrentLevel(input.user_id);
+      const roundMetadata = input.roundMetadata;
+      await updateRoundMetaData(
+        input.user_id,
+        current_level ?? 0,
+        roundMetadata
+      );
     }),
   trainingData: publicProcedure
     .input(
