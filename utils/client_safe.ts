@@ -1,5 +1,5 @@
 import { mushine_round_metadata } from "../server/database/model";
-import { TestMushroom, TrainingData } from "./server";
+import { TestMushroom, TrainingData } from "./server_side";
 
 export function extractTrainingData(
   testMushrooms: TestMushroom[],

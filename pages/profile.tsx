@@ -17,7 +17,6 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { reduceAnswerCount } from "../utils/client";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 
@@ -34,19 +33,9 @@ const Profile = () => {
 
   const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
 
-  const metaData = trpc.retrieveRoundMetadata.useQuery({
+  const metaArr = trpc.retrieveRoundMetadata.useQuery({
     user_id: user?.sub ?? null,
   }).data;
-
-  const forageData = reduceAnswerCount(
-    metaData?.filter((r) => r.game_type === "forage")
-  );
-  const multiData = reduceAnswerCount(
-    metaData?.filter((r) => r.game_type === "multi")
-  );
-  const tileData = reduceAnswerCount(
-    metaData?.filter((r) => r.game_type == "tile")
-  );
 
   const levelHandler = () => {
     saveSnapShot.mutate({ user_id: user?.sub ?? null });
@@ -79,34 +68,24 @@ const Profile = () => {
           width="80%"
         />
 
-        {/* TODO refactor so can render in loop  */}
         <SimpleGrid columns={3} m={5}>
-          {forageData?.correct && (
-            <Container>
-              <Heading fontSize={"medium"}>Forage</Heading>
-              <Text>{forageData?.percentageCorrect?.toFixed(0)}% Correct</Text>
-              <Text>{forageData?.correct ?? 0} correct answers</Text>
-              <Text>{forageData?.incorrect ?? 0} incorrect answers</Text>
-            </Container>
-          )}
-
-          {multiData?.correct && (
-            <Container>
-              <Heading fontSize={"medium"}>Multi choice</Heading>
-              <Text>{multiData?.percentageCorrect?.toFixed(0)}% Correct</Text>
-              <Text>{multiData?.correct ?? 0} correct answers</Text>
-              <Text>{multiData?.incorrect ?? 0} incorrect answers</Text>
-            </Container>
-          )}
-
-          {tileData?.correct && (
-            <Container>
-              <Heading fontSize={"medium"}>Tiles</Heading>
-              <Text>{tileData?.percentageCorrect?.toFixed(0)}% Correct</Text>
-              <Text>{tileData?.correct ?? 0} correct answers</Text>
-              <Text>{tileData?.incorrect ?? 0} incorrect answers</Text>
-            </Container>
-          )}
+          {Object.entries(metaArr ?? {}).map((kvp) => {
+            const name = kvp[0];
+            const data = kvp[1];
+            return (
+              <Container key={name}>
+                <Heading
+                  fontSize={"medium"}
+                  style={{ textTransform: "capitalize" }}
+                >
+                  {name}
+                </Heading>
+                <Text>{data?.percentageCorrect?.toFixed(0)}% Correct</Text>
+                <Text>{data?.correct ?? 0} correct answers</Text>
+                <Text>{data?.incorrect ?? 0} incorrect answers</Text>
+              </Container>
+            );
+          })}
         </SimpleGrid>
         <Button onClick={levelHandler}>Progress to next level</Button>
 

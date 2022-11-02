@@ -1,5 +1,5 @@
 import { QueryResult } from "pg";
-import { TrainingData } from "../../utils/server";
+import { TrainingData } from "../../utils/server_side";
 
 import db from "./connection";
 

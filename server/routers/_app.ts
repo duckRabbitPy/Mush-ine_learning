@@ -1,9 +1,10 @@
 import { number, string, z } from "zod";
+import { reduceAnswerCount } from "../../utils/client_safe";
 import {
   getTestMushrooms,
   getCloudMushrooms,
   getMushroomSet,
-} from "../../utils/server";
+} from "../../utils/server_side";
 import {
   getCommonConfusions,
   updateScore,
@@ -102,7 +103,18 @@ export const appRouter = router({
         return null;
       }
       const stats = await getRoundMetadata(input.user_id, 6);
-      return stats;
+      const forage = reduceAnswerCount(
+        stats?.filter((r) => r.game_type === "forage")
+      );
+      const multi = reduceAnswerCount(
+        stats?.filter((r) => r.game_type === "multi")
+      );
+      const tile = reduceAnswerCount(
+        stats?.filter((r) => r.game_type == "tile")
+      );
+
+      const metaArr = { forage, multi, tile };
+      return metaArr;
     }),
   trainingData: publicProcedure
     .input(

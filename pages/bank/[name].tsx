@@ -7,7 +7,7 @@ import { useState } from "react";
 import { CloudImage } from "../../types";
 import { trpc } from "../../utils/trpc";
 import { useUser } from "@auth0/nextjs-auth0";
-import { getCloudMushrooms } from "../../utils/server";
+import { getCloudMushrooms } from "../../utils/server_side";
 
 export async function getStaticPaths() {
   const mushroomNames = await getCloudMushrooms();
