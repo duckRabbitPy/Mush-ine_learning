@@ -128,6 +128,27 @@ export async function updateRoundMetaData(
   }
 }
 
+export async function getRoundMetadata(user_id: string, current_level: number) {
+  return db
+    .query(
+      "SELECT game_type, correct_mushroom, correct_answer FROM mushine_round_metadata WHERE user_id = $1 AND current_level = $2;",
+      [user_id, current_level]
+    )
+    .then(
+      (
+        result: QueryResult<
+          Pick<
+            mushine_round_metadata,
+            "game_type" | "correct_mushroom" | "correct_answer"
+          >
+        >
+      ) => {
+        return result.rows;
+      }
+    )
+    .catch((error: Error) => console.log(error));
+}
+
 export async function getCommonConfusions(name: string, user_id: string) {
   const misidentifiedArr = await db
     .query(

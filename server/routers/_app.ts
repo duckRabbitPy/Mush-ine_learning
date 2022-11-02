@@ -14,6 +14,7 @@ import {
   saveLevelSnapshot,
   updateRoundMetaData,
   getCurrentLevel,
+  getRoundMetadata,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
@@ -89,6 +90,19 @@ export const appRouter = router({
         current_level ?? 0,
         roundMetadata
       );
+    }),
+  retrieveRoundMetadata: publicProcedure
+    .input(
+      z.object({
+        user_id: z.string().nullable(),
+      })
+    )
+    .query(async ({ input }) => {
+      if (!input.user_id) {
+        return null;
+      }
+      const stats = await getRoundMetadata(input.user_id, 6);
+      return stats;
     }),
   trainingData: publicProcedure
     .input(
