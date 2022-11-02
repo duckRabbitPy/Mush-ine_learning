@@ -101,7 +101,7 @@ export async function getTestMushrooms(omitArr: string[], max: number) {
     return mushroom;
   });
 
-  return testMushrooms;
+  return shuffleArrayCopy(testMushrooms);
 }
 
 export async function getMushroomSet(omitArr: string[], numOptions: number) {
@@ -136,7 +136,11 @@ export async function getMushroomSet(omitArr: string[], numOptions: number) {
   optionsArr.push(correctMushroom);
   const options = shuffleArrayCopy(optionsArr);
 
-  return { correctMushroom, mushroomSet, options };
+  return {
+    correctMushroom,
+    mushroomSet: shuffleArrayCopy(mushroomSet),
+    options,
+  };
 }
 
 export function randomArrItem<Type>(arr: Type[]) {
