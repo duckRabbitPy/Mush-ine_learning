@@ -74,11 +74,17 @@ const InfoBank = ({
       <Heading>{mushroomName} mushroom</Heading>
 
       <Link href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}>
-        <Button m={2}>More Info</Button>
+        <Button m={2} bgColor="burlywood">
+          More Info
+        </Button>
       </Link>
 
       <Link href="/bank">
         <Button m={2}>Back to bank menu </Button>
+      </Link>
+
+      <Link href="/">
+        <Button m={2}>Home</Button>
       </Link>
 
       {expandIndex === null && (
