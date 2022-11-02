@@ -12,8 +12,8 @@ import { useState } from "react";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
-import { RoundMetadata, TrainingData } from "../utils/server";
-import { extractTrainingData } from "../utils/client";
+import { RoundMetadata, TrainingData } from "../utils/server_side";
+import { extractTrainingData } from "../utils/client_safe";
 import { ProgressIndicator } from "./components/Progress";
 
 export const reactQueryConfig = {

@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 import { randomUUID } from "crypto";
-import { getCloudMushrooms } from "../../../utils/server";
+import { getCloudMushrooms } from "../../../utils/server_side";
 import db from "../connection";
 
 // ts-node migration-1.ts

@@ -1,9 +1,11 @@
 import { useUser } from "@auth0/nextjs-auth0";
 import {
   Button,
+  Container,
   Flex,
   Heading,
   Progress,
+  SimpleGrid,
   Spinner,
   Table,
   TableContainer,
@@ -25,11 +27,15 @@ const Profile = () => {
   });
 
   const snapshot = trpc.downloadLevelSnapShot.useQuery({
-    level: 4,
+    level: 6,
     user_id: user?.sub ?? null,
   });
 
   const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
+
+  const metaArr = trpc.retrieveRoundMetadata.useQuery({
+    user_id: user?.sub ?? null,
+  }).data;
 
   const levelHandler = () => {
     saveSnapShot.mutate({ user_id: user?.sub ?? null });
@@ -62,6 +68,25 @@ const Profile = () => {
           width="80%"
         />
 
+        <SimpleGrid columns={3} m={5}>
+          {Object.entries(metaArr ?? {}).map((kvp) => {
+            const name = kvp[0];
+            const data = kvp[1];
+            return (
+              <Container key={name}>
+                <Heading
+                  fontSize={"medium"}
+                  style={{ textTransform: "capitalize" }}
+                >
+                  {name}
+                </Heading>
+                <Text>{data?.percentageCorrect?.toFixed(0)}% Correct</Text>
+                <Text>{data?.correct ?? 0} correct answers</Text>
+                <Text>{data?.incorrect ?? 0} incorrect answers</Text>
+              </Container>
+            );
+          })}
+        </SimpleGrid>
         <Button onClick={levelHandler}>Progress to next level</Button>
 
         <TableContainer maxWidth={"60%"} mt={5} whiteSpace="break-spaces">

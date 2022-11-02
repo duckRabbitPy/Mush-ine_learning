@@ -7,7 +7,7 @@ import { useState } from "react";
 import { CloudImage } from "../../types";
 import { trpc } from "../../utils/trpc";
 import { useUser } from "@auth0/nextjs-auth0";
-import { getCloudMushrooms } from "../../utils/server";
+import { getCloudMushrooms } from "../../utils/server_side";
 
 export async function getStaticPaths() {
   const mushroomNames = await getCloudMushrooms();
@@ -74,11 +74,17 @@ const InfoBank = ({
       <Heading>{mushroomName} mushroom</Heading>
 
       <Link href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}>
-        <Button m={2}>More Info</Button>
+        <Button m={2} bgColor="burlywood">
+          More Info
+        </Button>
       </Link>
 
       <Link href="/bank">
         <Button m={2}>Back to bank menu </Button>
+      </Link>
+
+      <Link href="/">
+        <Button m={2}>Home</Button>
       </Link>
 
       {expandIndex === null && (

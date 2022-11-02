@@ -1,9 +1,10 @@
 import { number, string, z } from "zod";
+import { reduceAnswerCount } from "../../utils/client_safe";
 import {
   getTestMushrooms,
   getCloudMushrooms,
   getMushroomSet,
-} from "../../utils/server";
+} from "../../utils/server_side";
 import {
   getCommonConfusions,
   updateScore,
@@ -14,6 +15,7 @@ import {
   saveLevelSnapshot,
   updateRoundMetaData,
   getCurrentLevel,
+  getRoundMetadata,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
@@ -89,6 +91,30 @@ export const appRouter = router({
         current_level ?? 0,
         roundMetadata
       );
+    }),
+  retrieveRoundMetadata: publicProcedure
+    .input(
+      z.object({
+        user_id: z.string().nullable(),
+      })
+    )
+    .query(async ({ input }) => {
+      if (!input.user_id) {
+        return null;
+      }
+      const stats = await getRoundMetadata(input.user_id, 6);
+      const forage = reduceAnswerCount(
+        stats?.filter((r) => r.game_type === "forage")
+      );
+      const multi = reduceAnswerCount(
+        stats?.filter((r) => r.game_type === "multi")
+      );
+      const tile = reduceAnswerCount(
+        stats?.filter((r) => r.game_type == "tile")
+      );
+
+      const metaArr = { forage, multi, tile };
+      return metaArr;
     }),
   trainingData: publicProcedure
     .input(
