@@ -13,14 +13,8 @@ import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
 import { RoundMetadata, TrainingData } from "../utils/server_side";
-import { extractTrainingData } from "../utils/client_safe";
+import { extractTrainingData, reactQueryConfig } from "../utils/client_safe";
 import { ProgressIndicator } from "./components/Progress";
-
-export const reactQueryConfig = {
-  refetchOnMount: false,
-  refetchOnWindowFocus: false,
-  refetchOnReconnect: false,
-};
 
 const Forage = () => {
   const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);

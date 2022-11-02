@@ -6,7 +6,7 @@ import HomeBtn from "./components/HomeBtn";
 import { RoundMetadata, TrainingData } from "../utils/server_side";
 import { useUser } from "@auth0/nextjs-auth0";
 import { ProgressIndicator } from "./components/Progress";
-import { reactQueryConfig } from "./forage";
+import { reactQueryConfig } from "../utils/client_safe";
 
 const Multi = () => {
   const [round, setRound] = useState(0);

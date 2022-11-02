@@ -1,6 +1,12 @@
 import { mushine_round_metadata } from "../server/database/model";
 import { TestMushroom, TrainingData } from "./server_side";
 
+export const reactQueryConfig = {
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+};
+
 export function extractTrainingData(
   testMushrooms: TestMushroom[],
   trainingData: TrainingData[] | undefined

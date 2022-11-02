@@ -6,7 +6,7 @@ import HomeBtn from "./components/HomeBtn";
 import { RoundMetadata, TrainingData } from "../utils/server_side";
 import { useUser } from "@auth0/nextjs-auth0";
 import { ProgressIndicator } from "./components/Progress";
-import { reactQueryConfig } from "./forage";
+import { reactQueryConfig } from "../utils/client_safe";
 
 const Tile = () => {
   const [round, setRound] = useState(0);
@@ -50,7 +50,7 @@ const Tile = () => {
           return prev.concat({
             correct_mushroom: correctMushroom,
             correct_answer: false,
-            game_type: "forage",
+            game_type: "tile",
           });
         });
 
@@ -58,17 +58,16 @@ const Tile = () => {
         return prev.concat(false);
       });
     } else {
-      setRoundOver(true);
-
       correctMushroom &&
         setRoundMetaData((prev: RoundMetadata[]) => {
           return prev.concat({
             correct_mushroom: correctMushroom,
             correct_answer: true,
-            game_type: "forage",
+            game_type: "tile",
           });
         });
 
+      setRoundOver(true);
       setProgress((prev) => {
         return prev.concat(true);
       });
@@ -98,6 +97,8 @@ const Tile = () => {
     if (user_id) {
       saveScore.mutate({ user_id, score });
       saveTrainingData.mutate({ trainingData: trainingResult, user_id });
+
+      console.log(trainingResult, "training result");
       roundMetaData.length > 1 &&
         saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
     } else {
