@@ -101,21 +101,24 @@ const Profile = () => {
                 const misIdentifiedAs = kvp[1];
                 return (
                   <Tbody key={mushroom}>
-                    <Td p={3} textTransform="capitalize">
-                      🍄 {mushroom}
-                    </Td>
-                    <Td p={3} wordBreak={"break-word"}>
-                      {Object.keys(misIdentifiedAs).map((name, i, arr) => {
-                        return (
-                          <>
-                            <Link key={name} href={`/bank/${name}`} passHref>
-                              <a style={{ color: "blue" }}>{name}</a>
-                            </Link>
-                            {i === arr.length - 1 ? "" : ", "}
-                          </>
-                        );
-                      })}
-                    </Td>
+                    <Tr>
+                      <Td p={3} textTransform="capitalize">
+                        🍄 {mushroom}
+                      </Td>
+                      <Td p={3} wordBreak={"break-word"}>
+                        {Object.keys(misIdentifiedAs).map((name, i, arr) => {
+                          console.log("key3", name);
+                          return (
+                            <>
+                              <Link key={name} href={`/bank/${name}`} passHref>
+                                <a style={{ color: "blue" }}>{name}</a>
+                              </Link>
+                              {i === arr.length - 1 ? "" : ", "}
+                            </>
+                          );
+                        })}
+                      </Td>
+                    </Tr>
                   </Tbody>
                 );
               })}
