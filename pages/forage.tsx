@@ -13,7 +13,7 @@ import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
 import { RoundMetadata, TrainingData } from "../utils/server_side";
-import { extractTrainingData } from "../utils/client_safe";
+import { currLevelInfo, extractTrainingData } from "../utils/client_safe";
 import { ProgressIndicator } from "./components/Progress";
 
 export const reactQueryConfig = {
@@ -31,6 +31,13 @@ const Forage = () => {
   const [progress, setProgress] = useState<boolean[]>([]);
   const [score, setScore] = useState(0);
   const { user } = useUser();
+  const xpQuery = trpc.retrieveUserScore.useQuery({
+    user_id: user?.sub ?? null,
+  });
+  const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
+  const snapshot = trpc.downloadLevelSnapShot.useQuery({
+    user_id: user?.sub ?? null,
+  });
   const getTestMushrooms = trpc.testMushrooms.useQuery(
     {
       omitArr,
@@ -98,6 +105,18 @@ const Forage = () => {
 
       roundMetaData.length > 1 &&
         saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
+
+      const { levelUp, xpToNextLevel } = currLevelInfo(
+        xpQuery.data,
+        snapshot.data?.level,
+        score
+      );
+
+      console.log(levelUp, xpToNextLevel, "save");
+
+      if (levelUp) {
+        saveSnapShot.mutate({ user_id: user?.sub ?? null });
+      }
     } else {
       throw new Error("user object lacking sub property");
     }

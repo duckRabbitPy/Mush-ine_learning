@@ -76,3 +76,31 @@ export function reduceAnswerCount(
     return acc;
   }, {} as reducedAnswers);
 }
+
+export function currLevelInfo(
+  currXp: number | undefined,
+  currLevel: number | undefined,
+  score: number | undefined
+) {
+  if (!currXp || !currLevel) {
+    // TODO handle starter and null cases better
+    return { levelUp: false, xpToNextLevel: 0, boundaryAhead: 10000 };
+  }
+
+  const safeScore = score ?? 0;
+  const levelBoundaries = [];
+
+  for (let i = 1; i < currLevel + 1; i++) {
+    levelBoundaries.push(Math.round(i * 100 * (i / 2)));
+  }
+
+  const boundaryAhead = levelBoundaries[currLevel - 1];
+
+  if (boundaryAhead < currXp + (score ?? 0)) {
+    const xpToNextLevel = levelBoundaries[currLevel + 1] - (currXp + safeScore);
+    return { levelUp: true, xpToNextLevel, boundaryAhead };
+  }
+
+  const xpToNextLevel = boundaryAhead - currXp + safeScore;
+  return { levelUp: false, xpToNextLevel, boundaryAhead };
+}
