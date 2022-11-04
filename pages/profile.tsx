@@ -27,7 +27,6 @@ const Profile = () => {
   });
 
   const snapshot = trpc.downloadLevelSnapShot.useQuery({
-    level: 6,
     user_id: user?.sub ?? null,
   });
 
