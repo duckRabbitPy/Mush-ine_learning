@@ -98,14 +98,15 @@ const Forage = () => {
     const user_id = user?.sub;
     if (user_id) {
       const preRoundLevel = returnLvl(xpQuery.data);
-      const postRoundLevel = returnLvl(preRoundLevel + score);
+      const postRoundLevel = returnLvl((xpQuery.data ?? 0) + score);
+
       saveScore.mutate({ user_id, score });
       saveTrainingData.mutate({ trainingData: trainingResult, user_id });
 
       roundMetaData.length > 1 &&
         saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
 
-      if (preRoundLevel !== postRoundLevel) {
+      if (preRoundLevel <= postRoundLevel) {
         saveSnapShot.mutate({ user_id: user?.sub ?? null });
       }
     } else {

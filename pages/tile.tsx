@@ -7,6 +7,7 @@ import { RoundMetadata, TrainingData } from "../utils/server_side";
 import { useUser } from "@auth0/nextjs-auth0";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
+import { returnLvl } from "../utils/client_safe";
 
 const Tile = () => {
   const [round, setRound] = useState(0);
@@ -18,8 +19,12 @@ const Tile = () => {
   const saveScore = trpc.storeUserScore.useMutation();
   const saveTrainingData = trpc.storeTrainingData.useMutation();
   const saveRoundMetaData = trpc.storeRoundMetadata.useMutation();
+  const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
   const [score, setScore] = useState(0);
   const { user } = useUser();
+  const xpQuery = trpc.retrieveUserScore.useQuery({
+    user_id: user?.sub ?? null,
+  });
   const getMushroomSet = trpc.mushroomSet.useQuery(
     {
       omitArr,
@@ -95,11 +100,18 @@ const Tile = () => {
 
   const handleSaveBtn = async () => {
     const user_id = user?.sub;
+    const preRoundLevel = returnLvl(xpQuery.data);
+    const postRoundLevel = returnLvl((xpQuery.data ?? 0) + score);
+
     if (user_id) {
       saveScore.mutate({ user_id, score });
       saveTrainingData.mutate({ trainingData: trainingResult, user_id });
       roundMetaData.length > 1 &&
         saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
+
+      if (preRoundLevel <= postRoundLevel) {
+        saveSnapShot.mutate({ user_id: user?.sub ?? null });
+      }
     } else {
       throw new Error("user object lacking sub property");
     }

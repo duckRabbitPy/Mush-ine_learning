@@ -32,6 +32,7 @@ export type mushine_round_metadata = {
 };
 
 export type mushine_level_snapshots = {
+  id: number;
   level: number;
   user_id: string;
   snapshot: levelSnapshot;
