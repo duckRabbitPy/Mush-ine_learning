@@ -16,7 +16,7 @@ export async function initTables() {
     "CREATE TABLE mushine_training_weightings (id SERIAL PRIMARY KEY, user_id VARCHAR (50), correct_mushroom VARCHAR (50), misidentified_as VARCHAR (50), weight integer, timestamp TIMESTAMP)"
   );
   await db.query(
-    "CREATE TABLE mushine_level_snapshots (level SERIAL PRIMARY KEY, user_id VARCHAR (50),snapshot JSONB);"
+    "CREATE TABLE mushine_level_snapshots (id SERIAL PRIMARY KEY, level INTEGER, user_id VARCHAR (50),snapshot JSONB);"
   );
 
   await db.query(

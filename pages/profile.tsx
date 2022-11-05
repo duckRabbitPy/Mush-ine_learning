@@ -1,6 +1,5 @@
 import { useUser } from "@auth0/nextjs-auth0";
 import {
-  Button,
   Container,
   Flex,
   Heading,
@@ -17,6 +16,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import Link from "next/link";
+import { currLevelInfo } from "../utils/client_safe";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 
@@ -27,19 +27,19 @@ const Profile = () => {
   });
 
   const snapshot = trpc.downloadLevelSnapShot.useQuery({
-    level: 6,
     user_id: user?.sub ?? null,
   });
-
-  const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
 
   const metaArr = trpc.retrieveRoundMetadata.useQuery({
     user_id: user?.sub ?? null,
   }).data;
 
-  const levelHandler = () => {
-    saveSnapShot.mutate({ user_id: user?.sub ?? null });
-  };
+  const { xpToNextLevel, boundaryAhead } = currLevelInfo(
+    xpQuery.data,
+    snapshot.data?.level
+  );
+
+  console.log(xpToNextLevel, boundaryAhead);
 
   return (
     <>
@@ -60,10 +60,11 @@ const Profile = () => {
           </>
         )}
 
+        <Text>xp to next level: {xpToNextLevel}</Text>
         <Progress
           m={3}
           hasStripe
-          value={Number(String(xpQuery.data).slice(-2))}
+          value={(boundaryAhead - xpToNextLevel / boundaryAhead) * 100}
           height={5}
           width="80%"
         />
@@ -87,7 +88,6 @@ const Profile = () => {
             );
           })}
         </SimpleGrid>
-        <Button onClick={levelHandler}>Progress to next level</Button>
 
         <TableContainer maxWidth={"60%"} mt={5} whiteSpace="break-spaces">
           <Table colorScheme="blue">
@@ -103,21 +103,23 @@ const Profile = () => {
                 const misIdentifiedAs = kvp[1];
                 return (
                   <Tbody key={mushroom}>
-                    <Td p={3} textTransform="capitalize">
-                      🍄 {mushroom}
-                    </Td>
-                    <Td p={3} wordBreak={"break-word"}>
-                      {Object.keys(misIdentifiedAs).map((name, i, arr) => {
-                        return (
-                          <>
-                            <Link key={name} href={`/bank/${name}`} passHref>
-                              <a style={{ color: "blue" }}>{name}</a>
-                            </Link>
-                            {i === arr.length - 1 ? "" : ", "}
-                          </>
-                        );
-                      })}
-                    </Td>
+                    <Tr>
+                      <Td p={3} textTransform="capitalize">
+                        🍄 {mushroom}
+                      </Td>
+                      <Td p={3} wordBreak={"break-word"}>
+                        {Object.keys(misIdentifiedAs).map((name, i, arr) => {
+                          return (
+                            <div key={name}>
+                              <Link href={`/bank/${name}`} passHref>
+                                <a style={{ color: "blue" }}>{name}</a>
+                              </Link>
+                              {i === arr.length - 1 ? "" : ", "}
+                            </div>
+                          );
+                        })}
+                      </Td>
+                    </Tr>
                   </Tbody>
                 );
               })}

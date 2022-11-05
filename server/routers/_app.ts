@@ -102,7 +102,8 @@ export const appRouter = router({
       if (!input.user_id) {
         return null;
       }
-      const stats = await getRoundMetadata(input.user_id, 6);
+      const currLevel = await getCurrentLevel(input.user_id);
+      const stats = await getRoundMetadata(input.user_id, currLevel ?? 0);
       const forage = reduceAnswerCount(
         stats?.filter((r) => r.game_type === "forage")
       );
@@ -170,7 +171,7 @@ export const appRouter = router({
   downloadLevelSnapShot: publicProcedure
     .input(
       z.object({
-        level: number(),
+        level: number().optional(),
         user_id: string().nullable(),
       })
     )
@@ -178,7 +179,11 @@ export const appRouter = router({
       if (!input.user_id) {
         return null;
       }
-      const snapshot = await getLevelSnapshot(input.level, input.user_id);
+      const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
+      const snapshot = await getLevelSnapshot(
+        input.level ?? currLevel,
+        input.user_id
+      );
 
       if (!snapshot) {
         return null;

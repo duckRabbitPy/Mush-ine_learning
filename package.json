@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "test": "vitest run",
     "start": "next start",
     "lint": "next lint",
     "initDB": "npx ts-node --skip-project ./server/database/migrations/migration-1.ts"
@@ -38,6 +39,7 @@
     "@types/react-dom": "18.0.6",
     "eslint": "8.25.0",
     "eslint-config-next": "12.3.1",
-    "typescript": "4.8.4"
+    "typescript": "4.8.4",
+    "vitest": "^0.24.5"
   }
 }

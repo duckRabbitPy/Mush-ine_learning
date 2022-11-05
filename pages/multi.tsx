@@ -1,24 +1,39 @@
 import { Button, Flex, SimpleGrid, Spinner } from "@chakra-ui/react";
-import { useState } from "react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { RoundMetadata, TrainingData } from "../utils/server_side";
-import { useUser } from "@auth0/nextjs-auth0";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
+import { returnLvl } from "../utils/client_safe";
+import { useGameState } from "../hooks/useGameState";
+import { useCommonTrpc } from "../hooks/useCommonTrpc";
 
 const Multi = () => {
-  const [round, setRound] = useState(0);
-  const [omitArr, setOmitArr] = useState<string[]>([]);
-  const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
-  const [roundMetaData, setRoundMetaData] = useState<RoundMetadata[] | []>([]);
-  const [progress, setProgress] = useState<boolean[]>([]);
-  const saveScore = trpc.storeUserScore.useMutation();
-  const saveTrainingData = trpc.storeTrainingData.useMutation();
-  const saveRoundMetaData = trpc.storeRoundMetadata.useMutation();
-  const [score, setScore] = useState(0);
-  const { user } = useUser();
+  const {
+    xpQuery,
+    saveRoundMetaData,
+    saveScore,
+    saveSnapShot,
+    saveTrainingData,
+  } = useCommonTrpc();
+
+  const {
+    trainingResult,
+    setTrainingResult,
+    roundMetaData,
+    setRoundMetaData,
+    round,
+    setRound,
+    omitArr,
+    setOmitArr,
+    progress,
+    setProgress,
+    score,
+    setScore,
+    user,
+  } = useGameState();
+
   const getMushroomSet = trpc.mushroomSet.useQuery(
     {
       omitArr,
@@ -28,7 +43,6 @@ const Multi = () => {
       ...reactQueryConfig,
     }
   );
-
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
   const gameOver = round > 3;
@@ -76,10 +90,16 @@ const Multi = () => {
   const handleSaveBtn = async () => {
     const user_id = user?.sub;
     if (user_id) {
+      const preRoundLevel = returnLvl(xpQuery.data);
+      const postRoundLevel = returnLvl((xpQuery.data ?? 0) + score);
       saveScore.mutate({ user_id, score });
       saveTrainingData.mutate({ trainingData: trainingResult, user_id });
       roundMetaData.length > 1 &&
         saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
+
+      if (preRoundLevel <= postRoundLevel) {
+        saveSnapShot.mutate({ user_id: user?.sub ?? null });
+      }
     } else {
       throw new Error("user object lacking sub property");
     }

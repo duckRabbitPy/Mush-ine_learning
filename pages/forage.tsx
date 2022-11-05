@@ -8,13 +8,13 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { useState } from "react";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { useUser } from "@auth0/nextjs-auth0";
-import { RoundMetadata, TrainingData } from "../utils/server_side";
-import { extractTrainingData } from "../utils/client_safe";
+import { RoundMetadata } from "../utils/server_side";
+import { extractTrainingData, returnLvl } from "../utils/client_safe";
 import { ProgressIndicator } from "./components/Progress";
+import { useCommonTrpc } from "../hooks/useCommonTrpc";
+import { useGameState } from "../hooks/useGameState";
 
 export const reactQueryConfig = {
   refetchOnMount: false,
@@ -23,14 +23,32 @@ export const reactQueryConfig = {
 };
 
 const Forage = () => {
-  const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
-  const [roundMetaData, setRoundMetaData] = useState<RoundMetadata[] | []>([]);
-  const [round, setRound] = useState(0);
-  const [omitArr, setOmitArr] = useState<string[]>([]);
-  const [inputAnswer, setInputAnswer] = useState<string | null>(null);
-  const [progress, setProgress] = useState<boolean[]>([]);
-  const [score, setScore] = useState(0);
-  const { user } = useUser();
+  const {
+    xpQuery,
+    saveRoundMetaData,
+    saveScore,
+    saveSnapShot,
+    saveTrainingData,
+  } = useCommonTrpc();
+
+  const {
+    trainingResult,
+    setTrainingResult,
+    roundMetaData,
+    setRoundMetaData,
+    round,
+    setRound,
+    omitArr,
+    setOmitArr,
+    inputAnswer,
+    setInputAnswer,
+    progress,
+    setProgress,
+    score,
+    setScore,
+    user,
+  } = useGameState();
+
   const getTestMushrooms = trpc.testMushrooms.useQuery(
     {
       omitArr,
@@ -41,10 +59,6 @@ const Forage = () => {
       ...reactQueryConfig,
     }
   );
-
-  const saveScore = trpc.storeUserScore.useMutation();
-  const saveTrainingData = trpc.storeTrainingData.useMutation();
-  const saveRoundMetaData = trpc.storeRoundMetadata.useMutation();
   const testMushrooms = getTestMushrooms.data;
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
@@ -93,11 +107,18 @@ const Forage = () => {
   const handleSaveBtn = async () => {
     const user_id = user?.sub;
     if (user_id) {
+      const preRoundLevel = returnLvl(xpQuery.data);
+      const postRoundLevel = returnLvl((xpQuery.data ?? 0) + score);
+
       saveScore.mutate({ user_id, score });
       saveTrainingData.mutate({ trainingData: trainingResult, user_id });
 
       roundMetaData.length > 1 &&
         saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
+
+      if (preRoundLevel <= postRoundLevel) {
+        saveSnapShot.mutate({ user_id: user?.sub ?? null });
+      }
     } else {
       throw new Error("user object lacking sub property");
     }

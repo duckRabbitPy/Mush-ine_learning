@@ -76,3 +76,36 @@ export function reduceAnswerCount(
     return acc;
   }, {} as reducedAnswers);
 }
+
+export function currLevelInfo(
+  currXp: number | undefined,
+  currLevel: number | undefined
+) {
+  const levelBoundaries = generateLvlBoundaries();
+  const boundaryAhead = levelBoundaries[currLevel ? currLevel + 1 : 0];
+  const xpToNextLevel = boundaryAhead - (currXp ?? 0);
+  return { xpToNextLevel, boundaryAhead };
+}
+
+export function returnLvl(xp: number | undefined | null | void) {
+  const XP = xp ?? 0;
+  let levelBoundaries = generateLvlBoundaries();
+
+  const level = levelBoundaries.reduce((acc, curr, i, arr) => {
+    if (curr <= XP && XP < arr[i + 1]) {
+      acc = i;
+    }
+    return acc;
+  }, 0);
+
+  return level;
+}
+
+export function generateLvlBoundaries() {
+  let levelBoundaries = [];
+  for (let i = 1; i <= 99; i++) {
+    levelBoundaries.push(Math.round(i * 100 * (i / 2)));
+  }
+
+  return levelBoundaries;
+}
