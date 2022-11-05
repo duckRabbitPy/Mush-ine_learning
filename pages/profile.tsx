@@ -60,7 +60,7 @@ const Profile = () => {
           </>
         )}
 
-        <Text>Xp to next level: {xpToNextLevel}</Text>
+        <Text>xp to next level: {xpToNextLevel}</Text>
         <Progress
           m={3}
           hasStripe
