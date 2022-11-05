@@ -82,7 +82,7 @@ export function currLevelInfo(
   currLevel: number | undefined
 ) {
   const levelBoundaries = generateLvlBoundaries();
-  const boundaryAhead = levelBoundaries[currLevel ?? 0 + 1];
+  const boundaryAhead = levelBoundaries[currLevel ?? 0];
   const xpToNextLevel = boundaryAhead - (currXp ?? 0);
   return { xpToNextLevel, boundaryAhead };
 }
@@ -104,11 +104,8 @@ export function returnLvl(xp: number | undefined | null | void) {
 export function generateLvlBoundaries() {
   let levelBoundaries = [];
   for (let i = 1; i <= 99; i++) {
-    if (i === 1) {
-      levelBoundaries.push(0);
-    } else {
-      levelBoundaries.push(Math.round(i * 100 * (i / 2)));
-    }
+    levelBoundaries.push(Math.round(i * 100 * (i / 2)));
   }
+
   return levelBoundaries;
 }

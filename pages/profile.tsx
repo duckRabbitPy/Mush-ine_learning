@@ -106,7 +106,6 @@ const Profile = () => {
                       </Td>
                       <Td p={3} wordBreak={"break-word"}>
                         {Object.keys(misIdentifiedAs).map((name, i, arr) => {
-                          console.log("key3", name);
                           return (
                             <>
                               <Link key={name} href={`/bank/${name}`} passHref>

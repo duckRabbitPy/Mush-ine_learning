@@ -185,8 +185,6 @@ export const appRouter = router({
         input.user_id
       );
 
-      console.log(snapshot, currLevel);
-
       if (!snapshot) {
         return null;
       }

@@ -6,7 +6,7 @@ describe("curr level undefined", () => {
   const currLevel = undefined;
   it("boundary ahead correct", () => {
     const { boundaryAhead } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryAhead, 200);
+    assert.equal(boundaryAhead, 50);
   });
 });
 
@@ -16,12 +16,12 @@ describe("curr level 0", () => {
 
   it("boundary ahead correct", () => {
     const { boundaryAhead } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryAhead, 200);
+    assert.equal(boundaryAhead, 50);
   });
 
   it("correct xpToNextLevel", () => {
     const { xpToNextLevel } = currLevelInfo(currXp, currLevel);
-    assert.equal(xpToNextLevel, 200);
+    assert.equal(xpToNextLevel, 50);
   });
 });
 
