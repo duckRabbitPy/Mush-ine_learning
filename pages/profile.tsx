@@ -39,6 +39,8 @@ const Profile = () => {
     snapshot.data?.level
   );
 
+  console.log(xpToNextLevel, boundaryAhead);
+
   return (
     <>
       <Flex direction="column" alignItems={"center"} mt={10}>
@@ -58,10 +60,11 @@ const Profile = () => {
           </>
         )}
 
+        <Text>Xp to next level: {xpToNextLevel}</Text>
         <Progress
           m={3}
           hasStripe
-          value={(xpToNextLevel / boundaryAhead) * 100}
+          value={(boundaryAhead - xpToNextLevel / boundaryAhead) * 100}
           height={5}
           width="80%"
         />
