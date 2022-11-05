@@ -107,12 +107,12 @@ const Profile = () => {
                       <Td p={3} wordBreak={"break-word"}>
                         {Object.keys(misIdentifiedAs).map((name, i, arr) => {
                           return (
-                            <>
-                              <Link key={name} href={`/bank/${name}`} passHref>
+                            <div key={name}>
+                              <Link href={`/bank/${name}`} passHref>
                                 <a style={{ color: "blue" }}>{name}</a>
                               </Link>
                               {i === arr.length - 1 ? "" : ", "}
-                            </>
+                            </div>
                           );
                         })}
                       </Td>
