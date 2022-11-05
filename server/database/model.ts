@@ -1,4 +1,5 @@
 import { QueryResult } from "pg";
+import { returnLvl } from "../../utils/client_safe";
 import { TrainingData } from "../../utils/server_side";
 
 import db from "./connection";
@@ -197,28 +198,23 @@ export async function saveLevelSnapshot(
 
   const currLevel = await getCurrentLevel(user_id);
 
-  const newLevel = currLevel ? currLevel + 1 : 1;
-
   const savedSnapShot = await db.query(
     `INSERT into mushine_level_snapshots (level, user_id, snapshot) VALUES ($1, $2, $3) RETURNING level, snapshot`,
-    [newLevel, user_id, snapshot]
+    [currLevel, user_id, snapshot]
   );
 
   return savedSnapShot.rows[0];
 }
 
 export async function getCurrentLevel(user_id: string) {
-  const currLevel = await db
-    .query(
-      `SELECT level FROM mushine_level_snapshots WHERE user_id = $1 ORDER BY level DESC`,
-      [user_id]
-    )
-    .then((result: QueryResult<Pick<mushine_level_snapshots, "level">>) => {
-      return result.rows[0].level;
+  const currXp = await db
+    .query(`SELECT xp FROM mushine_learning_user WHERE user_id = $1`, [user_id])
+    .then((result: QueryResult<Pick<mushine_learning_user, "xp">>) => {
+      return result.rows[0].xp;
     })
     .catch((error: Error) => console.log(error));
 
-  return currLevel;
+  return returnLvl(currXp);
 }
 
 export async function getLevelSnapshot(level: number, user_id: string) {

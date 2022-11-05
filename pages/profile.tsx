@@ -36,8 +36,7 @@ const Profile = () => {
 
   const { xpToNextLevel, boundaryAhead } = currLevelInfo(
     xpQuery.data,
-    snapshot.data?.level,
-    0
+    snapshot.data?.level
   );
 
   return (

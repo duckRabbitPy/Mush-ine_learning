@@ -79,28 +79,36 @@ export function reduceAnswerCount(
 
 export function currLevelInfo(
   currXp: number | undefined,
-  currLevel: number | undefined,
-  score: number | undefined
+  currLevel: number | undefined
 ) {
-  if (!currXp || !currLevel) {
-    // TODO handle starter and null cases better
-    return { levelUp: false, xpToNextLevel: 0, boundaryAhead: 10000 };
+  const levelBoundaries = generateLvlBoundaries();
+  const boundaryAhead = levelBoundaries[currLevel ?? 0 + 1];
+  const xpToNextLevel = boundaryAhead - (currXp ?? 0);
+  return { xpToNextLevel, boundaryAhead };
+}
+
+export function returnLvl(xp: number | undefined | null | void) {
+  const XP = xp ?? 0;
+  let levelBoundaries = generateLvlBoundaries();
+
+  const level = levelBoundaries.reduce((acc, curr, i, arr) => {
+    if (curr <= XP && XP < arr[i + 1]) {
+      acc = i;
+    }
+    return acc;
+  }, 0);
+
+  return level;
+}
+
+export function generateLvlBoundaries() {
+  let levelBoundaries = [];
+  for (let i = 1; i <= 99; i++) {
+    if (i === 1) {
+      levelBoundaries.push(0);
+    } else {
+      levelBoundaries.push(Math.round(i * 100 * (i / 2)));
+    }
   }
-
-  const safeScore = score ?? 0;
-  const levelBoundaries = [];
-
-  for (let i = 1; i < currLevel + 1; i++) {
-    levelBoundaries.push(Math.round(i * 100 * (i / 2)));
-  }
-
-  const boundaryAhead = levelBoundaries[currLevel - 1];
-
-  if (boundaryAhead < currXp + (score ?? 0)) {
-    const xpToNextLevel = levelBoundaries[currLevel + 1] - (currXp + safeScore);
-    return { levelUp: true, xpToNextLevel, boundaryAhead };
-  }
-
-  const xpToNextLevel = boundaryAhead - currXp + safeScore;
-  return { levelUp: false, xpToNextLevel, boundaryAhead };
+  return levelBoundaries;
 }

@@ -13,7 +13,7 @@ import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { useUser } from "@auth0/nextjs-auth0";
 import { RoundMetadata, TrainingData } from "../utils/server_side";
-import { currLevelInfo, extractTrainingData } from "../utils/client_safe";
+import { extractTrainingData, returnLvl } from "../utils/client_safe";
 import { ProgressIndicator } from "./components/Progress";
 
 export const reactQueryConfig = {
@@ -35,9 +35,6 @@ const Forage = () => {
     user_id: user?.sub ?? null,
   });
   const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
-  const snapshot = trpc.downloadLevelSnapShot.useQuery({
-    user_id: user?.sub ?? null,
-  });
   const getTestMushrooms = trpc.testMushrooms.useQuery(
     {
       omitArr,
@@ -100,21 +97,15 @@ const Forage = () => {
   const handleSaveBtn = async () => {
     const user_id = user?.sub;
     if (user_id) {
+      const preRoundLevel = returnLvl(xpQuery.data);
+      const postRoundLevel = returnLvl(preRoundLevel + score);
       saveScore.mutate({ user_id, score });
       saveTrainingData.mutate({ trainingData: trainingResult, user_id });
 
       roundMetaData.length > 1 &&
         saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
 
-      const { levelUp, xpToNextLevel } = currLevelInfo(
-        xpQuery.data,
-        snapshot.data?.level,
-        score
-      );
-
-      console.log(levelUp, xpToNextLevel, "save");
-
-      if (levelUp) {
+      if (preRoundLevel !== postRoundLevel) {
         saveSnapShot.mutate({ user_id: user?.sub ?? null });
       }
     } else {
