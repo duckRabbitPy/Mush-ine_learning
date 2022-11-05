@@ -1,30 +1,41 @@
 import { Button, Flex, SimpleGrid, Spinner } from "@chakra-ui/react";
-import { useState } from "react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { RoundMetadata, TrainingData } from "../utils/server_side";
-import { useUser } from "@auth0/nextjs-auth0";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
 import { returnLvl } from "../utils/client_safe";
+import { useGameState } from "../hooks/useGameState";
+import { useCommonTrpc } from "../hooks/useCommonTrpc";
+import { useState } from "react";
 
 const Tile = () => {
-  const [round, setRound] = useState(0);
+  const {
+    xpQuery,
+    saveRoundMetaData,
+    saveScore,
+    saveSnapShot,
+    saveTrainingData,
+  } = useCommonTrpc();
+
+  const {
+    trainingResult,
+    setTrainingResult,
+    roundMetaData,
+    setRoundMetaData,
+    round,
+    setRound,
+    omitArr,
+    setOmitArr,
+    progress,
+    setProgress,
+    score,
+    setScore,
+    user,
+  } = useGameState();
+
   const [roundOver, setRoundOver] = useState(false);
-  const [omitArr, setOmitArr] = useState<string[]>([]);
-  const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
-  const [roundMetaData, setRoundMetaData] = useState<RoundMetadata[] | []>([]);
-  const [progress, setProgress] = useState<boolean[]>([]);
-  const saveScore = trpc.storeUserScore.useMutation();
-  const saveTrainingData = trpc.storeTrainingData.useMutation();
-  const saveRoundMetaData = trpc.storeRoundMetadata.useMutation();
-  const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
-  const [score, setScore] = useState(0);
-  const { user } = useUser();
-  const xpQuery = trpc.retrieveUserScore.useQuery({
-    user_id: user?.sub ?? null,
-  });
   const getMushroomSet = trpc.mushroomSet.useQuery(
     {
       omitArr,
