@@ -39,8 +39,6 @@ const Profile = () => {
     snapshot.data?.level
   );
 
-  console.log(xpToNextLevel, boundaryAhead);
-
   return (
     <>
       <Flex direction="column" alignItems={"center"} mt={10}>

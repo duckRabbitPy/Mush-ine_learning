@@ -40,6 +40,7 @@ const Tile = () => {
     {
       omitArr,
       numOptions: 9,
+      user_id: user?.sub ?? null,
     },
     {
       enabled: round !== 0 && round !== 4,

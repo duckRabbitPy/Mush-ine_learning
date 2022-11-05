@@ -1,5 +1,9 @@
 import { v2 as cloudinary } from "cloudinary";
-import { game_types, name_string } from "../server/database/model";
+import {
+  game_types,
+  name_string,
+  snapshotType,
+} from "../server/database/model";
 import { CloudImage, SubfolderResult } from "../types";
 
 export type TestMushroom = {
@@ -104,7 +108,11 @@ export async function getTestMushrooms(omitArr: string[], max: number) {
   return shuffleArrayCopy(testMushrooms);
 }
 
-export async function getMushroomSet(omitArr: string[], numOptions: number) {
+export async function getMushroomSet(
+  omitArr: string[],
+  numOptions: number,
+  snapshot: Record<string, snapshotType> | null | undefined
+) {
   const allMushroomNames = await getCloudMushrooms();
   const mushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
@@ -122,14 +130,20 @@ export async function getMushroomSet(omitArr: string[], numOptions: number) {
   let optionsArr: string[] = [];
   let count = 0;
 
-  for (const _ of mushroomNamePool) {
+  const tailoredMushroomPool = tailoredNamePool(
+    correctMushroom,
+    mushroomNamePool,
+    snapshot
+  );
+
+  for (const _ of tailoredMushroomPool) {
     if (count > numOptions - 1) {
       break;
     } else {
-      const item = randomArrItem(mushroomNamePool);
+      const item = randomArrItem(tailoredMushroomPool);
       optionsArr.push(item);
-      const index = mushroomNamePool.findIndex((x) => x === item);
-      mushroomNamePool.splice(index, 1);
+      const index = tailoredMushroomPool.findIndex((x) => x === item);
+      tailoredMushroomPool.splice(index, 1);
       count++;
     }
   }
@@ -160,4 +174,26 @@ export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
   }
 
   return arr;
+}
+
+export function tailoredNamePool(
+  correctAnswer: string,
+  mushroomNamePool: string[],
+  snapshot: Record<string, snapshotType> | undefined | null
+) {
+  if (!snapshot) {
+    return mushroomNamePool;
+  }
+  const misidentified = snapshot[correctAnswer];
+  const ranked = Object.entries(misidentified)
+    .sort(([, weightA], [, weightB]) => Number(weightB) - Number(weightA))
+    .map((kvp) => kvp[0]);
+
+  const highRankedRemoved = mushroomNamePool.filter(
+    (mushroom) => !ranked.includes(mushroom)
+  );
+  const tailoredArray = [...ranked, ...highRankedRemoved];
+
+  // todo: len check and remove second half of options
+  return tailoredArray;
 }
