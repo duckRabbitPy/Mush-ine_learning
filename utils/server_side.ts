@@ -38,7 +38,7 @@ async function buildTestMushrooms(
 ): Promise<TestMushroom[]> {
   let testMushroomArr = [];
   let count = 0;
-  for (const mushroomName of mushroomNames) {
+  for (const mushroomName of mushroomNames.slice()) {
     if (count >= number) break;
 
     const images = (await cloudinary.api.resources({
@@ -98,6 +98,7 @@ export async function getTestMushrooms(omitArr: string[], max: number) {
   }
   const unselectedMushrooms = await buildTestMushrooms(mushroomNamePool, max);
   const chosen = randomArrItem(unselectedMushrooms).name;
+
   const testMushrooms = unselectedMushrooms.map((mushroom) => {
     if (mushroom.name === chosen) {
       return { ...mushroom, correctMatch: true };
@@ -133,11 +134,12 @@ export async function getMushroomSet(
   const tailoredMushroomPool = tailoredNamePool(
     correctMushroom,
     mushroomNamePool,
-    snapshot
+    snapshot,
+    numOptions
   );
 
-  for (const _ of tailoredMushroomPool) {
-    if (count > numOptions - 1) {
+  for (const _ of tailoredMushroomPool.slice()) {
+    if (count >= numOptions - 1) {
       break;
     } else {
       const item = randomArrItem(tailoredMushroomPool);
@@ -147,6 +149,7 @@ export async function getMushroomSet(
       count++;
     }
   }
+
   optionsArr.push(correctMushroom);
   const options = shuffleArrayCopy(optionsArr);
 
@@ -179,7 +182,8 @@ export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
 export function tailoredNamePool(
   correctAnswer: string,
   mushroomNamePool: string[],
-  snapshot: Record<string, snapshotType> | undefined | null
+  snapshot: Record<string, snapshotType> | undefined | null,
+  returnLength: number
 ) {
   if (!snapshot) {
     return mushroomNamePool;
@@ -193,7 +197,5 @@ export function tailoredNamePool(
     (mushroom) => !ranked.includes(mushroom)
   );
   const tailoredArray = [...ranked, ...highRankedRemoved];
-
-  // todo: len check and remove second half of options
-  return tailoredArray;
+  return tailoredArray.slice(0, returnLength);
 }
