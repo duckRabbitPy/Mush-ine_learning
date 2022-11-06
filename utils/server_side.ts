@@ -112,7 +112,10 @@ export async function getTestMushrooms(
     max
   );
 
-  const testMushrooms = unselectedMushrooms.map((mushroom) => {
+  const selectedArr = await buildTestMushrooms([chosen], max);
+  const joinedMushrooms = [...selectedArr, ...unselectedMushrooms];
+
+  const testMushrooms = joinedMushrooms.map((mushroom) => {
     if (mushroom.name === chosen) {
       return { ...mushroom, correctMatch: true };
     }

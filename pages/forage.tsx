@@ -60,7 +60,7 @@ const Forage = () => {
       ...reactQueryConfig,
     }
   );
-  const testMushrooms = getTestMushrooms.data;
+  const testMushrooms = getTestMushrooms?.data;
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
     (testMushrooms && testMushrooms?.length < 1 && omitArr.length > 0) ||

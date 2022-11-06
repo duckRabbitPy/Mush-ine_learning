@@ -139,7 +139,6 @@ export const appRouter = router({
     )
     .query(async ({ input }) => {
       let snapshot = null;
-
       if (input.user_id) {
         const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
         const snapshotData = await getLevelSnapshot(currLevel, input.user_id);
