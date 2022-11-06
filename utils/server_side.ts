@@ -139,7 +139,7 @@ export async function getMushroomSet(
   );
 
   for (const _ of tailoredMushroomPool.slice()) {
-    if (count >= numOptions - 1) {
+    if (count >= numOptions) {
       break;
     } else {
       const item = randomArrItem(tailoredMushroomPool);
@@ -191,11 +191,12 @@ export function tailoredNamePool(
   const misidentified = snapshot[correctAnswer];
   const ranked = Object.entries(misidentified)
     .sort(([, weightA], [, weightB]) => Number(weightB) - Number(weightA))
-    .map((kvp) => kvp[0]);
+    .map((kvp) => kvp[0])
+    .slice(0, Math.round(returnLength / 2));
 
   const highRankedRemoved = mushroomNamePool.filter(
     (mushroom) => !ranked.includes(mushroom)
   );
   const tailoredArray = [...ranked, ...highRankedRemoved];
-  return tailoredArray.slice(0, returnLength);
+  return tailoredArray.slice(0, returnLength + 1);
 }
