@@ -10,9 +10,19 @@ const AuthStatus = () => {
   const textColor = user ? "green.400" : "red.400";
   return (
     <Flex align="center">
-      <Text color={textColor}>{message}</Text>
+      <Text color={textColor} backgroundColor="#F2ECE3" p={1} borderRadius={10}>
+        {message}
+      </Text>
       <Link href={user ? "/api/auth/logout" : "/api/auth/login"}>
-        <Button m={2}>{user ? "Log Out" : "Log in"}</Button>
+        <Button
+          m={2}
+          size={"sm"}
+          backgroundColor="#A63922"
+          color={"white"}
+          _hover={{ color: "black", backgroundColor: "gray.100" }}
+        >
+          {user ? "Log Out" : "Log in"}
+        </Button>
       </Link>
     </Flex>
   );
