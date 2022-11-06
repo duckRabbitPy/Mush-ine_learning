@@ -108,12 +108,20 @@ const Multi = () => {
   };
 
   return (
-    <Flex gap={5} direction="column" alignItems="center">
+    <Flex
+      gap={5}
+      direction="column"
+      alignItems="center"
+      height={"100vh"}
+      backgroundColor={"#091122"}
+    >
       <HomeBtn w="-moz-fit-content" mt={3} />
       Multi Quiz
       <Flex gap={2} direction={"column"}>
         {round < 1 && (
-          <Button onClick={() => setRound(round + 1)}>Start</Button>
+          <Button onClick={() => setRound(round + 1)} backgroundColor="#B8E6F3">
+            Start
+          </Button>
         )}
         {round > 0 && !getMushroomSet.isRefetching && (
           <Flex gap={2}>
@@ -145,13 +153,18 @@ const Multi = () => {
                   onClick={handleSaveBtn}
                   w="-moz-fit-content"
                   alignSelf="center"
+                  backgroundColor="#B8E6F3"
                 >
                   Save score
                 </Button>
               )}
               {round > 0 &&
                 options?.map((name) => (
-                  <Button key={name} onClick={() => handleSelection(name)}>
+                  <Button
+                    key={name}
+                    onClick={() => handleSelection(name)}
+                    backgroundColor="#B8E6F3"
+                  >
                     {name}
                   </Button>
                 ))}

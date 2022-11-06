@@ -199,7 +199,7 @@ export function tailoredNamePool(
   correctAnswer: string,
   mushroomNamePool: string[],
   snapshot: Record<string, snapshotType> | undefined | null,
-  returnLength: number
+  maxOptions: number
 ) {
   if (!snapshot) {
     return mushroomNamePool;
@@ -208,11 +208,13 @@ export function tailoredNamePool(
   const ranked = Object.entries(misidentified)
     .sort(([, weightA], [, weightB]) => Number(weightB) - Number(weightA))
     .map((kvp) => kvp[0])
-    .slice(0, Math.round(returnLength / 2));
+    .slice(0, Math.round(maxOptions / 2));
 
   const highRankedRemoved = mushroomNamePool.filter(
     (mushroom) => !ranked.includes(mushroom)
   );
+
   const tailoredArray = [...ranked, ...highRankedRemoved];
-  return tailoredArray.slice(0, returnLength + 1);
+
+  return tailoredArray.slice(0, maxOptions - 1);
 }
