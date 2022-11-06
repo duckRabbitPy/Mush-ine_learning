@@ -134,10 +134,22 @@ export const appRouter = router({
       z.object({
         omitArr: z.array(z.string()),
         max: z.number(),
+        user_id: z.string().nullable(),
       })
     )
     .query(async ({ input }) => {
-      const testMushrooms = await getTestMushrooms(input.omitArr, input.max);
+      let snapshot = null;
+
+      if (input.user_id) {
+        const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
+        const snapshotData = await getLevelSnapshot(currLevel, input.user_id);
+        snapshot = snapshotData?.snapshot;
+      }
+      const testMushrooms = await getTestMushrooms(
+        input.omitArr,
+        input.max,
+        snapshot
+      );
       return testMushrooms;
     }),
   mushroomSet: publicProcedure

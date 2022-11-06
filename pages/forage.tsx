@@ -53,6 +53,7 @@ const Forage = () => {
     {
       omitArr,
       max: 4,
+      user_id: user?.sub ?? null,
     },
     {
       enabled: round !== 0 && round !== 4,

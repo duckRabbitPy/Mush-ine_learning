@@ -87,17 +87,30 @@ async function getAllMushroomImgPaths(mushroomName: string): Promise<string[]> {
   return srcArr;
 }
 
-export async function getTestMushrooms(omitArr: string[], max: number) {
+export async function getTestMushrooms(
+  omitArr: string[],
+  max: number,
+  snapshot: Record<string, snapshotType> | null | undefined
+) {
   const allMushroomNames = await getCloudMushrooms();
+  const chosen = randomArrItem(allMushroomNames);
   const mushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
   );
+  const tailoredMushroomPool = tailoredNamePool(
+    chosen,
+    mushroomNamePool,
+    snapshot,
+    max
+  );
 
-  if (!mushroomNamePool.length) {
+  if (!tailoredMushroomPool.length) {
     return [];
   }
-  const unselectedMushrooms = await buildTestMushrooms(mushroomNamePool, max);
-  const chosen = randomArrItem(unselectedMushrooms).name;
+  const unselectedMushrooms = await buildTestMushrooms(
+    tailoredMushroomPool,
+    max
+  );
 
   const testMushrooms = unselectedMushrooms.map((mushroom) => {
     if (mushroom.name === chosen) {
