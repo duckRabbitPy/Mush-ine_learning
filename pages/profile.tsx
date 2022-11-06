@@ -49,16 +49,18 @@ const Profile = () => {
           <Spinner />
         ) : (
           <>
-            <Text mt={5} fontSize="2xl">
+            <Text mt={5} fontSize="2xl" fontWeight={"extrabold"}>
               Level {snapshot.data?.level}
             </Text>
-            <Text mt={5} fontSize="2xl">
+            <Text color="green.400" mt={5} fontSize="2xl">
               XP: {xpQuery.data ?? 0}
             </Text>
           </>
         )}
 
-        <Text>xp to next level: {xpToNextLevel}</Text>
+        <Text color="blue.600" fontWeight="semibold">
+          xp to next level: {xpToNextLevel}
+        </Text>
         <Progress
           m={3}
           hasStripe
@@ -67,6 +69,9 @@ const Profile = () => {
           width="80%"
         />
 
+        <Heading fontSize="large" mb={2} mt={5}>
+          Stats for level: {snapshot.data?.level}
+        </Heading>
         <SimpleGrid columns={3} m={5}>
           {Object.entries(metaArr ?? {}).map((kvp) => {
             const name = kvp[0];
@@ -79,7 +84,9 @@ const Profile = () => {
                 >
                   {name}
                 </Heading>
-                <Text>{data?.percentageCorrect?.toFixed(0)}% Correct</Text>
+                <Text color="blue.500">
+                  {data?.percentageCorrect?.toFixed(0) ?? 0}% Correct
+                </Text>
                 <Text>{data?.correct ?? 0} correct answers</Text>
                 <Text>{data?.incorrect ?? 0} incorrect answers</Text>
               </Container>
