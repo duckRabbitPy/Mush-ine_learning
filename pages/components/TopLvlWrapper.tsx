@@ -9,3 +9,5 @@ type Props = {
 export const TopLevelWrapper = ({ children, backgroundColor }: Props) => (
   <div style={{ backgroundColor, height: "100vh" }}>{children}</div>
 );
+
+export default TopLevelWrapper;
