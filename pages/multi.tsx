@@ -37,6 +37,8 @@ const Multi = () => {
   const getMushroomSet = trpc.mushroomSet.useQuery(
     {
       omitArr,
+      user_id: user?.sub ?? null,
+      numOptions: 3,
     },
     {
       enabled: round !== 0 && round !== 4,

@@ -1,5 +1,9 @@
 import { v2 as cloudinary } from "cloudinary";
-import { game_types, name_string } from "../server/database/model";
+import {
+  game_types,
+  name_string,
+  snapshotType,
+} from "../server/database/model";
 import { CloudImage, SubfolderResult } from "../types";
 
 export type TestMushroom = {
@@ -34,7 +38,7 @@ async function buildTestMushrooms(
 ): Promise<TestMushroom[]> {
   let testMushroomArr = [];
   let count = 0;
-  for (const mushroomName of mushroomNames) {
+  for (const mushroomName of mushroomNames.slice()) {
     if (count >= number) break;
 
     const images = (await cloudinary.api.resources({
@@ -83,18 +87,35 @@ async function getAllMushroomImgPaths(mushroomName: string): Promise<string[]> {
   return srcArr;
 }
 
-export async function getTestMushrooms(omitArr: string[], max: number) {
+export async function getTestMushrooms(
+  omitArr: string[],
+  max: number,
+  snapshot: Record<string, snapshotType> | null | undefined
+) {
   const allMushroomNames = await getCloudMushrooms();
+  const chosen = randomArrItem(allMushroomNames);
   const mushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
   );
+  const tailoredMushroomPool = tailoredNamePool(
+    chosen,
+    mushroomNamePool,
+    snapshot,
+    max
+  );
 
-  if (!mushroomNamePool.length) {
+  if (!tailoredMushroomPool.length) {
     return [];
   }
-  const unselectedMushrooms = await buildTestMushrooms(mushroomNamePool, max);
-  const chosen = randomArrItem(unselectedMushrooms).name;
-  const testMushrooms = unselectedMushrooms.map((mushroom) => {
+  const unselectedMushrooms = await buildTestMushrooms(
+    tailoredMushroomPool,
+    max
+  );
+
+  const selectedArr = await buildTestMushrooms([chosen], max);
+  const joinedMushrooms = [...selectedArr, ...unselectedMushrooms];
+
+  const testMushrooms = joinedMushrooms.map((mushroom) => {
     if (mushroom.name === chosen) {
       return { ...mushroom, correctMatch: true };
     }
@@ -104,7 +125,11 @@ export async function getTestMushrooms(omitArr: string[], max: number) {
   return shuffleArrayCopy(testMushrooms);
 }
 
-export async function getMushroomSet(omitArr: string[], numOptions: number) {
+export async function getMushroomSet(
+  omitArr: string[],
+  numOptions: number,
+  snapshot: Record<string, snapshotType> | null | undefined
+) {
   const allMushroomNames = await getCloudMushrooms();
   const mushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
@@ -122,17 +147,25 @@ export async function getMushroomSet(omitArr: string[], numOptions: number) {
   let optionsArr: string[] = [];
   let count = 0;
 
-  for (const _ of mushroomNamePool) {
-    if (count > numOptions - 1) {
+  const tailoredMushroomPool = tailoredNamePool(
+    correctMushroom,
+    mushroomNamePool,
+    snapshot,
+    numOptions
+  );
+
+  for (const _ of tailoredMushroomPool.slice()) {
+    if (count >= numOptions) {
       break;
     } else {
-      const item = randomArrItem(mushroomNamePool);
+      const item = randomArrItem(tailoredMushroomPool);
       optionsArr.push(item);
-      const index = mushroomNamePool.findIndex((x) => x === item);
-      mushroomNamePool.splice(index, 1);
+      const index = tailoredMushroomPool.findIndex((x) => x === item);
+      tailoredMushroomPool.splice(index, 1);
       count++;
     }
   }
+
   optionsArr.push(correctMushroom);
   const options = shuffleArrayCopy(optionsArr);
 
@@ -160,4 +193,26 @@ export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
   }
 
   return arr;
+}
+
+export function tailoredNamePool(
+  correctAnswer: string,
+  mushroomNamePool: string[],
+  snapshot: Record<string, snapshotType> | undefined | null,
+  returnLength: number
+) {
+  if (!snapshot) {
+    return mushroomNamePool;
+  }
+  const misidentified = snapshot[correctAnswer];
+  const ranked = Object.entries(misidentified)
+    .sort(([, weightA], [, weightB]) => Number(weightB) - Number(weightA))
+    .map((kvp) => kvp[0])
+    .slice(0, Math.round(returnLength / 2));
+
+  const highRankedRemoved = mushroomNamePool.filter(
+    (mushroom) => !ranked.includes(mushroom)
+  );
+  const tailoredArray = [...ranked, ...highRankedRemoved];
+  return tailoredArray.slice(0, returnLength + 1);
 }

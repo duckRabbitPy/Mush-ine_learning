@@ -53,13 +53,14 @@ const Forage = () => {
     {
       omitArr,
       max: 4,
+      user_id: user?.sub ?? null,
     },
     {
       enabled: round !== 0 && round !== 4,
       ...reactQueryConfig,
     }
   );
-  const testMushrooms = getTestMushrooms.data;
+  const testMushrooms = getTestMushrooms?.data;
   const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
     (testMushrooms && testMushrooms?.length < 1 && omitArr.length > 0) ||
