@@ -7,10 +7,10 @@ const AuthStatus = () => {
   const message = user
     ? `Signed in as ${user.name || "registered guest"}`
     : "Not signed in";
-  const textColor = user ? "green.400" : "red.400";
+  const textColor = user ? "green.500" : "red.500";
   return (
     <Flex align="center">
-      <Text color={textColor} backgroundColor="#F2ECE3" p={1} borderRadius={10}>
+      <Text color={textColor} p={1}>
         {message}
       </Text>
       <Link href={user ? "/api/auth/logout" : "/api/auth/login"}>
