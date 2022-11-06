@@ -40,9 +40,11 @@ const Profile = () => {
   );
 
   return (
-    <>
-      <Flex direction="column" alignItems={"center"} mt={10}>
-        <Heading mb={10}>Profile - {user?.name}</Heading>
+    <div style={{ backgroundColor: "#EDF2F7", overflow: "hidden" }}>
+      <Flex direction="column" alignItems={"center"}>
+        <Heading mb={10} mt={5}>
+          Profile - {user?.name}
+        </Heading>
         <HomeBtn />
 
         {xpQuery.isLoading || snapshot.isLoading ? (
@@ -94,7 +96,12 @@ const Profile = () => {
           })}
         </SimpleGrid>
 
-        <TableContainer maxWidth={"60%"} mt={5} whiteSpace="break-spaces">
+        <TableContainer
+          maxWidth={"60%"}
+          mt={5}
+          mb={5}
+          whiteSpace="break-spaces"
+        >
           <Table colorScheme="blue">
             <Thead>
               <Tr>
@@ -131,7 +138,7 @@ const Profile = () => {
           </Table>
         </TableContainer>
       </Flex>
-    </>
+    </div>
   );
 };
 
