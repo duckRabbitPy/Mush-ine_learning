@@ -48,7 +48,7 @@ const Profile = () => {
         <HomeBtn />
 
         {xpQuery.isLoading || snapshot.isLoading ? (
-          <Spinner />
+          <Spinner color="white" />
         ) : (
           <>
             <Text mt={5} fontSize="2xl" fontWeight={"extrabold"}>
