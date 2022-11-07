@@ -214,7 +214,9 @@ export function tailoredNamePool(
     (mushroom) => !ranked.includes(mushroom)
   );
 
-  const tailoredArray = [...ranked, ...highRankedRemoved];
+  const tailoredArray = [...ranked, ...highRankedRemoved].filter(
+    (mushroom) => mushroom !== correctAnswer
+  );
 
   return tailoredArray.slice(0, maxOptions - 1);
 }

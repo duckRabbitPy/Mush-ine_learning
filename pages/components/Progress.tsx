@@ -8,7 +8,7 @@ export type progressProps = {
 export function ProgressIndicator({ progress, score, round }: progressProps) {
   return (
     <>
-      <Flex gap={5}>
+      <Flex gap={5} justifyContent="center">
         <Text color="white">Score: {score}</Text>
         <Text color="white">Round: {round}</Text>
       </Flex>

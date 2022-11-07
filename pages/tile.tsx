@@ -138,7 +138,15 @@ const Tile = () => {
         <Flex gap={2} direction={"column"} alignItems="center">
           <ProgressIndicator round={round} score={score} progress={progress} />
           {round < 1 && (
-            <Button onClick={() => setRound(round + 1)}>Start</Button>
+            <Flex direction="column" gap="10">
+              <Image
+                src="/tile.png"
+                height={200}
+                width={200}
+                alt="tile game"
+              ></Image>
+              <Button onClick={() => setRound(round + 1)}>Start</Button>
+            </Flex>
           )}
           {roundOver && (
             <Button onClick={handleNextBtn} width="fit-content">

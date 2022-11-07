@@ -1,4 +1,4 @@
-import { Button, Flex, Text, SimpleGrid, Spinner } from "@chakra-ui/react";
+import { Button, Flex, SimpleGrid, Spinner, Heading } from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
@@ -112,15 +112,25 @@ const Multi = () => {
     <TopLevelWrapper backgroundColor="#091122">
       <Flex gap={5} direction="column" alignItems="center">
         <HomeBtn w="-moz-fit-content" mt={3} />
-        <Text color="white"> Multi Quiz</Text>
+        <Heading color="white" fontSize="3xl">
+          Multi Quiz
+        </Heading>
         <Flex gap={2} direction={"column"}>
           {round < 1 && (
-            <Button
-              onClick={() => setRound(round + 1)}
-              backgroundColor="#B8E6F3"
-            >
-              Start
-            </Button>
+            <Flex direction="column" gap="10">
+              <Image
+                src="/multi.png"
+                height={200}
+                width={200}
+                alt="multi game"
+              ></Image>
+              <Button
+                onClick={() => setRound(round + 1)}
+                backgroundColor="#B8E6F3"
+              >
+                Start
+              </Button>
+            </Flex>
           )}
           {round > 0 && !getMushroomSet.isRefetching && (
             <Flex gap={2}>

@@ -74,7 +74,7 @@ const Forage = () => {
       setProgress((prev) => {
         return prev.concat(true);
       });
-    } else if (!answerCorrect && round !== 0) {
+    } else if (!answerCorrect) {
       const trainingData = testMushrooms
         ? extractTrainingData(testMushrooms, trainingResult)
         : [];
@@ -145,14 +145,32 @@ const Forage = () => {
                 score={score}
                 progress={progress}
               />
-              <Button
-                onClick={handleNextBtn}
-                w="-moz-fit-content"
-                alignSelf="center"
-                visibility={round !== 0 && !inputAnswer ? "hidden" : "visible"}
-              >
-                {round === 0 ? "Start" : "Next"}
-              </Button>
+
+              {round === 0 && !correctMushroom ? (
+                <Flex direction="column" gap="10">
+                  <Image
+                    src="/forage.png"
+                    height={200}
+                    width={200}
+                    alt="forage game"
+                  ></Image>
+                  <Button
+                    onClick={() => setRound(round + 1)}
+                    w="-moz-fit-content"
+                    alignSelf="center"
+                  >
+                    Start
+                  </Button>
+                </Flex>
+              ) : (
+                <Button
+                  onClick={handleNextBtn}
+                  w="-moz-fit-content"
+                  alignSelf="center"
+                >
+                  Next
+                </Button>
+              )}
             </>
           )}
           {gameOver && <Text>Game over!</Text>}
@@ -169,14 +187,14 @@ const Forage = () => {
         </Flex>
         <Container>
           {round !== 0 && round !== 4 && getTestMushrooms.isLoading ? (
-            <Spinner />
+            <Spinner color="white" />
           ) : (
             <SimpleGrid columns={2} gap={2}>
               {!gameOver &&
-                getTestMushrooms.data?.map((testMushroom) => {
+                getTestMushrooms.data?.map((testMushroom, index) => {
                   return (
                     <Container
-                      key={testMushroom.name}
+                      key={`${testMushroom.name}${index}`}
                       p={0}
                       display="flex"
                       justifyContent="center"
@@ -201,7 +219,7 @@ const Forage = () => {
                               : 1,
                         }}
                       />
-                      <Text fontSize="small">
+                      <Text fontSize="small" color="white">
                         {inputAnswer ? testMushroom.name : ""}
                       </Text>
                     </Container>
