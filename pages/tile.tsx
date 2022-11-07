@@ -1,4 +1,4 @@
-import { Button, Flex, SimpleGrid, Spinner } from "@chakra-ui/react";
+import { Button, Flex, SimpleGrid, Spinner, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
@@ -9,6 +9,7 @@ import { returnLvl } from "../utils/client_safe";
 import { useGameState } from "../hooks/useGameState";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { useState } from "react";
+import { TopLevelWrapper } from "./components/TopLvlWrapper";
 
 const Tile = () => {
   const {
@@ -130,66 +131,68 @@ const Tile = () => {
   };
 
   return (
-    <Flex gap={5} direction="column" alignItems="center">
-      <HomeBtn w="-moz-fit-content" mt={3} />
-      Tile Game
-      <Flex gap={2} direction={"column"} alignItems="center">
-        <ProgressIndicator round={round} score={score} progress={progress} />
-        {round < 1 && (
-          <Button onClick={() => setRound(round + 1)}>Start</Button>
-        )}
-        {roundOver && (
-          <Button onClick={handleNextBtn} width="fit-content">
-            Next
-          </Button>
-        )}
-        {round > 0 && !getMushroomSet.isRefetching && (
-          <Flex gap={2} flexDirection="column" alignItems="center">
-            {getMushroomSet.isLoading && !gameOver && <Spinner />}
+    <TopLevelWrapper backgroundColor="#091122">
+      <Flex gap={5} direction="column" alignItems="center">
+        <HomeBtn w="-moz-fit-content" mt={3} />
+        <Text color="white"> Tile Game</Text>
+        <Flex gap={2} direction={"column"} alignItems="center">
+          <ProgressIndicator round={round} score={score} progress={progress} />
+          {round < 1 && (
+            <Button onClick={() => setRound(round + 1)}>Start</Button>
+          )}
+          {roundOver && (
+            <Button onClick={handleNextBtn} width="fit-content">
+              Next
+            </Button>
+          )}
+          {round > 0 && !getMushroomSet.isRefetching && (
+            <Flex gap={2} flexDirection="column" alignItems="center">
+              {getMushroomSet.isLoading && !gameOver && <Spinner />}
 
-            <SimpleGrid columns={1} gap={1} width="fit-content">
-              {getMushroomSet.data?.mushroomSet
-                .map((src) => {
-                  return (
-                    <Image
-                      key={src}
-                      src={src}
-                      alt="testMushroom"
-                      height={350}
-                      width={350}
-                    />
-                  );
-                })
-                .filter((_, index) => index === 0)}
-            </SimpleGrid>
-
-            <Flex direction={"column"} gap={1}>
-              {gameOver && !saveScore.isSuccess && (
-                <Button
-                  onClick={handleSaveBtn}
-                  w="-moz-fit-content"
-                  alignSelf="center"
-                >
-                  Save score
-                </Button>
-              )}
-              <SimpleGrid columns={3} gap={1} height="fit-content">
-                {round > 0 &&
-                  options?.map((name) => (
-                    <Button
-                      disabled={roundOver}
-                      key={name}
-                      onClick={() => handleSelection(name)}
-                    >
-                      {name}
-                    </Button>
-                  ))}
+              <SimpleGrid columns={1} gap={1} width="fit-content">
+                {getMushroomSet.data?.mushroomSet
+                  .map((src) => {
+                    return (
+                      <Image
+                        key={src}
+                        src={src}
+                        alt="testMushroom"
+                        height={350}
+                        width={350}
+                      />
+                    );
+                  })
+                  .filter((_, index) => index === 0)}
               </SimpleGrid>
+
+              <Flex direction={"column"} gap={1}>
+                {gameOver && !saveScore.isSuccess && (
+                  <Button
+                    onClick={handleSaveBtn}
+                    w="-moz-fit-content"
+                    alignSelf="center"
+                  >
+                    Save score
+                  </Button>
+                )}
+                <SimpleGrid columns={3} gap={1} height="fit-content">
+                  {round > 0 &&
+                    options?.map((name) => (
+                      <Button
+                        disabled={roundOver}
+                        key={name}
+                        onClick={() => handleSelection(name)}
+                      >
+                        {name}
+                      </Button>
+                    ))}
+                </SimpleGrid>
+              </Flex>
             </Flex>
-          </Flex>
-        )}
+          )}
+        </Flex>
       </Flex>
-    </Flex>
+    </TopLevelWrapper>
   );
 };
 

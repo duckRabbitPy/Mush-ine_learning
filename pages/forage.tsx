@@ -15,6 +15,7 @@ import { extractTrainingData, returnLvl } from "../utils/client_safe";
 import { ProgressIndicator } from "./components/Progress";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { useGameState } from "../hooks/useGameState";
+import { TopLevelWrapper } from "./components/TopLvlWrapper";
 
 export const reactQueryConfig = {
   refetchOnMount: false,
@@ -126,87 +127,91 @@ const Forage = () => {
   };
 
   return (
-    <Flex gap={2} direction="column" alignItems="center">
-      <HomeBtn w="-moz-fit-content" mt={3} />
-      <Flex direction="column" gap={2}>
-        {!gameOver && !getTestMushrooms.isRefetching && (
-          <>
-            <Heading size={"md"} mb={2} pl={2} pr={2}>
-              {correctMushroom?.name
-                ? `Find 🔎 the ${correctMushroom?.name} mushroom`
-                : "Forage Game🍄"}
-              {inputAnswer === correctMushroom?.name && " ✅"}
-              {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
-            </Heading>
-            <ProgressIndicator
-              round={round}
-              score={score}
-              progress={progress}
-            />
+    <TopLevelWrapper backgroundColor="#091122">
+      <Flex gap={2} direction="column" alignItems="center">
+        <HomeBtn w="-moz-fit-content" mt={3} />
+        <Flex direction="column" gap={2}>
+          {!gameOver && !getTestMushrooms.isRefetching && (
+            <>
+              <Heading size={"md"} mb={2} pl={2} pr={2} color="white">
+                {correctMushroom?.name
+                  ? `Find 🔎 the ${correctMushroom?.name} mushroom`
+                  : "Forage Game🍄"}
+                {inputAnswer === correctMushroom?.name && " ✅"}
+                {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
+              </Heading>
+              <ProgressIndicator
+                round={round}
+                score={score}
+                progress={progress}
+              />
+              <Button
+                onClick={handleNextBtn}
+                w="-moz-fit-content"
+                alignSelf="center"
+                visibility={round !== 0 && !inputAnswer ? "hidden" : "visible"}
+              >
+                {round === 0 ? "Start" : "Next"}
+              </Button>
+            </>
+          )}
+          {gameOver && <Text>Game over!</Text>}
+          {gameOver && !saveScore.isSuccess && (
             <Button
-              onClick={handleNextBtn}
+              onClick={handleSaveBtn}
               w="-moz-fit-content"
               alignSelf="center"
-              visibility={round !== 0 && !inputAnswer ? "hidden" : "visible"}
+              backgroundColor={saveScore?.isLoading ? "green.300" : ""}
             >
-              {round === 0 ? "Start" : "Next"}
+              Save score
             </Button>
-          </>
-        )}
-        {gameOver && <Text>Game over!</Text>}
-        {gameOver && !saveScore.isSuccess && (
-          <Button
-            onClick={handleSaveBtn}
-            w="-moz-fit-content"
-            alignSelf="center"
-            backgroundColor={saveScore?.isLoading ? "green.300" : ""}
-          >
-            Save score
-          </Button>
-        )}
+          )}
+        </Flex>
+        <Container>
+          {round !== 0 && round !== 4 && getTestMushrooms.isLoading ? (
+            <Spinner />
+          ) : (
+            <SimpleGrid columns={2} gap={2}>
+              {!gameOver &&
+                getTestMushrooms.data?.map((testMushroom) => {
+                  return (
+                    <Container
+                      key={testMushroom.name}
+                      p={0}
+                      display="flex"
+                      justifyContent="center"
+                      flexDirection="column"
+                    >
+                      <Image
+                        onClick={() => {
+                          if (!inputAnswer) {
+                            setInputAnswer(testMushroom.name);
+                          }
+                        }}
+                        src={testMushroom.src}
+                        alt="testMushroom"
+                        height={250}
+                        width={250}
+                        style={{
+                          cursor: "pointer",
+                          borderRadius: "5px",
+                          opacity:
+                            inputAnswer && !testMushroom.correctMatch
+                              ? "0.6"
+                              : 1,
+                        }}
+                      />
+                      <Text fontSize="small">
+                        {inputAnswer ? testMushroom.name : ""}
+                      </Text>
+                    </Container>
+                  );
+                })}
+            </SimpleGrid>
+          )}
+        </Container>
       </Flex>
-      <Container>
-        {round !== 0 && round !== 4 && getTestMushrooms.isLoading ? (
-          <Spinner />
-        ) : (
-          <SimpleGrid columns={2} gap={2}>
-            {!gameOver &&
-              getTestMushrooms.data?.map((testMushroom) => {
-                return (
-                  <Container
-                    key={testMushroom.name}
-                    p={0}
-                    display="flex"
-                    justifyContent="center"
-                    flexDirection="column"
-                  >
-                    <Image
-                      onClick={() => {
-                        if (!inputAnswer) {
-                          setInputAnswer(testMushroom.name);
-                        }
-                      }}
-                      src={testMushroom.src}
-                      alt="testMushroom"
-                      height={250}
-                      width={250}
-                      style={{
-                        cursor: "pointer",
-                        borderRadius: "5px",
-                        opacity:
-                          inputAnswer && !testMushroom.correctMatch ? "0.6" : 1,
-                      }}
-                    />
-                    <Text fontSize="small">
-                      {inputAnswer ? testMushroom.name : ""}
-                    </Text>
-                  </Container>
-                );
-              })}
-          </SimpleGrid>
-        )}
-      </Container>
-    </Flex>
+    </TopLevelWrapper>
   );
 };
 

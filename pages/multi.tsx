@@ -1,4 +1,4 @@
-import { Button, Flex, SimpleGrid, Spinner } from "@chakra-ui/react";
+import { Button, Flex, Text, SimpleGrid, Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
@@ -8,6 +8,7 @@ import { reactQueryConfig } from "./forage";
 import { returnLvl } from "../utils/client_safe";
 import { useGameState } from "../hooks/useGameState";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
+import { TopLevelWrapper } from "./components/TopLvlWrapper";
 
 const Multi = () => {
   const {
@@ -108,71 +109,70 @@ const Multi = () => {
   };
 
   return (
-    <Flex
-      gap={5}
-      direction="column"
-      alignItems="center"
-      height={"100vh"}
-      backgroundColor={"#091122"}
-    >
-      <HomeBtn w="-moz-fit-content" mt={3} />
-      Multi Quiz
-      <Flex gap={2} direction={"column"}>
-        {round < 1 && (
-          <Button onClick={() => setRound(round + 1)} backgroundColor="#B8E6F3">
-            Start
-          </Button>
-        )}
-        {round > 0 && !getMushroomSet.isRefetching && (
-          <Flex gap={2}>
-            {getMushroomSet.isLoading && !gameOver && <Spinner />}
+    <TopLevelWrapper backgroundColor="#091122">
+      <Flex gap={5} direction="column" alignItems="center">
+        <HomeBtn w="-moz-fit-content" mt={3} />
+        <Text color="white"> Multi Quiz</Text>
+        <Flex gap={2} direction={"column"}>
+          {round < 1 && (
+            <Button
+              onClick={() => setRound(round + 1)}
+              backgroundColor="#B8E6F3"
+            >
+              Start
+            </Button>
+          )}
+          {round > 0 && !getMushroomSet.isRefetching && (
+            <Flex gap={2}>
+              {getMushroomSet.isLoading && !gameOver && <Spinner />}
 
-            <SimpleGrid columns={3} gap={1}>
-              {getMushroomSet.data?.mushroomSet.map((src) => {
-                return (
-                  <Image
-                    key={src}
-                    src={src}
-                    alt="testMushroom"
-                    height={150}
-                    width={150}
-                  />
-                );
-              })}
-            </SimpleGrid>
+              <SimpleGrid columns={3} gap={1}>
+                {getMushroomSet.data?.mushroomSet.map((src) => {
+                  return (
+                    <Image
+                      key={src}
+                      src={src}
+                      alt="testMushroom"
+                      height={150}
+                      width={150}
+                    />
+                  );
+                })}
+              </SimpleGrid>
 
-            <Flex direction={"column"} gap={1}>
-              <ProgressIndicator
-                round={round}
-                score={score}
-                progress={progress}
-              />
+              <Flex direction={"column"} gap={1}>
+                <ProgressIndicator
+                  round={round}
+                  score={score}
+                  progress={progress}
+                />
 
-              {gameOver && !saveScore.isSuccess && (
-                <Button
-                  onClick={handleSaveBtn}
-                  w="-moz-fit-content"
-                  alignSelf="center"
-                  backgroundColor="#B8E6F3"
-                >
-                  Save score
-                </Button>
-              )}
-              {round > 0 &&
-                options?.map((name) => (
+                {gameOver && !saveScore.isSuccess && (
                   <Button
-                    key={name}
-                    onClick={() => handleSelection(name)}
+                    onClick={handleSaveBtn}
+                    w="-moz-fit-content"
+                    alignSelf="center"
                     backgroundColor="#B8E6F3"
                   >
-                    {name}
+                    Save score
                   </Button>
-                ))}
+                )}
+                {round > 0 &&
+                  options?.map((name) => (
+                    <Button
+                      key={name}
+                      onClick={() => handleSelection(name)}
+                      backgroundColor="#B8E6F3"
+                    >
+                      {name}
+                    </Button>
+                  ))}
+              </Flex>
             </Flex>
-          </Flex>
-        )}
+          )}
+        </Flex>
       </Flex>
-    </Flex>
+    </TopLevelWrapper>
   );
 };
 
