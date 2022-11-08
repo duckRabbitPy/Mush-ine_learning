@@ -143,6 +143,7 @@ const Tile = () => {
                 src="/tile.png"
                 height={200}
                 width={200}
+                blurDataURL={"/tile.png"}
                 alt="tile game"
               ></Image>
               <Button onClick={() => setRound(round + 1)}>Start</Button>
