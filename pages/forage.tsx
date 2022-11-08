@@ -153,6 +153,7 @@ const Forage = () => {
                     height={200}
                     width={200}
                     alt="forage game"
+                    blurDataURL={"/forage.png"}
                   ></Image>
                   <Button
                     onClick={() => setRound(round + 1)}
