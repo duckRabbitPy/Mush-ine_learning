@@ -21,6 +21,7 @@
     "@trpc/react-query": "^10.0.0-proxy-beta.21",
     "@trpc/server": "^10.0.0-proxy-beta.21",
     "@types/pg": "^8.6.5",
+    "@types/webpack-env": "^1.18.0",
     "cloudinary": "^1.32.0",
     "dotenv": "^16.0.3",
     "eslint-plugin-unused-imports": "^2.0.0",
