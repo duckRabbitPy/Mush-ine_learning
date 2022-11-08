@@ -96,9 +96,11 @@ export async function getTestMushrooms(
 
   console.log({ allMushroomNames });
   const chosen = randomArrItem(allMushroomNames);
-  const mushroomNamePool = allMushroomNames.filter(
-    (mushroomName) => !omitArr.includes(mushroomName)
-  );
+  const mushroomNamePool = allMushroomNames
+    .filter((mushroomName) => !omitArr.includes(mushroomName))
+    .filter((mushroom) => mushroom !== chosen);
+
+  console.log({ mushroomNamePool });
   const tailoredMushroomPool = tailoredNamePool(
     chosen,
     mushroomNamePool,
@@ -224,9 +226,7 @@ export function tailoredNamePool(
     (mushroom) => !ranked.includes(mushroom)
   );
 
-  const tailoredArray = [...ranked, ...highRankedRemoved].filter(
-    (mushroom) => mushroom !== correctAnswer
-  );
+  const tailoredArray = [...ranked, ...highRankedRemoved];
 
   return tailoredArray.slice(0, maxOptions - 1);
 }
