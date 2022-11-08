@@ -53,7 +53,7 @@ const Forage = () => {
   const getTestMushrooms = trpc.testMushrooms.useQuery(
     {
       omitArr,
-      max: 4,
+      maxIncorrect: 3,
       user_id: user?.sub ?? null,
     },
     {

@@ -133,7 +133,7 @@ export const appRouter = router({
     .input(
       z.object({
         omitArr: z.array(z.string()),
-        max: z.number(),
+        maxIncorrect: z.number(),
         user_id: z.string().nullable(),
       })
     )
@@ -146,7 +146,7 @@ export const appRouter = router({
       }
       const testMushrooms = await getTestMushrooms(
         input.omitArr,
-        input.max,
+        input.maxIncorrect,
         snapshot
       );
       return testMushrooms;
