@@ -93,6 +93,8 @@ export async function getTestMushrooms(
   snapshot: Record<string, snapshotType> | null | undefined
 ) {
   const allMushroomNames = await getCloudMushrooms();
+
+  console.log({ allMushroomNames });
   const chosen = randomArrItem(allMushroomNames);
   const mushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
@@ -104,6 +106,8 @@ export async function getTestMushrooms(
     max
   );
 
+  console.log({ tailoredMushroomPool });
+
   if (!tailoredMushroomPool.length) {
     return [];
   }
@@ -112,14 +116,12 @@ export async function getTestMushrooms(
     max
   );
 
-  const selectedArr = await buildTestMushrooms([chosen], max);
+  console.log({ unselectedMushrooms });
+
+  const selectedArr = await buildTestMushrooms([chosen], 1);
   const joinedMushrooms = [...selectedArr, ...unselectedMushrooms];
 
   console.log({ joinedMushrooms });
-
-  if (joinedMushrooms.length > 4) {
-    throw new Error("joined", joinedMushrooms);
-  }
 
   const testMushrooms = joinedMushrooms.map((mushroom) => {
     if (mushroom.name === chosen) {
@@ -127,6 +129,8 @@ export async function getTestMushrooms(
     }
     return mushroom;
   });
+
+  console.log({ testMushrooms });
 
   return shuffleArrayCopy(testMushrooms);
 }
