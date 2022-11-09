@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getCloudMushrooms, getTestMushrooms } from "../server_side";
+import {
+  getCloudMushrooms,
+  getTestMushrooms,
+  buildTestMushrooms,
+} from "../server_side";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -61,6 +65,50 @@ describe("getCloudImages returns an array of mushroom names", () => {
   });
   it("array contains medusa", async () => {
     getCloudMushrooms().then((res) => expect(res).includes("medusa"));
+  });
+});
+
+describe("test buildTestMushrooms", async () => {
+  it("built test mushroom returns an object with 3 values", () => {
+    buildTestMushrooms(
+      ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
+      3
+    ).then((res) => {
+      expect(
+        res.every((testMushroom) => Object.values(testMushroom).length === 3)
+      ).toBe(true);
+    });
+  });
+
+  it("test mushrooms contain expected keys", async () => {
+    const expectedKeys = ["name", "correctMatch", "src"];
+
+    const hasExpectedKeys = await buildTestMushrooms(
+      ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
+      3
+    ).then((res) =>
+      res.every((testMushroom) =>
+        expectedKeys.every((expectedKey) =>
+          Object.keys(testMushroom).includes(expectedKey)
+        )
+      )
+    );
+    expect(hasExpectedKeys).toBe(true);
+  });
+
+  it("test mushrooms contains 3 non null/undefined values", async () => {
+    const has3values = await buildTestMushrooms(
+      ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
+      3
+    ).then((res) =>
+      res.every(
+        (testMushroom) =>
+          Object.values(testMushroom).filter(
+            (value) => value !== undefined || null
+          ).length === 3
+      )
+    );
+    expect(has3values).toBe(true);
   });
 });
 
