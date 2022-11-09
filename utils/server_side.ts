@@ -32,7 +32,7 @@ export async function getCloudMushrooms() {
   return images ? images.folders.map((i) => i.name) : [];
 }
 
-async function buildTestMushrooms(
+export async function buildTestMushrooms(
   mushroomNames: string[],
   number: number
 ): Promise<TestMushroom[]> {
