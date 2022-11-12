@@ -184,10 +184,15 @@ const Tile = () => {
                     Save score
                   </Button>
                 )}
-                <SimpleGrid columns={3} gap={1} height="fit-content">
+                <SimpleGrid
+                  columns={{ base: 2, md: 3 }}
+                  gap={{ base: 0.5, md: 1 }}
+                  height="fit-content"
+                >
                   {round > 0 &&
                     options?.map((name) => (
                       <Button
+                        size={{ base: "xs", md: "sm", lg: "md" }}
                         disabled={roundOver}
                         key={name}
                         onClick={() => handleSelection(name)}

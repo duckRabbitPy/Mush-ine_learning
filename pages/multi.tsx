@@ -115,7 +115,7 @@ const Multi = () => {
         <Heading color="white" fontSize="3xl">
           Multi Quiz
         </Heading>
-        <Flex gap={2} direction={"column"}>
+        <Flex gap={2} direction={"column"} margin={5}>
           {round < 1 && (
             <Flex direction="column" gap="10">
               <Image
@@ -134,7 +134,7 @@ const Multi = () => {
             </Flex>
           )}
           {round > 0 && !getMushroomSet.isRefetching && (
-            <Flex gap={2}>
+            <Flex gap={2} direction={{ base: "column", md: "row" }}>
               {getMushroomSet.isLoading && !gameOver && <Spinner />}
 
               <SimpleGrid columns={3} gap={1}>

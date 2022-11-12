@@ -19,6 +19,7 @@ import Link from "next/link";
 import { currLevelInfo } from "../utils/client_safe";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
+import TopLevelWrapper from "./components/TopLvlWrapper";
 
 const Profile = () => {
   const { user } = useUser();
@@ -40,7 +41,7 @@ const Profile = () => {
   );
 
   return (
-    <div style={{ backgroundColor: "#EDF2F7", overflow: "hidden" }}>
+    <TopLevelWrapper backgroundColor={"#EDF2F7"}>
       <Flex direction="column" alignItems={"center"}>
         <Heading mb={10} mt={5}>
           Profile - {user?.name}
@@ -138,7 +139,7 @@ const Profile = () => {
           </Table>
         </TableContainer>
       </Flex>
-    </div>
+    </TopLevelWrapper>
   );
 };
 
