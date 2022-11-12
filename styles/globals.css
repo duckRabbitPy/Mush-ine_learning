@@ -6,6 +6,11 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+@font-face {
+  font-family: honeyMushroom;
+  src: url("/HoneyMushroom.otf") format("opentype");
+}
+
 a {
   color: inherit;
   text-decoration: none;
