@@ -96,7 +96,7 @@ describe("test buildTestMushrooms", async () => {
     expect(hasExpectedKeys).toBe(true);
   });
 
-  it("test mushrooms contains 3 non null/undefined values", async () => {
+  it("test mushrooms contain 3 non null/non-undefined values", async () => {
     const has3values = await buildTestMushrooms(
       ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
       3

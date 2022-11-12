@@ -65,7 +65,7 @@ const Home: NextPage = () => {
           <Heading size="md" pt={5}>
             Games
           </Heading>
-          <Flex>
+          <Flex direction={{ base: "column", md: "row" }}>
             <Link href="/forage">
               <Button
                 m={2}

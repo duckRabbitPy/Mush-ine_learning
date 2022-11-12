@@ -21,7 +21,7 @@ const BankMenu = ({ mushroomNames }: { mushroomNames: string[] }) => {
         <Heading mb={10} color="white">
           Mushroom Info Bank
         </Heading>
-        <Container width="30%">
+        <Container width={{ base: "70vw", md: "50vw", lg: "30vw" }}>
           {mushroomNames?.map((name) => (
             <Link key={name} href={`/bank/${name}`}>
               <Button mt={1} width="100%" backgroundColor={"#B8E6F3"}>

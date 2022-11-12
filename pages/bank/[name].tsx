@@ -88,7 +88,7 @@ const InfoBank = ({
       </Link>
 
       {expandIndex === null && (
-        <SimpleGrid columns={4} gap={1}>
+        <SimpleGrid columns={{ base: 3, lg: 4 }} gap={1}>
           {visibleMushrooms?.map((imgSrc, index) => (
             <Image
               key={imgSrc}
@@ -121,16 +121,18 @@ const InfoBank = ({
         </Container>
       )}
 
-      <Heading as={"h2"} fontSize={"large"} mt={5}>
-        Training data
-      </Heading>
-      <p>You most commonly confuse {mushroomName} with: </p>
+      <Container>
+        <Heading as={"h2"} fontSize={"large"} mt={5}>
+          Training data
+        </Heading>
+        <p>You most commonly confuse {mushroomName} with: </p>
 
-      <ol>
-        {lookalikes.data?.map((mushroom) => (
-          <li key={mushroom.misidentified_as}>{mushroom.misidentified_as}</li>
-        ))}
-      </ol>
+        <ol>
+          {lookalikes.data?.map((mushroom) => (
+            <li key={mushroom.misidentified_as}>{mushroom.misidentified_as}</li>
+          ))}
+        </ol>
+      </Container>
     </Container>
   );
 };
