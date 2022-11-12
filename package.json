@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "test": "vitest run",
+    "test": "vitest run --silent=false",
     "start": "next start",
     "lint": "next lint",
     "initDB": "npx ts-node --skip-project ./server/database/migrations/migration-1.ts"

@@ -71,7 +71,9 @@ export async function buildTestMushrooms(
   return testMushroomArr;
 }
 
-async function getAllMushroomImgPaths(mushroomName: string): Promise<string[]> {
+export async function getAllMushroomImgPaths(
+  mushroomName: string
+): Promise<string[]> {
   const images = (await cloudinary.api.resources({
     type: "upload",
     prefix: `mushroom_images/${mushroomName}`,
@@ -103,7 +105,8 @@ export async function getTestMushrooms(
     chosen,
     mushroomNamePool,
     snapshot,
-    maxIncorrect
+    maxIncorrect,
+    omitArr
   );
 
   if (!tailoredMushroomPool.length) {
@@ -153,7 +156,8 @@ export async function getMushroomSet(
     correctMushroom,
     mushroomNamePool,
     snapshot,
-    numOptions
+    numOptions,
+    omitArr
   );
 
   for (const _ of tailoredMushroomPool.slice()) {
@@ -201,7 +205,8 @@ export function tailoredNamePool(
   correctAnswer: string,
   mushroomNamePool: string[],
   snapshot: Record<string, snapshotType> | undefined | null,
-  maxOptions: number
+  maxOptions: number,
+  omitArr: string[]
 ) {
   if (!snapshot) {
     return mushroomNamePool;
@@ -216,7 +221,9 @@ export function tailoredNamePool(
     (mushroom) => !ranked.includes(mushroom)
   );
 
-  const tailoredArray = [...ranked, ...highRankedRemoved];
+  const tailoredArray = [...ranked, ...highRankedRemoved].filter(
+    (mushroomName) => !omitArr.includes(mushroomName)
+  );
 
   return tailoredArray.slice(0, maxOptions);
 }

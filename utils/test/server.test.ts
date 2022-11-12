@@ -3,6 +3,8 @@ import {
   getCloudMushrooms,
   getTestMushrooms,
   buildTestMushrooms,
+  getAllMushroomImgPaths,
+  tailoredNamePool,
 } from "../server_side";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -53,23 +55,14 @@ const SNAPSHOT = {
   "the-great-wood-mushroom": {},
 };
 
-describe("getCloudImages returns an array of mushroom names", () => {
-  it("return array is array", async () => {
-    getCloudMushrooms().then((res) => expect(Array.isArray(res)).toBe(true));
-  });
-  it("array has length", async () => {
-    getCloudMushrooms().then((res) => expect(res.length).greaterThan(0));
-  });
-  it("array contains strings", async () => {
-    getCloudMushrooms().then((res) => expect(res[0]).toBeTypeOf("string"));
-  });
+describe("getCloudMushrooms returns an array of mushroom names", () => {
   it("array contains medusa", async () => {
     getCloudMushrooms().then((res) => expect(res).includes("medusa"));
   });
 });
 
 describe("test buildTestMushrooms", async () => {
-  it("built test mushroom returns an object with 3 values", () => {
+  it("built test mushroom passed number 3 returns an object with 3 values", () => {
     buildTestMushrooms(
       ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
       3
@@ -80,7 +73,7 @@ describe("test buildTestMushrooms", async () => {
     });
   });
 
-  it("test mushrooms contain expected keys", async () => {
+  it("test mushrooms returned contain expected keys", async () => {
     const expectedKeys = ["name", "correctMatch", "src"];
 
     const hasExpectedKeys = await buildTestMushrooms(
@@ -112,10 +105,35 @@ describe("test buildTestMushrooms", async () => {
   });
 });
 
-describe("if maxIncorrect is set to 3, 4 mushrooms returned in total", async () => {
-  it("maxIncorrect 3, returns array of 4", async () => {
+describe("test getTestMushrooms", async () => {
+  it("if maxIncorrect is set to 3, 4 mushrooms returned in total", async () => {
     await expect(
       getTestMushrooms([], 3, SNAPSHOT as any)
     ).resolves.toHaveLength(4);
+  });
+});
+
+describe("test getAllMushroomImgPaths", async () => {
+  it("get all image paths returns strings containing cloudinary domain", async () =>
+    getAllMushroomImgPaths("medusa").then((res) =>
+      expect(res.every((i) => i.match(/cloudinary/))).toBe(true)
+    ));
+});
+
+describe("test getMushroomSet", async () => {
+  it("tailoredNamePool does not contain omitted mushroom name", async () => {
+    const mushroomNamePool = Object.keys(SNAPSHOT);
+    const omission = mushroomNamePool[0];
+    const correctAnswer = mushroomNamePool[1];
+
+    expect(
+      tailoredNamePool(
+        correctAnswer,
+        mushroomNamePool,
+        SNAPSHOT as any,
+        mushroomNamePool.length,
+        [omission]
+      ).includes(omission)
+    ).toBe(false);
   });
 });
