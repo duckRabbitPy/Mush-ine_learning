@@ -18,8 +18,16 @@ const Home: NextPage = () => {
       </Head>
 
       <Flex direction={"column"} justifyContent="center" align="center">
-        <Heading as={"h1"} p={5} textAlign="center">
-          Welcome to Mush-ine learning! 🍄
+        <Heading
+          as={"h1"}
+          p={5}
+          textAlign="center"
+          size="4xl"
+          fontFamily="honeyMushroom"
+          letterSpacing="wide"
+          color="#172b56"
+        >
+          Mush-ine learning! 🍄
         </Heading>
 
         <AuthStatus />
