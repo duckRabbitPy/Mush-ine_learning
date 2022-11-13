@@ -8,6 +8,7 @@ import AuthStatus from "./components/AuthStatus";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import localFont from "@next/font/local";
 import CustomBtn from "./components/CustomBtn";
+import { brandColors } from "./_app";
 
 const myFont = localFont({ src: "../public/HoneyMushroom.otf" });
 
@@ -32,7 +33,7 @@ const Home: NextPage = () => {
           className={myFont.className}
           fontFamily="honeyMushroom, mono"
           letterSpacing="wide"
-          color="#172b56"
+          color={brandColors[900]}
         >
           Mush-ine learning! 🍄
         </Heading>
@@ -55,7 +56,7 @@ const Home: NextPage = () => {
           mt={5}
         >
           <CustomBtn
-            color="#543034"
+            brandColor={200}
             href="/profile"
             sound="click"
             icon={BiUser}
@@ -63,7 +64,7 @@ const Home: NextPage = () => {
             Profile
           </CustomBtn>
 
-          <CustomBtn color="#543034" href="/bank" sound="click" icon={CiVault}>
+          <CustomBtn brandColor={200} href="/bank" sound="click" icon={CiVault}>
             Mushroom bank
           </CustomBtn>
 
@@ -71,15 +72,15 @@ const Home: NextPage = () => {
             Games
           </Heading>
           <Flex direction={{ base: "column", md: "row" }}>
-            <CustomBtn color="#0C6279" href="forage" sound="click">
+            <CustomBtn brandColor={300} href="forage" sound="click">
               Forage Game
             </CustomBtn>
 
-            <CustomBtn color="#0C6279" href="multi" sound="click">
+            <CustomBtn brandColor={300} href="multi" sound="click">
               MultiChoice Game
             </CustomBtn>
 
-            <CustomBtn color="#0C6279" href="tile" sound="click">
+            <CustomBtn brandColor={300} href="tile" sound="click">
               Tile Game
             </CustomBtn>
           </Flex>

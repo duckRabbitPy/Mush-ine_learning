@@ -2,10 +2,11 @@ import { Button, ButtonProps, Icon } from "@chakra-ui/react";
 import Link from "next/link";
 import React from "react";
 import { IconType } from "react-icons";
+import { brandColors } from "../_app";
 
 type CustomBtnProps = {
   children: React.ReactNode;
-  color: `#${string}`;
+  brandColor: brandColors;
   href?: string;
   sound?: "click";
   icon?: IconType;
@@ -14,7 +15,7 @@ type CustomBtnProps = {
 
 export const CustomBtn = ({
   children,
-  color,
+  brandColor,
   sound,
   href,
   icon,
@@ -24,16 +25,16 @@ export const CustomBtn = ({
     click: "/clickSound.mp3",
   };
   const clickSound =
-    sound && new Audio(soundLookup[sound as keyof typeof soundLookup]);
-
-  const wrapper = () => <Link href={"dd"}>{children}</Link>;
+    sound && typeof Audio !== "undefined"
+      ? new Audio(soundLookup[sound as keyof typeof soundLookup])
+      : undefined;
 
   return href ? (
     <Link href={href}>
       <Button
         m={2}
         color={"white"}
-        backgroundColor={color}
+        backgroundColor={`brand.${brandColor}`}
         onClick={() => clickSound?.play()}
         _hover={{ color: "black", backgroundColor: "gray.100" }}
         {...styles}
@@ -46,7 +47,7 @@ export const CustomBtn = ({
     <Button
       m={2}
       color={"white"}
-      backgroundColor={color}
+      backgroundColor={`brand.${brandColor}`}
       onClick={() => clickSound?.play()}
       _hover={{ color: "black", backgroundColor: "gray.100" }}
       {...styles}
