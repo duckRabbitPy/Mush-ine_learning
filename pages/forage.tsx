@@ -50,7 +50,7 @@ const Forage = () => {
     user,
   } = useGameState();
 
-  const getTestMushrooms = trpc.testMushrooms.useQuery(
+  const getForageMushrooms = trpc.forageMushrooms.useQuery(
     {
       omitArr,
       maxIncorrect: 3,
@@ -61,10 +61,10 @@ const Forage = () => {
       ...reactQueryConfig,
     }
   );
-  const testMushrooms = getTestMushrooms?.data;
-  const correctMushroom = testMushrooms?.filter((t) => t.correctMatch)[0];
+  const forageMushrooms = getForageMushrooms?.data;
+  const correctMushroom = forageMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
-    (testMushrooms && testMushrooms?.length < 1 && omitArr.length > 0) ||
+    (forageMushrooms && forageMushrooms?.length < 1 && omitArr.length > 0) ||
     round > 3;
   const answerCorrect = inputAnswer === correctMushroom?.name;
 
@@ -75,8 +75,8 @@ const Forage = () => {
         return prev.concat(true);
       });
     } else if (!answerCorrect) {
-      const trainingData = testMushrooms
-        ? extractTrainingData(testMushrooms, trainingResult)
+      const trainingData = forageMushrooms
+        ? extractTrainingData(forageMushrooms, trainingResult)
         : [];
 
       setTrainingResult(trainingData);
@@ -131,7 +131,7 @@ const Forage = () => {
       <Flex gap={2} direction="column" alignItems="center">
         <HomeBtn w="-moz-fit-content" mt={3} />
         <Flex direction="column" gap={2}>
-          {!gameOver && !getTestMushrooms.isRefetching && (
+          {!gameOver && !getForageMushrooms.isRefetching && (
             <>
               <Heading size={"md"} mb={2} pl={2} pr={2} color="white">
                 {correctMushroom?.name
@@ -187,12 +187,12 @@ const Forage = () => {
           )}
         </Flex>
         <Container>
-          {round !== 0 && round !== 4 && getTestMushrooms.isLoading ? (
+          {round !== 0 && round !== 4 && getForageMushrooms.isLoading ? (
             <Spinner color="white" />
           ) : (
             <SimpleGrid columns={2} gap={2}>
               {!gameOver &&
-                getTestMushrooms.data?.map((testMushroom, index) => {
+                getForageMushrooms.data?.map((testMushroom, index) => {
                   return (
                     <Container
                       key={`${testMushroom.name}${index}`}
@@ -220,7 +220,12 @@ const Forage = () => {
                               : 1,
                         }}
                       />
-                      <Text fontSize="small" color="white">
+                      <Text
+                        fontSize="medium"
+                        color={
+                          testMushroom.correctMatch ? "green.300" : "white"
+                        }
+                      >
                         {inputAnswer ? testMushroom.name : ""}
                       </Text>
                     </Container>

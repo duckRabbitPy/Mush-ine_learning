@@ -1,8 +1,8 @@
 import { mushine_round_metadata } from "../server/database/model";
-import { TestMushroom, TrainingData } from "./server_side";
+import { ForageMushroom, TrainingData } from "./server_side";
 
 export function extractTrainingData(
-  testMushrooms: TestMushroom[],
+  testMushrooms: ForageMushroom[],
   trainingData: TrainingData[] | undefined
 ) {
   const trainingDataCopy = trainingData?.slice() ?? [];
@@ -83,8 +83,10 @@ export function currLevelInfo(
 ) {
   const levelBoundaries = generateLvlBoundaries();
   const boundaryAhead = levelBoundaries[currLevel ? currLevel + 1 : 0];
+  const boundaryBehind =
+    currLevel && currLevel > 0 ? levelBoundaries[currLevel] : 0;
   const xpToNextLevel = boundaryAhead - (currXp ?? 0);
-  return { xpToNextLevel, boundaryAhead };
+  return { xpToNextLevel, boundaryAhead, boundaryBehind };
 }
 
 export function returnLvl(xp: number | undefined | null | void) {

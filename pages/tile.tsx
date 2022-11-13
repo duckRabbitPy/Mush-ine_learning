@@ -159,7 +159,7 @@ const Tile = () => {
               {getMushroomSet.isLoading && !gameOver && <Spinner />}
 
               <SimpleGrid columns={1} gap={1} width="fit-content">
-                {getMushroomSet.data?.mushroomSet
+                {getMushroomSet.data?.mushroomImgSrcs
                   .map((src) => {
                     return (
                       <Image
