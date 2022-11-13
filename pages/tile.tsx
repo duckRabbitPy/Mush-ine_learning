@@ -41,7 +41,7 @@ const Tile = () => {
   const getMushroomSet = trpc.mushroomSet.useQuery(
     {
       omitArr,
-      numOptions: 9,
+      numOptions: 8,
       user_id: user?.sub ?? null,
     },
     {
