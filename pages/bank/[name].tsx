@@ -14,7 +14,7 @@ export async function getStaticPaths() {
   const paths = mushroomNames.map((mushroomName) => {
     return {
       params: {
-        name: mushroomName,
+        name: mushroomName.trim(),
       },
     };
   });

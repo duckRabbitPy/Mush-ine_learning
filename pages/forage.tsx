@@ -16,6 +16,7 @@ import { ProgressIndicator } from "./components/Progress";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { useGameState } from "../hooks/useGameState";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
+import { useSound } from "../hooks/useSound";
 
 export const reactQueryConfig = {
   refetchOnMount: false,
@@ -67,6 +68,8 @@ const Forage = () => {
     (forageMushrooms && forageMushrooms?.length < 1 && omitArr.length > 0) ||
     round > 3;
   const answerCorrect = inputAnswer === correctMushroom?.name;
+  const correctSound = useSound("correct");
+  const incorrectSound = useSound("incorrect");
 
   const handleNextBtn = async () => {
     if (answerCorrect) {
@@ -136,7 +139,7 @@ const Forage = () => {
               <Heading size={"md"} mb={2} pl={2} pr={2} color="white">
                 {correctMushroom?.name
                   ? `Find 🔎 the ${correctMushroom?.name} mushroom`
-                  : "Forage Game🍄"}
+                  : "Forage Game 🍄"}
                 {inputAnswer === correctMushroom?.name && " ✅"}
                 {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
               </Heading>
@@ -206,6 +209,9 @@ const Forage = () => {
                           if (!inputAnswer) {
                             setInputAnswer(testMushroom.name);
                           }
+                          testMushroom.correctMatch
+                            ? correctSound?.play()
+                            : incorrectSound?.play();
                         }}
                         src={testMushroom.src}
                         alt="testMushroom"

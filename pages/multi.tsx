@@ -9,6 +9,7 @@ import { returnLvl } from "../utils/client_safe";
 import { useGameState } from "../hooks/useGameState";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
+import { useSound } from "../hooks/useSound";
 
 const Multi = () => {
   const {
@@ -49,15 +50,18 @@ const Multi = () => {
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
   const gameOver = round > 3;
+  const correctSound = useSound("correct");
+  const incorrectSound = useSound("incorrect");
 
   const handleSelection = async (name: string) => {
     if (name === correctMushroom) {
+      correctSound?.play();
       setScore(score + 10);
-
       setProgress((prev) => {
         return prev.concat(true);
       });
     } else if (name !== correctMushroom) {
+      incorrectSound?.play();
       const trainingDataCopy = trainingResult?.slice() ?? [];
       const newResult: TrainingData = {
         misidentifiedMushroom: correctMushroom ?? null,
@@ -135,7 +139,9 @@ const Multi = () => {
           )}
           {round > 0 && !getMushroomSet.isRefetching && (
             <Flex gap={2} direction={{ base: "column", md: "row" }}>
-              {getMushroomSet.isLoading && !gameOver && <Spinner />}
+              {getMushroomSet.isLoading && !gameOver && (
+                <Spinner color="white" />
+              )}
 
               <SimpleGrid columns={3} gap={1}>
                 {getMushroomSet.data?.mushroomImgSrcs.map((src) => {

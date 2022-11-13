@@ -143,7 +143,6 @@ export const appRouter = router({
       if (input.user_id) {
         const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
         const snapshotData = await getLevelSnapshot(currLevel, input.user_id);
-        console.log(snapshotData?.snapshot);
         snapshot = snapshotData?.snapshot;
       }
       const forageMushrooms = await getForageMushrooms(

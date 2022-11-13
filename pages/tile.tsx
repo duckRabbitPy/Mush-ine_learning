@@ -10,6 +10,7 @@ import { useGameState } from "../hooks/useGameState";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { useState } from "react";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
+import { useSound } from "../hooks/useSound";
 
 const Tile = () => {
   const {
@@ -40,7 +41,7 @@ const Tile = () => {
   const getMushroomSet = trpc.mushroomSet.useQuery(
     {
       omitArr,
-      numOptions: 9,
+      numOptions: 8,
       user_id: user?.sub ?? null,
     },
     {
@@ -52,9 +53,12 @@ const Tile = () => {
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
   const gameOver = round > 3;
+  const correctSound = useSound("correct");
+  const incorrectSound = useSound("incorrect");
 
   const handleSelection = async (name: string) => {
     if (name !== correctMushroom) {
+      incorrectSound?.play();
       const trainingDataCopy = trainingResult?.slice() ?? [];
       const newResult: TrainingData = {
         misidentifiedMushroom: correctMushroom ?? null,
@@ -76,6 +80,7 @@ const Tile = () => {
         return prev.concat(false);
       });
     } else {
+      correctSound?.play();
       setRoundOver(true);
 
       correctMushroom &&
@@ -156,7 +161,9 @@ const Tile = () => {
           )}
           {round > 0 && !getMushroomSet.isRefetching && (
             <Flex gap={2} flexDirection="column" alignItems="center">
-              {getMushroomSet.isLoading && !gameOver && <Spinner />}
+              {getMushroomSet.isLoading && !gameOver && (
+                <Spinner color="white" />
+              )}
 
               <SimpleGrid columns={1} gap={1} width="fit-content">
                 {getMushroomSet.data?.mushroomImgSrcs
