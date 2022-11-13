@@ -6,11 +6,8 @@ import Head from "next/head";
 import Image from "next/image";
 import AuthStatus from "./components/AuthStatus";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
-import localFont from "@next/font/local";
 import CustomBtn from "./components/CustomBtn";
 import { brandColors } from "./_app";
-
-const myFont = localFont({ src: "../public/HoneyMushroom.otf" });
 
 const Home: NextPage = () => {
   return (
@@ -30,7 +27,6 @@ const Home: NextPage = () => {
           p={5}
           textAlign="center"
           size="4xl"
-          className={myFont.className}
           fontFamily="honeyMushroom, mono"
           letterSpacing="wide"
           color={brandColors[900]}
