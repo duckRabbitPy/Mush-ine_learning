@@ -1,8 +1,8 @@
 import { mushine_round_metadata } from "../server/database/model";
-import { TestMushroom, TrainingData } from "./server_side";
+import { ForageMushroom, TrainingData } from "./server_side";
 
 export function extractTrainingData(
-  testMushrooms: TestMushroom[],
+  testMushrooms: ForageMushroom[],
   trainingData: TrainingData[] | undefined
 ) {
   const trainingDataCopy = trainingData?.slice() ?? [];

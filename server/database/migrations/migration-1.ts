@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 import { randomUUID } from "crypto";
-import { getCloudMushrooms } from "../../../utils/server_side";
+import { getMushroomNames } from "../../../utils/server_side";
 import db from "../connection";
 
 // ts-node migration-1.ts
@@ -25,7 +25,7 @@ export async function initTables() {
 }
 
 export async function initTrainingMushroomSet() {
-  const trainingMushrooms = await getCloudMushrooms();
+  const trainingMushrooms = await getMushroomNames();
   for (const mushroomName of trainingMushrooms) {
     const uuid = randomUUID();
     await db

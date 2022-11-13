@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-  getCloudMushrooms,
-  getTestMushrooms,
-  buildTestMushrooms,
+  getMushroomNames,
+  getForageMushrooms,
+  buildForageMushrooms,
   getAllMushroomImgPaths,
   tailoredNamePool,
 } from "../server_side";
@@ -55,15 +55,15 @@ const SNAPSHOT = {
   "the-great-wood-mushroom": {},
 };
 
-describe("getCloudMushrooms returns an array of mushroom names", () => {
+describe("getMushroomNames returns an array of mushroom names", () => {
   it("array contains medusa", async () => {
-    getCloudMushrooms().then((res) => expect(res).includes("medusa"));
+    getMushroomNames().then((res) => expect(res).includes("medusa"));
   });
 });
 
-describe("test buildTestMushrooms", async () => {
+describe("testbuildForageMushrooms", async () => {
   it("built test mushroom passed number 3 returns an object with 3 values", () => {
-    buildTestMushrooms(
+    buildForageMushrooms(
       ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
       3
     ).then((res) => {
@@ -76,7 +76,7 @@ describe("test buildTestMushrooms", async () => {
   it("test mushrooms returned contain expected keys", async () => {
     const expectedKeys = ["name", "correctMatch", "src"];
 
-    const hasExpectedKeys = await buildTestMushrooms(
+    const hasExpectedKeys = await buildForageMushrooms(
       ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
       3
     ).then((res) =>
@@ -90,7 +90,7 @@ describe("test buildTestMushrooms", async () => {
   });
 
   it("test mushrooms contain 3 non null/non-undefined values", async () => {
-    const has3values = await buildTestMushrooms(
+    const has3values = await buildForageMushrooms(
       ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
       3
     ).then((res) =>
@@ -105,9 +105,9 @@ describe("test buildTestMushrooms", async () => {
   });
 });
 
-describe("test getTestMushrooms", async () => {
+describe("test getForageMushrooms", async () => {
   it("if maxIncorrect is set to 3, 4 mushrooms returned in total", async () => {
-    await expect(getTestMushrooms([], 3, SNAPSHOT)).resolves.toHaveLength(4);
+    await expect(getForageMushrooms([], 3, SNAPSHOT)).resolves.toHaveLength(4);
   });
 });
 

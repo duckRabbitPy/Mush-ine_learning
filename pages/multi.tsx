@@ -138,7 +138,7 @@ const Multi = () => {
               {getMushroomSet.isLoading && !gameOver && <Spinner />}
 
               <SimpleGrid columns={3} gap={1}>
-                {getMushroomSet.data?.mushroomSet.map((src) => {
+                {getMushroomSet.data?.mushroomImgSrcs.map((src) => {
                   return (
                     <Image
                       key={src}

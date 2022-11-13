@@ -1,8 +1,8 @@
 import { number, string, z } from "zod";
 import { reduceAnswerCount } from "../../utils/client_safe";
 import {
-  getTestMushrooms,
-  getCloudMushrooms,
+  getForageMushrooms,
+  getMushroomNames,
   getMushroomSet,
 } from "../../utils/server_side";
 import {
@@ -130,7 +130,7 @@ export const appRouter = router({
       const confusions = await getCommonConfusions(input.name, input.user_id);
       return confusions;
     }),
-  testMushrooms: publicProcedure
+  forageMushrooms: publicProcedure
     .input(
       z.object({
         omitArr: z.array(z.string()),
@@ -146,12 +146,12 @@ export const appRouter = router({
         console.log(snapshotData?.snapshot);
         snapshot = snapshotData?.snapshot;
       }
-      const testMushrooms = await getTestMushrooms(
+      const forageMushrooms = await getForageMushrooms(
         input.omitArr,
         input.maxIncorrect,
         snapshot
       );
-      return testMushrooms;
+      return forageMushrooms;
     }),
   mushroomSet: publicProcedure
     .input(
@@ -188,7 +188,7 @@ export const appRouter = router({
       if (!input.user_id) {
         return null;
       }
-      const mushrooms = await getCloudMushrooms();
+      const mushrooms = await getMushroomNames();
       const snapshot = await saveLevelSnapshot(mushrooms, input.user_id);
       return snapshot;
     }),

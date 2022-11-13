@@ -6,7 +6,7 @@ import {
 } from "../server/database/model";
 import { CloudImage, SubfolderResult } from "../types";
 
-export type TestMushroom = {
+export type ForageMushroom = {
   name: string;
   src: string;
   correctMatch: boolean;
@@ -23,7 +23,7 @@ export type RoundMetadata = {
   correct_mushroom: mushroomName;
 };
 
-export async function getCloudMushrooms() {
+export async function getMushroomNames() {
   const images = (await cloudinary.api.sub_folders("mushroom_images")) as
     | {
         folders: SubfolderResult[];
@@ -32,10 +32,10 @@ export async function getCloudMushrooms() {
   return images ? images.folders.map((i) => i.name) : [];
 }
 
-export async function buildTestMushrooms(
+export async function buildForageMushrooms(
   mushroomNames: string[],
   number: number
-): Promise<TestMushroom[]> {
+): Promise<ForageMushroom[]> {
   let testMushroomArr = [];
   let count = 0;
   for (const mushroomName of mushroomNames.slice()) {
@@ -89,12 +89,12 @@ export async function getAllMushroomImgPaths(
   return srcArr;
 }
 
-export async function getTestMushrooms(
+export async function getForageMushrooms(
   omitArr: string[],
   maxIncorrect: number,
   snapshot: Record<mushroomName, summedWeights> | null | undefined
 ) {
-  const allMushroomNames = await getCloudMushrooms();
+  const allMushroomNames = await getMushroomNames();
 
   const chosen = randomArrItem(allMushroomNames);
   const mushroomNamePool = allMushroomNames
@@ -112,12 +112,12 @@ export async function getTestMushrooms(
   if (!tailoredMushroomPool.length) {
     return [];
   }
-  const unselectedMushrooms = await buildTestMushrooms(
+  const unselectedMushrooms = await buildForageMushrooms(
     tailoredMushroomPool,
     maxIncorrect
   );
 
-  const selectedArr = await buildTestMushrooms([chosen], 1);
+  const selectedArr = await buildForageMushrooms([chosen], 1);
   const joinedMushrooms = [...selectedArr, ...unselectedMushrooms];
 
   const testMushrooms = joinedMushrooms.map((mushroom) => {
@@ -135,7 +135,7 @@ export async function getMushroomSet(
   numOptions: number,
   snapshot: Record<mushroomName, summedWeights> | null | undefined
 ) {
-  const allMushroomNames = await getCloudMushrooms();
+  const allMushroomNames = await getMushroomNames();
   const mushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
   );
@@ -144,7 +144,7 @@ export async function getMushroomSet(
     return null;
   }
   const correctMushroom = randomArrItem(mushroomNamePool);
-  const mushroomSet = await getAllMushroomImgPaths(correctMushroom);
+  const mushroomImgSrcs = await getAllMushroomImgPaths(correctMushroom);
 
   const correctIndex = mushroomNamePool.findIndex((x) => x === correctMushroom);
   mushroomNamePool.splice(correctIndex, 1);
@@ -177,7 +177,7 @@ export async function getMushroomSet(
 
   return {
     correctMushroom,
-    mushroomSet: shuffleArrayCopy(mushroomSet),
+    mushroomImgSrcs: shuffleArrayCopy(mushroomImgSrcs),
     options,
   };
 }
