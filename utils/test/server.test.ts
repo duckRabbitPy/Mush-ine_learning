@@ -107,9 +107,7 @@ describe("test buildTestMushrooms", async () => {
 
 describe("test getTestMushrooms", async () => {
   it("if maxIncorrect is set to 3, 4 mushrooms returned in total", async () => {
-    await expect(
-      getTestMushrooms([], 3, SNAPSHOT as any)
-    ).resolves.toHaveLength(4);
+    await expect(getTestMushrooms([], 3, SNAPSHOT)).resolves.toHaveLength(4);
   });
 });
 
@@ -130,7 +128,7 @@ describe("test getMushroomSet", async () => {
       tailoredNamePool(
         correctAnswer,
         mushroomNamePool,
-        SNAPSHOT as any,
+        SNAPSHOT,
         mushroomNamePool.length,
         [omission]
       ).includes(omission)

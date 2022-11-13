@@ -1,8 +1,8 @@
 import { v2 as cloudinary } from "cloudinary";
 import {
   game_types,
-  name_string,
-  snapshotType,
+  mushroomName as mushroomName,
+  summedWeights,
 } from "../server/database/model";
 import { CloudImage, SubfolderResult } from "../types";
 
@@ -20,7 +20,7 @@ export type TrainingData = {
 export type RoundMetadata = {
   game_type: game_types;
   correct_answer: boolean;
-  correct_mushroom: name_string;
+  correct_mushroom: mushroomName;
 };
 
 export async function getCloudMushrooms() {
@@ -92,7 +92,7 @@ export async function getAllMushroomImgPaths(
 export async function getTestMushrooms(
   omitArr: string[],
   maxIncorrect: number,
-  snapshot: Record<string, snapshotType> | null | undefined
+  snapshot: Record<mushroomName, summedWeights> | null | undefined
 ) {
   const allMushroomNames = await getCloudMushrooms();
 
@@ -133,7 +133,7 @@ export async function getTestMushrooms(
 export async function getMushroomSet(
   omitArr: string[],
   numOptions: number,
-  snapshot: Record<string, snapshotType> | null | undefined
+  snapshot: Record<mushroomName, summedWeights> | null | undefined
 ) {
   const allMushroomNames = await getCloudMushrooms();
   const mushroomNamePool = allMushroomNames.filter(
@@ -204,7 +204,7 @@ export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
 export function tailoredNamePool(
   correctAnswer: string,
   mushroomNamePool: string[],
-  snapshot: Record<string, snapshotType> | undefined | null,
+  snapshot: Record<mushroomName, summedWeights> | undefined | null,
   maxOptions: number,
   omitArr: string[]
 ) {

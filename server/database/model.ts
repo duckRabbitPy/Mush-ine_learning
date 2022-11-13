@@ -4,7 +4,7 @@ import { TrainingData } from "../../utils/server_side";
 
 import db from "./connection";
 
-export type name_string = string;
+export type mushroomName = string;
 
 export type game_types = "forage" | "multi" | "tile";
 
@@ -16,9 +16,9 @@ export type mushine_learning_user = {
 
 export type mushine_training_weightings = {
   id: number;
-  correct_mushroom: name_string;
+  correct_mushroom: mushroomName;
   timestamp: string;
-  misidentified_as: name_string;
+  misidentified_as: mushroomName;
   weight: number;
 };
 
@@ -26,7 +26,7 @@ export type mushine_round_metadata = {
   id: number;
   game_type: game_types;
   current_level: number;
-  correct_mushroom: name_string;
+  correct_mushroom: mushroomName;
   correct_answer: boolean;
   timestamp: string;
 };
@@ -41,11 +41,10 @@ export type mushine_level_snapshots = {
 export type levelSnapshot = {
   user_id: string;
   level: number;
-  snapshot: Record<name_string, snapshotType>;
+  snapshot: Record<mushroomName, summedWeights>;
 };
 
-export type summedWeight = Record<name_string, number>;
-export type snapshotType = Record<name_string, summedWeight>;
+export type summedWeights = Record<mushroomName, number>;
 
 export function createUser(user_id: string) {
   return db
@@ -175,7 +174,7 @@ export async function saveLevelSnapshot(
   storedMushrooms: string[],
   user_id: string
 ) {
-  let snapshot: snapshotType = {};
+  let snapshot: Record<mushroomName, summedWeights> = {};
 
   for (const mushroomName of storedMushrooms) {
     const shroomAndWeighting = await db
@@ -236,7 +235,7 @@ function aggregateWeightings(
     "weight" | "misidentified_as"
   >[]
 ) {
-  const aggregated = trainingWeightings.reduce((acc: summedWeight, curr) => {
+  const aggregated = trainingWeightings.reduce((acc: summedWeights, curr) => {
     if (acc[curr.misidentified_as] && acc[curr.misidentified_as]) {
       acc[curr.misidentified_as] += curr.weight;
     } else {
