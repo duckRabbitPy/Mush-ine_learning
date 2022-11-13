@@ -3,6 +3,7 @@ import { GetStaticProps } from "next";
 import Link from "next/link";
 import { getMushroomNames } from "../../utils/server_side";
 import HomeBtn from "../components/HomeBtn";
+import TopLevelWrapper from "../components/TopLvlWrapper";
 
 export const getStaticProps: GetStaticProps = async () => {
   const mushroomNames = await getMushroomNames();
@@ -15,8 +16,8 @@ export const getStaticProps: GetStaticProps = async () => {
 
 const BankMenu = ({ mushroomNames }: { mushroomNames: string[] }) => {
   return (
-    <div style={{ backgroundColor: "#091122" }}>
-      <Flex direction="column" alignItems={"center"} height={"100vh"}>
+    <TopLevelWrapper backgroundColor={"#091122"}>
+      <Flex direction="column" alignItems={"center"} height={"fit-content"}>
         <HomeBtn mt={5} />
         <Heading mb={10} color="white">
           Mushroom Info Bank
@@ -31,7 +32,7 @@ const BankMenu = ({ mushroomNames }: { mushroomNames: string[] }) => {
           ))}
         </Container>
       </Flex>
-    </div>
+    </TopLevelWrapper>
   );
 };
 

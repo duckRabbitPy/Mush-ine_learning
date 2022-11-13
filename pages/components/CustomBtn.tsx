@@ -8,7 +8,6 @@ type CustomBtnProps = {
   children: React.ReactNode;
   brandColor: brandColors;
   href?: string;
-  sound?: "click";
   icon?: IconType;
   styles?: ButtonProps;
 };
@@ -16,18 +15,12 @@ type CustomBtnProps = {
 export const CustomBtn = ({
   children,
   brandColor,
-  sound,
   href,
   icon,
   styles,
 }: CustomBtnProps) => {
-  const soundLookup = {
-    click: "/clickSound.mp3",
-  };
   const clickSound =
-    sound && typeof Audio !== "undefined"
-      ? new Audio(soundLookup[sound as keyof typeof soundLookup])
-      : undefined;
+    typeof Audio !== "undefined" ? new Audio("/clickSound.mp3") : undefined;
 
   return href ? (
     <Link href={href}>

@@ -69,10 +69,10 @@ const Forage = () => {
     round > 3;
   const answerCorrect = inputAnswer === correctMushroom?.name;
   const correctSound = useSound("correct");
+  const incorrectSound = useSound("incorrect");
 
   const handleNextBtn = async () => {
     if (answerCorrect) {
-      correctSound;
       setScore(score + 10);
       setProgress((prev) => {
         return prev.concat(true);
@@ -209,6 +209,9 @@ const Forage = () => {
                           if (!inputAnswer) {
                             setInputAnswer(testMushroom.name);
                           }
+                          testMushroom.correctMatch
+                            ? correctSound?.play()
+                            : incorrectSound?.play();
                         }}
                         src={testMushroom.src}
                         alt="testMushroom"

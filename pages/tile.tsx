@@ -54,9 +54,11 @@ const Tile = () => {
   const options = getMushroomSet.data?.options;
   const gameOver = round > 3;
   const correctSound = useSound("correct");
+  const incorrectSound = useSound("incorrect");
 
   const handleSelection = async (name: string) => {
     if (name !== correctMushroom) {
+      incorrectSound?.play();
       const trainingDataCopy = trainingResult?.slice() ?? [];
       const newResult: TrainingData = {
         misidentifiedMushroom: correctMushroom ?? null,

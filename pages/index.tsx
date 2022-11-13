@@ -55,16 +55,11 @@ const Home: NextPage = () => {
           align="center"
           mt={5}
         >
-          <CustomBtn
-            brandColor={200}
-            href="/profile"
-            sound="click"
-            icon={BiUser}
-          >
+          <CustomBtn brandColor={200} href="/profile" icon={BiUser}>
             Profile
           </CustomBtn>
 
-          <CustomBtn brandColor={200} href="/bank" sound="click" icon={CiVault}>
+          <CustomBtn brandColor={200} href="/bank" icon={CiVault}>
             Mushroom bank
           </CustomBtn>
 
@@ -72,15 +67,15 @@ const Home: NextPage = () => {
             Games
           </Heading>
           <Flex direction={{ base: "column", md: "row" }}>
-            <CustomBtn brandColor={300} href="forage" sound="click">
+            <CustomBtn brandColor={300} href="forage">
               Forage Game
             </CustomBtn>
 
-            <CustomBtn brandColor={300} href="multi" sound="click">
+            <CustomBtn brandColor={300} href="multi">
               MultiChoice Game
             </CustomBtn>
 
-            <CustomBtn brandColor={300} href="tile" sound="click">
+            <CustomBtn brandColor={300} href="tile">
               Tile Game
             </CustomBtn>
           </Flex>
