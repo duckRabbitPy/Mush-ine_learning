@@ -1,13 +1,13 @@
-import { Button, Flex, Heading, Icon } from "@chakra-ui/react";
+import { Flex, Heading } from "@chakra-ui/react";
 import { BiUser } from "react-icons/bi";
 import { CiVault } from "react-icons/ci";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import Link from "next/link";
 import AuthStatus from "./components/AuthStatus";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import localFont from "@next/font/local";
+import CustomBtn from "./components/CustomBtn";
 
 const myFont = localFont({ src: "../public/HoneyMushroom.otf" });
 
@@ -45,6 +45,7 @@ const Home: NextPage = () => {
           width={200}
           height={200}
           className="wave"
+          priority
         />
 
         <Flex
@@ -53,66 +54,34 @@ const Home: NextPage = () => {
           align="center"
           mt={5}
         >
-          <Link href="/profile">
-            <Button
-              m={2}
-              color={"white"}
-              backgroundColor={"#543034"}
-              _hover={{ color: "black", backgroundColor: "gray.100" }}
-            >
-              Profile
-              <Icon as={BiUser} ml={2} />
-            </Button>
-          </Link>
+          <CustomBtn
+            color="#543034"
+            href="/profile"
+            sound="click"
+            icon={BiUser}
+          >
+            Profile
+          </CustomBtn>
 
-          <Link href="/bank">
-            <Button
-              m={2}
-              color={"white"}
-              backgroundColor={"#543034"}
-              _hover={{ color: "black", backgroundColor: "gray.100" }}
-            >
-              Mushroom bank
-              <Icon as={CiVault} ml={2} />
-            </Button>
-          </Link>
+          <CustomBtn color="#543034" href="/bank" sound="click" icon={CiVault}>
+            Mushroom bank
+          </CustomBtn>
 
           <Heading size="md" pt={5}>
             Games
           </Heading>
           <Flex direction={{ base: "column", md: "row" }}>
-            <Link href="/forage">
-              <Button
-                m={2}
-                color={"white"}
-                backgroundColor={"#0C6279"}
-                _hover={{ color: "black", backgroundColor: "gray.100" }}
-              >
-                Forage Game
-              </Button>
-            </Link>
+            <CustomBtn color="#0C6279" href="forage" sound="click">
+              Forage Game
+            </CustomBtn>
 
-            <Link href="/multi">
-              <Button
-                m={2}
-                color={"white"}
-                backgroundColor={"#0C6279"}
-                _hover={{ color: "black", backgroundColor: "gray.100" }}
-              >
-                MultiChoice Game
-              </Button>
-            </Link>
+            <CustomBtn color="#0C6279" href="multi" sound="click">
+              MultiChoice Game
+            </CustomBtn>
 
-            <Link href="/tile">
-              <Button
-                m={2}
-                color={"white"}
-                backgroundColor={"#0C6279"}
-                _hover={{ color: "black", backgroundColor: "gray.100" }}
-              >
-                Tile Game
-              </Button>
-            </Link>
+            <CustomBtn color="#0C6279" href="tile" sound="click">
+              Tile Game
+            </CustomBtn>
           </Flex>
         </Flex>
       </Flex>
