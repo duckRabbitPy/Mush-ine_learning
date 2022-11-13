@@ -135,7 +135,9 @@ const Multi = () => {
           )}
           {round > 0 && !getMushroomSet.isRefetching && (
             <Flex gap={2} direction={{ base: "column", md: "row" }}>
-              {getMushroomSet.isLoading && !gameOver && <Spinner />}
+              {getMushroomSet.isLoading && !gameOver && (
+                <Spinner color="white" />
+              )}
 
               <SimpleGrid columns={3} gap={1}>
                 {getMushroomSet.data?.mushroomImgSrcs.map((src) => {

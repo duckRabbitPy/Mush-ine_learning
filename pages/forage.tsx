@@ -136,7 +136,7 @@ const Forage = () => {
               <Heading size={"md"} mb={2} pl={2} pr={2} color="white">
                 {correctMushroom?.name
                   ? `Find 🔎 the ${correctMushroom?.name} mushroom`
-                  : "Forage Game🍄"}
+                  : "Forage Game 🍄"}
                 {inputAnswer === correctMushroom?.name && " ✅"}
                 {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
               </Heading>

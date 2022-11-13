@@ -156,7 +156,9 @@ const Tile = () => {
           )}
           {round > 0 && !getMushroomSet.isRefetching && (
             <Flex gap={2} flexDirection="column" alignItems="center">
-              {getMushroomSet.isLoading && !gameOver && <Spinner />}
+              {getMushroomSet.isLoading && !gameOver && (
+                <Spinner color="white" />
+              )}
 
               <SimpleGrid columns={1} gap={1} width="fit-content">
                 {getMushroomSet.data?.mushroomImgSrcs

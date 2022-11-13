@@ -124,14 +124,13 @@ const Profile = () => {
                       <Td p={3} textTransform="capitalize">
                         🍄 {mushroom}
                       </Td>
-                      <Td p={3} wordBreak={"break-word"}>
-                        {Object.keys(misIdentifiedAs).map((name, i, arr) => {
+                      <Td p={3} wordBreak={"break-word"} color="blue">
+                        {Object.keys(misIdentifiedAs).map((name) => {
                           return (
                             <div key={name}>
                               <Link href={`/bank/${name}`} passHref>
-                                <a style={{ color: "blue" }}>{name}</a>
+                                {name}
                               </Link>
-                              {i === arr.length - 1 ? "" : ", "}
                             </div>
                           );
                         })}
