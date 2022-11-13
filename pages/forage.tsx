@@ -220,7 +220,12 @@ const Forage = () => {
                               : 1,
                         }}
                       />
-                      <Text fontSize="small" color="white">
+                      <Text
+                        fontSize="medium"
+                        color={
+                          testMushroom.correctMatch ? "green.300" : "white"
+                        }
+                      >
                         {inputAnswer ? testMushroom.name : ""}
                       </Text>
                     </Container>

@@ -35,10 +35,13 @@ const Profile = () => {
     user_id: user?.sub ?? null,
   }).data;
 
-  const { xpToNextLevel, boundaryAhead } = currLevelInfo(
+  const { xpToNextLevel, boundaryAhead, boundaryBehind } = currLevelInfo(
     xpQuery.data,
     snapshot.data?.level
   );
+
+  const xpEarnedThisLevel = boundaryAhead - boundaryBehind - xpToNextLevel;
+  const percentageProgress = (xpEarnedThisLevel / xpToNextLevel) * 100;
 
   return (
     <TopLevelWrapper backgroundColor={"#EDF2F7"}>
@@ -67,8 +70,9 @@ const Profile = () => {
         <Progress
           m={3}
           hasStripe
-          value={(boundaryAhead - xpToNextLevel / boundaryAhead) * 100}
+          value={percentageProgress > 0 ? percentageProgress : 0.5}
           height={5}
+          border="1px gray solid"
           width="80%"
         />
 
