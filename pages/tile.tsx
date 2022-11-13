@@ -10,6 +10,7 @@ import { useGameState } from "../hooks/useGameState";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { useState } from "react";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
+import { useSound } from "../hooks/useSound";
 
 const Tile = () => {
   const {
@@ -52,6 +53,7 @@ const Tile = () => {
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
   const gameOver = round > 3;
+  const correctSound = useSound("correct");
 
   const handleSelection = async (name: string) => {
     if (name !== correctMushroom) {
@@ -76,6 +78,7 @@ const Tile = () => {
         return prev.concat(false);
       });
     } else {
+      correctSound?.play();
       setRoundOver(true);
 
       correctMushroom &&

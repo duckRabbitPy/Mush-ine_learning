@@ -16,6 +16,7 @@ import { ProgressIndicator } from "./components/Progress";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { useGameState } from "../hooks/useGameState";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
+import { useSound } from "../hooks/useSound";
 
 export const reactQueryConfig = {
   refetchOnMount: false,
@@ -67,9 +68,11 @@ const Forage = () => {
     (forageMushrooms && forageMushrooms?.length < 1 && omitArr.length > 0) ||
     round > 3;
   const answerCorrect = inputAnswer === correctMushroom?.name;
+  const correctSound = useSound("correct");
 
   const handleNextBtn = async () => {
     if (answerCorrect) {
+      correctSound;
       setScore(score + 10);
       setProgress((prev) => {
         return prev.concat(true);

@@ -9,6 +9,7 @@ import { returnLvl } from "../utils/client_safe";
 import { useGameState } from "../hooks/useGameState";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
+import { useSound } from "../hooks/useSound";
 
 const Multi = () => {
   const {
@@ -49,11 +50,12 @@ const Multi = () => {
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
   const gameOver = round > 3;
+  const correctSound = useSound("correct");
 
   const handleSelection = async (name: string) => {
     if (name === correctMushroom) {
+      correctSound?.play();
       setScore(score + 10);
-
       setProgress((prev) => {
         return prev.concat(true);
       });
