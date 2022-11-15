@@ -42,3 +42,5 @@ export function BarChart({ kvp }: { kvp: Record<string, number | string> }) {
     />
   );
 }
+
+export default BarChart;
