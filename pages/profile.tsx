@@ -16,10 +16,28 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { currLevelInfo } from "../utils/client_safe";
+import {
+  Chart,
+  PointElement,
+  CategoryScale,
+  BarElement,
+  LineElement,
+  LinearScale,
+} from "chart.js";
+
+import { currLevelInfo, sortObjectByNumValues } from "../utils/client_safe";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import TopLevelWrapper from "./components/TopLvlWrapper";
+import { BarChart } from "./components/BarChart";
+
+Chart.register(
+  BarElement,
+  PointElement,
+  LineElement,
+  LinearScale,
+  CategoryScale
+);
 
 const Profile = () => {
   const { user } = useUser();
@@ -102,7 +120,7 @@ const Profile = () => {
         </SimpleGrid>
 
         <TableContainer
-          maxWidth={"60%"}
+          maxWidth={{ base: "90%", lg: "60%" }}
           mt={5}
           mb={5}
           whiteSpace="break-spaces"
@@ -118,6 +136,9 @@ const Profile = () => {
               Object.entries(snapshot.data?.snapshot).map((kvp) => {
                 const mushroom = kvp[0];
                 const misIdentifiedAs = kvp[1];
+                const sortedMisIdentifiedAs =
+                  sortObjectByNumValues(misIdentifiedAs);
+
                 return (
                   <Tbody key={mushroom}>
                     <Tr>
@@ -125,15 +146,25 @@ const Profile = () => {
                         🍄 {mushroom}
                       </Td>
                       <Td p={3} wordBreak={"break-word"} color="blue">
-                        {Object.keys(misIdentifiedAs).map((name) => {
-                          return (
-                            <div key={name}>
-                              <Link href={`/bank/${name}`} passHref>
-                                {name}
-                              </Link>
-                            </div>
-                          );
-                        })}
+                        <Flex
+                          flexDirection={{ base: "column", lg: "row" }}
+                          alignItems={{ base: "flex-end", lg: "center" }}
+                        >
+                          <ol>
+                            {Object.keys(sortedMisIdentifiedAs).map((name) => {
+                              return (
+                                <li key={name}>
+                                  <Link href={`/bank/${name}`} passHref>
+                                    {name}
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ol>
+                          <div style={{ height: "200px", margin: "20px" }}>
+                            <BarChart kvp={sortedMisIdentifiedAs} />
+                          </div>
+                        </Flex>
                       </Td>
                     </Tr>
                   </Tbody>

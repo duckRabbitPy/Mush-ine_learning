@@ -111,3 +111,12 @@ export function generateLvlBoundaries() {
 
   return levelBoundaries;
 }
+
+export function sortObjectByNumValues(obj: Record<string, number>) {
+  return Object.entries(obj)
+    .sort((a, b) => b[1] - a[1])
+    .reduce((acc, curr) => {
+      acc[`${curr[0]}` as keyof typeof acc] = curr[1];
+      return acc;
+    }, {} as Record<string, number>);
+}
