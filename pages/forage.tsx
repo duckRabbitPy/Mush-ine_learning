@@ -68,8 +68,7 @@ const Forage = () => {
     (forageMushrooms && forageMushrooms?.length < 1 && omitArr.length > 0) ||
     round > 3;
   const answerCorrect = inputAnswer === correctMushroom?.name;
-  const correctSound = useSound("correct");
-  const incorrectSound = useSound("incorrect");
+  const { correctSound, incorrectSound, startSound } = useSound();
 
   const handleNextBtn = async () => {
     if (answerCorrect) {
@@ -157,9 +156,13 @@ const Forage = () => {
                     width={200}
                     alt="forage game"
                     blurDataURL={"/forage.png"}
+                    className={"pulse"}
                   ></Image>
                   <Button
-                    onClick={() => setRound(round + 1)}
+                    onClick={() => {
+                      startSound?.play();
+                      setRound(round + 1);
+                    }}
                     w="-moz-fit-content"
                     alignSelf="center"
                   >

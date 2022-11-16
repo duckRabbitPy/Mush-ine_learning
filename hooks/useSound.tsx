@@ -1,13 +1,18 @@
 const audioFiles = {
-  click: "/click.mp3",
-  correct: "/correct.mp3",
-  incorrect: "/incorrect.mp3",
+  clickSound: "/click.mp3",
+  correctSound: "/correct.mp3",
+  incorrectSound: "/incorrect.mp3",
+  startSound: "/game-start.wav",
 };
 
-type SoundOptions = keyof typeof audioFiles;
+export function useSound() {
+  return Object.entries(audioFiles).reduce((acc, curr) => {
+    acc[curr[0] as keyof typeof acc] = createSound(curr[1]);
 
-export function useSound(sound: SoundOptions) {
-  const audioElement =
-    typeof Audio !== "undefined" ? new Audio(audioFiles[sound]) : undefined;
-  return audioElement;
+    return acc;
+  }, {} as Record<keyof typeof audioFiles, HTMLAudioElement | undefined>);
+}
+
+function createSound(path: string) {
+  return typeof Audio !== "undefined" ? new Audio(path) : undefined;
 }

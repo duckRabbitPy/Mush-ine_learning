@@ -50,8 +50,7 @@ const Multi = () => {
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
   const gameOver = round > 3;
-  const correctSound = useSound("correct");
-  const incorrectSound = useSound("incorrect");
+  const { correctSound, incorrectSound, startSound } = useSound();
 
   const handleSelection = async (name: string) => {
     if (name === correctMushroom) {
@@ -128,9 +127,13 @@ const Multi = () => {
                 width={200}
                 blurDataURL={"/multi.png"}
                 alt="multi game"
+                className={"pulse"}
               ></Image>
               <Button
-                onClick={() => setRound(round + 1)}
+                onClick={() => {
+                  startSound?.play();
+                  setRound(round + 1);
+                }}
                 backgroundColor="#B8E6F3"
               >
                 Start

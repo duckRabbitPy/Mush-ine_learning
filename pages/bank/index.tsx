@@ -25,7 +25,7 @@ const BankMenu = ({ mushroomNames }: { mushroomNames: string[] }) => {
         <Container mb="10" width={{ base: "70vw", md: "50vw", lg: "30vw" }}>
           {mushroomNames?.map((name) => (
             <Link key={name} href={`/bank/${name}`}>
-              <Button mt={1} width="100%" backgroundColor={"#B8E6F3"}>
+              <Button mt={1} width="100%">
                 {name}
               </Button>
             </Link>
