@@ -4,47 +4,52 @@ import { TrainingData } from "../../utils/server_side";
 
 import db from "./connection";
 
-export type mushroomName = string;
+export type MushroomName = string;
 
-export type game_types = "forage" | "multi" | "tile";
+export type Game_types = "forage" | "multi" | "tile";
 
-export type mushine_learning_user = {
+export type Mushine_learning_user = {
   id: number;
   user_id: string;
   xp: number;
 };
 
-export type mushine_training_weightings = {
+export type Mushine_training_weightings = {
   id: number;
-  correct_mushroom: mushroomName;
+  correct_mushroom: MushroomName;
   timestamp: string;
-  misidentified_as: mushroomName;
+  misidentified_as: MushroomName;
   weight: number;
 };
 
-export type mushine_round_metadata = {
+export type Mushine_round_metadata = {
   id: number;
-  game_type: game_types;
+  game_type: Game_types;
   current_level: number;
-  correct_mushroom: mushroomName;
+  correct_mushroom: MushroomName;
   correct_answer: boolean;
   timestamp: string;
 };
 
-export type mushine_level_snapshots = {
+export type Mushine_level_snapshots = {
   id: number;
   level: number;
   user_id: string;
-  snapshot: levelSnapshot;
+  snapshot: LevelSnapshot;
 };
 
-export type levelSnapshot = {
+export type LevelSnapshot = {
   user_id: string;
   level: number;
-  snapshot: Record<mushroomName, summedWeights>;
+  snapshot: Record<MushroomName, SummedWeights>;
 };
 
-export type summedWeights = Record<mushroomName, number>;
+export type Heatmap = Pick<
+  Mushine_round_metadata,
+  "timestamp" | "correct_answer"
+>;
+
+export type SummedWeights = Record<MushroomName, number>;
 
 export function createUser(user_id: string) {
   return db
@@ -52,7 +57,7 @@ export function createUser(user_id: string) {
       "INSERT INTO mushine_learning_user (user_id, xp) VALUES ($1, 0) RETURNING *",
       [user_id]
     )
-    .then((result: QueryResult<Pick<mushine_learning_user, "user_id">>) => {
+    .then((result: QueryResult<Pick<Mushine_learning_user, "user_id">>) => {
       return result.rows[0].user_id;
     })
     .catch((error: Error) => console.log(error));
@@ -64,7 +69,7 @@ export async function updateScore(Score: number, user_id: string) {
       "UPDATE mushine_learning_user SET xp = $1 WHERE user_id = $2 RETURNING xp;",
       [Score, user_id]
     )
-    .then((result: QueryResult<Pick<mushine_learning_user, "xp">>) => {
+    .then((result: QueryResult<Pick<Mushine_learning_user, "xp">>) => {
       return result.rows[0].xp;
     })
     .catch((error: Error) => console.log(error));
@@ -73,7 +78,7 @@ export async function updateScore(Score: number, user_id: string) {
 export async function getScoreByUserId(user_id: string) {
   return db
     .query("SELECT xp FROM mushine_learning_user WHERE user_id = $1", [user_id])
-    .then((result: QueryResult<Pick<mushine_learning_user, "xp">>) => {
+    .then((result: QueryResult<Pick<Mushine_learning_user, "xp">>) => {
       return result.rows[0].xp;
     })
     .catch((error: Error) => console.log(error));
@@ -96,7 +101,7 @@ export async function updateTrainingData(
             `INSERT INTO mushine_training_weightings (user_id, correct_mushroom, misidentified_as, weight, timestamp) VALUES ($1, $2, $3, $4, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
             [user_id, correct_mushroom, misidentified_as, weight]
           )
-          .then((result: QueryResult<mushine_training_weightings>) => {
+          .then((result: QueryResult<Mushine_training_weightings>) => {
             return result.rows[0];
           })
           .catch((error: Error) => console.log(error));
@@ -111,7 +116,7 @@ export async function updateRoundMetaData(
   user_id: string,
   current_level: number,
   metadataInput: Pick<
-    mushine_round_metadata,
+    Mushine_round_metadata,
     "correct_answer" | "game_type" | "correct_mushroom"
   >[]
 ) {
@@ -122,7 +127,7 @@ export async function updateRoundMetaData(
         `INSERT INTO mushine_round_metadata (user_id, game_type, current_level, correct_mushroom, correct_answer, timestamp) VALUES ($1, $2, $3, $4, $5, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
         [user_id, game_type, current_level, correct_mushroom, correct_answer]
       )
-      .then((result: QueryResult<mushine_round_metadata>) => {
+      .then((result: QueryResult<Mushine_round_metadata>) => {
         return result.rows[0];
       })
       .catch((error: Error) => console.log(error));
@@ -139,7 +144,7 @@ export async function getRoundMetadata(user_id: string, current_level: number) {
       (
         result: QueryResult<
           Pick<
-            mushine_round_metadata,
+            Mushine_round_metadata,
             "game_type" | "correct_mushroom" | "correct_answer"
           >
         >
@@ -150,13 +155,21 @@ export async function getRoundMetadata(user_id: string, current_level: number) {
     .catch((error: Error) => console.log(error));
 }
 
+// export async function getHeatmapData(mushroomNames: MushroomName[]) {
+//   const argPlaceHolders = (args: string[]) =>
+//     args.map((_, index) => `$${index}`);
+
+//   const heatmaps = await db.query(`SELECT `).then((result: Heatmap) => {});
+//   return heatmaps;
+// }
+
 export async function getCommonConfusions(name: string, user_id: string) {
   const misidentifiedArr = await db
     .query(
       `SELECT weight, misidentified_as FROM mushine_training_weightings WHERE correct_mushroom = $1 AND user_id = $2`,
       [name, user_id]
     )
-    .then((result: QueryResult<mushine_training_weightings>) => {
+    .then((result: QueryResult<Mushine_training_weightings>) => {
       return result.rows;
     })
     .catch((error: Error) => console.log(error));
@@ -174,7 +187,7 @@ export async function saveLevelSnapshot(
   storedMushrooms: string[],
   user_id: string
 ) {
-  let snapshot: Record<mushroomName, summedWeights> = {};
+  let snapshot: Record<MushroomName, SummedWeights> = {};
 
   for (const mushroomName of storedMushrooms) {
     const shroomAndWeighting = await db
@@ -185,7 +198,7 @@ export async function saveLevelSnapshot(
       .then(
         (
           result: QueryResult<
-            Pick<mushine_training_weightings, "weight" | "misidentified_as">
+            Pick<Mushine_training_weightings, "weight" | "misidentified_as">
           >
         ) => {
           return aggregateWeightings(result.rows);
@@ -209,7 +222,7 @@ export async function saveLevelSnapshot(
 export async function getCurrentLevel(user_id: string) {
   const currXp = await db
     .query(`SELECT xp FROM mushine_learning_user WHERE user_id = $1`, [user_id])
-    .then((result: QueryResult<Pick<mushine_learning_user, "xp">>) => {
+    .then((result: QueryResult<Pick<Mushine_learning_user, "xp">>) => {
       return result.rows[0].xp;
     })
     .catch((error: Error) => console.log(error));
@@ -223,7 +236,7 @@ export async function getLevelSnapshot(level: number, user_id: string) {
       `SELECT snapshot, level FROM mushine_level_snapshots WHERE level = $1 AND user_id = $2`,
       [level, user_id]
     )
-    .then((result: QueryResult<Pick<levelSnapshot, "snapshot" | "level">>) => {
+    .then((result: QueryResult<Pick<LevelSnapshot, "snapshot" | "level">>) => {
       return result.rows[0];
     })
     .catch((error: Error) => console.log(error));
@@ -231,11 +244,11 @@ export async function getLevelSnapshot(level: number, user_id: string) {
 
 function aggregateWeightings(
   trainingWeightings: Pick<
-    mushine_training_weightings,
+    Mushine_training_weightings,
     "weight" | "misidentified_as"
   >[]
 ) {
-  const aggregated = trainingWeightings.reduce((acc: summedWeights, curr) => {
+  const aggregated = trainingWeightings.reduce((acc: SummedWeights, curr) => {
     if (acc[curr.misidentified_as] && acc[curr.misidentified_as]) {
       acc[curr.misidentified_as] += curr.weight;
     } else {
