@@ -53,8 +53,7 @@ const Tile = () => {
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
   const gameOver = round > 3;
-  const correctSound = useSound("correct");
-  const incorrectSound = useSound("incorrect");
+  const { correctSound, incorrectSound, startSound } = useSound();
 
   const handleSelection = async (name: string) => {
     if (name !== correctMushroom) {
@@ -150,8 +149,16 @@ const Tile = () => {
                 width={200}
                 blurDataURL={"/tile.png"}
                 alt="tile game"
+                className={"pulse"}
               ></Image>
-              <Button onClick={() => setRound(round + 1)}>Start</Button>
+              <Button
+                onClick={() => {
+                  setRound(round + 1);
+                  startSound?.play();
+                }}
+              >
+                Start
+              </Button>
             </Flex>
           )}
           {roundOver && (

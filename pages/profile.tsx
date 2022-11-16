@@ -64,7 +64,7 @@ const Profile = () => {
   return (
     <TopLevelWrapper backgroundColor={"#EDF2F7"}>
       <Flex direction="column" alignItems={"center"}>
-        <Heading mb={10} mt={5}>
+        <Heading mb={10} mt={5} fontFamily={"honeyMushroom"}>
           Profile - {user?.name}
         </Heading>
         <HomeBtn />
@@ -73,7 +73,12 @@ const Profile = () => {
           <Spinner color="white" />
         ) : (
           <>
-            <Text mt={5} fontSize="2xl" fontWeight={"extrabold"}>
+            <Text
+              mt={5}
+              fontSize="2xl"
+              fontWeight={"extrabold"}
+              fontFamily={"honeyMushroom"}
+            >
               Level {snapshot.data?.level}
             </Text>
             <Text color="green.400" mt={5} fontSize="2xl">
@@ -142,7 +147,11 @@ const Profile = () => {
                 return (
                   <Tbody key={mushroom}>
                     <Tr>
-                      <Td p={3} textTransform="capitalize">
+                      <Td
+                        p={3}
+                        textTransform="capitalize"
+                        fontFamily={"honeyMushroom"}
+                      >
                         🍄 {mushroom}
                       </Td>
                       <Td p={3} wordBreak={"break-word"} color="blue">
@@ -161,9 +170,13 @@ const Profile = () => {
                               );
                             })}
                           </ol>
-                          <div style={{ height: "200px", margin: "20px" }}>
-                            <BarChart kvp={sortedMisIdentifiedAs} />
-                          </div>
+                          {Object.keys(sortedMisIdentifiedAs).length > 0 ? (
+                            <div style={{ height: "200px", margin: "20px" }}>
+                              <BarChart kvp={sortedMisIdentifiedAs} />
+                            </div>
+                          ) : (
+                            <Text color="green.400">No mistake data!</Text>
+                          )}
                         </Flex>
                       </Td>
                     </Tr>

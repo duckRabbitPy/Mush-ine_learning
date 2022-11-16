@@ -8,6 +8,7 @@ import { CloudImage } from "../../types";
 import { trpc } from "../../utils/trpc";
 import { useUser } from "@auth0/nextjs-auth0";
 import { getMushroomNames } from "../../utils/server_side";
+import HomeBtn from "../components/HomeBtn";
 
 export async function getStaticPaths() {
   const mushroomNames = await getMushroomNames();
@@ -71,6 +72,8 @@ const InfoBank = ({
 
   return (
     <Container mt={5}>
+      <HomeBtn style={{ alignSelf: "center" }} />
+
       <Heading>{mushroomName} mushroom</Heading>
 
       <Link href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}>
@@ -80,11 +83,7 @@ const InfoBank = ({
       </Link>
 
       <Link href="/bank">
-        <Button m={2}>Back to bank menu </Button>
-      </Link>
-
-      <Link href="/">
-        <Button m={2}>Home</Button>
+        <Button m={2}>Bank menu </Button>
       </Link>
 
       {expandIndex === null && (
@@ -129,7 +128,12 @@ const InfoBank = ({
 
         <ol>
           {lookalikes.data?.map((mushroom) => (
-            <li key={mushroom.misidentified_as}>{mushroom.misidentified_as}</li>
+            <Link
+              key={mushroom.misidentified_as}
+              href={`/bank/${mushroom.misidentified_as}`}
+            >
+              <li>{mushroom.misidentified_as}</li>
+            </Link>
           ))}
         </ol>
       </Container>
