@@ -2,10 +2,12 @@ import { useUser } from "@auth0/nextjs-auth0";
 import {
   Container,
   Flex,
+  Grid,
   Heading,
   Progress,
   SimpleGrid,
   Spinner,
+  Square,
   Table,
   TableContainer,
   Tbody,
@@ -143,22 +145,52 @@ const Profile = () => {
                 <Th>Misidentified as</Th>
               </Tr>
             </Thead>
-            {snapshot.data?.snapshot &&
-              Object.entries(snapshot.data?.snapshot).map((kvp) => {
-                const mushroom = kvp[0];
-                const misIdentifiedAs = kvp[1];
-                const sortedMisIdentifiedAs =
-                  sortObjectByNumValues(misIdentifiedAs);
+            <Tbody>
+              {snapshot.data?.snapshot &&
+                heatmaps &&
+                Object.entries(snapshot.data?.snapshot).map((kvp) => {
+                  const mushroom = kvp[0];
+                  const misIdentifiedAs = kvp[1];
+                  const sortedMisIdentifiedAs =
+                    sortObjectByNumValues(misIdentifiedAs);
+                  const heatmap = heatmaps[mushroom].slice(0, 30);
 
-                return (
-                  <Tbody key={mushroom}>
-                    <Tr>
-                      <Td
-                        p={3}
-                        textTransform="capitalize"
-                        fontFamily={"honeyMushroom"}
-                      >
-                        🍄 {mushroom}
+                  const numCorrect = heatmap.filter(
+                    (result) => result.correct_answer
+                  ).length;
+                  const numIncorrect = heatmap.filter(
+                    (result) => !result.correct_answer
+                  ).length;
+
+                  const accuracy = Math.ceil(
+                    (numCorrect / (numCorrect + numIncorrect)) * 100
+                  );
+
+                  return (
+                    <Tr key={mushroom}>
+                      <Td p={3}>
+                        <Text
+                          fontFamily={"honeyMushroom"}
+                          textTransform="capitalize"
+                        >
+                          🍄 {mushroom}
+                        </Text>
+                        <Text>
+                          {Number.isNaN(accuracy)
+                            ? ``
+                            : `${accuracy}% accuracy`}
+                        </Text>
+                        <Grid gridTemplateColumns={"repeat(7, 0fr)"}>
+                          {heatmap.map((result) => (
+                            <Square
+                              size="20px"
+                              key={result.timestamp}
+                              bg={
+                                result.correct_answer ? "green.200" : "red.200"
+                              }
+                            />
+                          ))}
+                        </Grid>
                       </Td>
                       <Td p={3} wordBreak={"break-word"} color="blue">
                         <Flex
@@ -186,9 +218,9 @@ const Profile = () => {
                         </Flex>
                       </Td>
                     </Tr>
-                  </Tbody>
-                );
-              })}
+                  );
+                })}
+            </Tbody>
           </Table>
         </TableContainer>
       </Flex>
