@@ -58,6 +58,12 @@ const Profile = () => {
     snapshot.data?.level
   );
 
+  const heatmaps = trpc.downloadHeatMaps.useQuery({
+    user_id: user?.sub ?? null,
+  }).data;
+
+  console.log(heatmaps);
+
   const xpEarnedThisLevel = boundaryAhead - boundaryBehind - xpToNextLevel;
   const percentageProgress = (xpEarnedThisLevel / xpToNextLevel) * 100;
 

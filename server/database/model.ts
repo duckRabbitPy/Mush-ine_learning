@@ -44,10 +44,12 @@ export type LevelSnapshot = {
   snapshot: Record<MushroomName, SummedWeights>;
 };
 
-export type Heatmap = Pick<
+export type TimeAndResult = Pick<
   Mushine_round_metadata,
   "timestamp" | "correct_answer"
 >;
+
+export type Heatmaps = Record<MushroomName, TimeAndResult[]>;
 
 export type SummedWeights = Record<MushroomName, number>;
 
@@ -155,13 +157,25 @@ export async function getRoundMetadata(user_id: string, current_level: number) {
     .catch((error: Error) => console.log(error));
 }
 
-// export async function getHeatmapData(mushroomNames: MushroomName[]) {
-//   const argPlaceHolders = (args: string[]) =>
-//     args.map((_, index) => `$${index}`);
+export async function getHeatmapData(
+  mushroomNames: MushroomName[],
+  user_id: string
+) {
+  const heatmaps = {} as Heatmaps;
+  for (const mushroomName of mushroomNames) {
+    const heatmap = await db
+      .query(
+        `SELECT correct_answer, timestamp from mushine_round_metadata WHERE correct_mushroom = $1 AND user_id = $2 ORDER BY timestamp asc;`,
+        [mushroomName, user_id]
+      )
+      .then((result: QueryResult<TimeAndResult>) => result.rows);
 
-//   const heatmaps = await db.query(`SELECT `).then((result: Heatmap) => {});
-//   return heatmaps;
-// }
+    if (heatmap) {
+      heatmaps[mushroomName as keyof typeof heatmaps] = heatmap;
+    }
+  }
+  return heatmaps;
+}
 
 export async function getCommonConfusions(name: string, user_id: string) {
   const misidentifiedArr = await db

@@ -17,6 +17,7 @@ import {
   getCurrentLevel,
   getRoundMetadata,
   SummedWeights,
+  getHeatmapData,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
@@ -212,6 +213,20 @@ export const appRouter = router({
         return null;
       }
       return snapshot;
+    }),
+  downloadHeatMaps: publicProcedure
+    .input(
+      z.object({
+        user_id: string().nullable(),
+      })
+    )
+    .query(async ({ input }) => {
+      if (!input.user_id) {
+        return null;
+      }
+      const mushroomNames = await getMushroomNames();
+      const heatmaps = await getHeatmapData(mushroomNames, input.user_id);
+      return heatmaps;
     }),
 });
 
