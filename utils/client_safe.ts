@@ -1,4 +1,4 @@
-import { mushine_round_metadata } from "../server/database/model";
+import { Mushine_round_metadata } from "../server/database/model";
 import { ForageMushroom, TrainingData } from "./server_side";
 
 export function extractTrainingData(
@@ -52,7 +52,7 @@ export type reducedAnswers = {
 export function reduceAnswerCount(
   data:
     | Pick<
-        mushine_round_metadata,
+        Mushine_round_metadata,
         "game_type" | "correct_answer" | "correct_mushroom"
       >[]
     | undefined
