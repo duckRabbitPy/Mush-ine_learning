@@ -185,7 +185,11 @@ const Profile = () => {
 
                     return (
                       <Tr key={mushroom}>
-                        <Td p={3} verticalAlign="top">
+                        <Td
+                          p={3}
+                          verticalAlign="top"
+                          display={{ base: "block", md: "flex" }}
+                        >
                           <Flex direction="column" gap="2rem">
                             <Heading
                               fontFamily={"honeyMushroom"}
@@ -231,48 +235,51 @@ const Profile = () => {
                               </Grid>
                             </Container>
                           </Flex>
-                        </Td>
-                        <Td
-                          p={3}
-                          wordBreak={"break-word"}
-                          color="blue"
-                          display="flex"
-                          flexDirection="column"
-                          alignItems="center"
-                        >
-                          <Heading
-                            size="sm"
-                            fontFamily={"honeyMushroom"}
-                            fontWeight="thin"
-                            color="black"
+
+                          <Flex
+                            p={3}
+                            wordBreak={"break-word"}
+                            color="blue"
+                            display="flex"
+                            flexDirection="column"
+                            alignItems="center"
                           >
-                            Misidentified as
-                          </Heading>
-                          <ol>
-                            {Object.keys(sortedMisIdentifiedAs).map(
-                              (name, i) => {
-                                return (
-                                  <li key={name}>
-                                    <Link href={`/bank/${name}`} passHref>
-                                      {name}{" "}
-                                      <Square
-                                        bg={chartColors[i]}
-                                        size="10px"
-                                        display="inline-flex"
-                                      />
-                                    </Link>
-                                  </li>
-                                );
-                              }
+                            <Heading
+                              size="sm"
+                              fontFamily={"honeyMushroom"}
+                              fontWeight="thin"
+                              color="black"
+                            >
+                              Misidentified as
+                            </Heading>
+                            <ol>
+                              {Object.keys(sortedMisIdentifiedAs).map(
+                                (name, i) => {
+                                  return (
+                                    <li key={name}>
+                                      <Link href={`/bank/${name}`} passHref>
+                                        {name}{" "}
+                                        <Square
+                                          bg={chartColors[i]}
+                                          size="10px"
+                                          display="inline-flex"
+                                        />
+                                      </Link>
+                                    </li>
+                                  );
+                                }
+                              )}
+                            </ol>
+                            {Object.keys(sortedMisIdentifiedAs).length > 0 ? (
+                              <div
+                                style={{ height: "200px", marginTop: "3rem" }}
+                              >
+                                <BarChart kvp={sortedMisIdentifiedAs} />
+                              </div>
+                            ) : (
+                              <Text color="green.400">No mistake data!</Text>
                             )}
-                          </ol>
-                          {Object.keys(sortedMisIdentifiedAs).length > 0 ? (
-                            <div style={{ height: "200px", marginTop: "3rem" }}>
-                              <BarChart kvp={sortedMisIdentifiedAs} />
-                            </div>
-                          ) : (
-                            <Text color="green.400">No mistake data!</Text>
-                          )}
+                          </Flex>
                         </Td>
                       </Tr>
                     );

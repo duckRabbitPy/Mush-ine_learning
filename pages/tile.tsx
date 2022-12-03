@@ -71,7 +71,7 @@ const Tile = () => {
           return prev.concat({
             correct_mushroom: correctMushroom,
             correct_answer: false,
-            game_type: "forage",
+            game_type: "tile",
           });
         });
 
@@ -87,7 +87,7 @@ const Tile = () => {
           return prev.concat({
             correct_mushroom: correctMushroom,
             correct_answer: true,
-            game_type: "forage",
+            game_type: "tile",
           });
         });
 
@@ -111,6 +111,7 @@ const Tile = () => {
       }
       return prev;
     });
+
     setRoundOver(false);
     setProgress([]);
   };
