@@ -1,4 +1,11 @@
-import { Button, Flex, SimpleGrid, Spinner, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Heading,
+  SimpleGrid,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
@@ -71,7 +78,7 @@ const Tile = () => {
           return prev.concat({
             correct_mushroom: correctMushroom,
             correct_answer: false,
-            game_type: "forage",
+            game_type: "tile",
           });
         });
 
@@ -87,7 +94,7 @@ const Tile = () => {
           return prev.concat({
             correct_mushroom: correctMushroom,
             correct_answer: true,
-            game_type: "forage",
+            game_type: "tile",
           });
         });
 
@@ -111,6 +118,7 @@ const Tile = () => {
       }
       return prev;
     });
+
     setRoundOver(false);
     setProgress([]);
   };
@@ -138,7 +146,10 @@ const Tile = () => {
     <TopLevelWrapper backgroundColor="#091122">
       <Flex gap={5} direction="column" alignItems="center">
         <HomeBtn w="-moz-fit-content" mt={3} />
-        <Text color="white"> Tile Game</Text>
+        <Heading color="white" fontFamily={"honeyMushroom"}>
+          {" "}
+          Tile Game
+        </Heading>
         <Flex gap={2} direction={"column"} alignItems="center">
           <ProgressIndicator round={round} score={score} progress={progress} />
           {round < 1 && (
@@ -199,6 +210,9 @@ const Tile = () => {
                   >
                     Save score
                   </Button>
+                )}
+                {gameOver && saveScore.isSuccess && (
+                  <Text color="white">Score saved! Return to home </Text>
                 )}
                 <SimpleGrid
                   columns={{ base: 2, md: 3 }}

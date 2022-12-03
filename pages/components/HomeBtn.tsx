@@ -3,7 +3,12 @@ import Link from "next/link";
 
 const HomeBtn = (props: ButtonProps) => (
   <Link href="/">
-    <Button {...props} backgroundColor="#F2B443">
+    <Button
+      {...props}
+      backgroundColor="#F2B443"
+      fontFamily="rounded"
+      letterSpacing="widest"
+    >
       Home{" "}
     </Button>
   </Link>

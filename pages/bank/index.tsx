@@ -19,7 +19,7 @@ const BankMenu = ({ mushroomNames }: { mushroomNames: string[] }) => {
     <TopLevelWrapper backgroundColor={"#091122"}>
       <Flex direction="column" alignItems={"center"} height={"fit-content"}>
         <HomeBtn mt={5} />
-        <Heading mb={10} color="white">
+        <Heading mb={10} mt={5} color="white" fontFamily={"honeyMushroom"}>
           Mushroom Info Bank
         </Heading>
         <Container mb="10" width={{ base: "70vw", md: "50vw", lg: "30vw" }}>

@@ -2,21 +2,13 @@ import { useUser } from "@auth0/nextjs-auth0";
 import {
   Container,
   Flex,
-  Grid,
   Heading,
-  Input,
   Progress,
   SimpleGrid,
   Spinner,
-  Square,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
   Text,
-  Tr,
 } from "@chakra-ui/react";
-import Link from "next/link";
+
 import {
   Chart,
   PointElement,
@@ -26,13 +18,10 @@ import {
   LinearScale,
 } from "chart.js";
 
-import { currLevelInfo, sortObjectByNumValues } from "../utils/client_safe";
+import { currLevelInfo } from "../utils/client_safe";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import TopLevelWrapper from "./components/TopLvlWrapper";
-import { BarChart, chartColors } from "./components/BarChart";
-import { useState } from "react";
-import Fuse from "fuse.js";
 
 Chart.register(
   BarElement,
@@ -61,21 +50,8 @@ const Profile = () => {
     snapshot.data?.level
   );
 
-  const heatmaps = trpc.downloadHeatMaps.useQuery({
-    user_id: user?.sub ?? null,
-  }).data;
-
   const xpEarnedThisLevel = boundaryAhead - boundaryBehind - xpToNextLevel;
   const percentageProgress = (xpEarnedThisLevel / xpToNextLevel) * 100;
-
-  const [searchInput, setSearchInput] = useState("");
-
-  const mushroomNames =
-    snapshot.data?.snapshot &&
-    Object.entries(snapshot.data?.snapshot).map((kvp) => kvp[0]);
-
-  const fuse = new Fuse(mushroomNames ?? []);
-  const fuzzySearchResult = fuse.search(searchInput).map((res) => res.item);
 
   return (
     <TopLevelWrapper backgroundColor={"#EDF2F7"}>
@@ -97,13 +73,13 @@ const Profile = () => {
             >
               Level {snapshot.data?.level}
             </Text>
-            <Text color="green.400" mt={5} fontSize="2xl">
+            <Text color="green.400" mt={5} fontSize="2xl" fontFamily="rounded">
               XP: {xpQuery.data ?? 0}
             </Text>
           </>
         )}
 
-        <Text color="blue.600" fontWeight="semibold">
+        <Text color="blue.600" fontFamily="rounded">
           xp to next level: {xpToNextLevel}
         </Text>
         <Progress
@@ -115,171 +91,41 @@ const Profile = () => {
           width="80%"
         />
 
-        <Heading fontSize="large" mb={2} mt={5}>
-          Stats for level: {snapshot.data?.level}
+        <Heading fontSize="large" mb={2} mt={5} fontFamily="rounded">
+          Stats for level {snapshot.data?.level}
         </Heading>
         <SimpleGrid columns={3} m={5}>
           {Object.entries(metaArr ?? {}).map((kvp) => {
             const name = kvp[0];
             const data = kvp[1];
             return (
-              <Container key={name}>
+              <Container key={name} fontFamily="rounded">
                 <Heading
-                  fontSize={"medium"}
+                  fontSize="3xl"
                   style={{ textTransform: "capitalize" }}
+                  fontFamily={"honeyMushroom"}
+                  fontWeight="thin"
                 >
                   {name}
                 </Heading>
-                <Text color="blue.500">
+                <Text color="blue.500" fontFamily="rounded" fontSize={"xl"}>
                   {data?.percentageCorrect?.toFixed(0) ?? 0}% Correct
                 </Text>
-                <Text>{data?.correct ?? 0} correct answers</Text>
-                <Text>{data?.incorrect ?? 0} incorrect answers</Text>
+                <Text>
+                  {" "}
+                  <span style={{ color: "green" }}>
+                    {data?.correct ?? 0}
+                  </span>{" "}
+                  correct ids
+                </Text>
+                <Text>
+                  <span style={{ color: "red" }}>{data?.incorrect ?? 0}</span>{" "}
+                  incorrect ids
+                </Text>
               </Container>
             );
           })}
         </SimpleGrid>
-
-        <TableContainer
-          maxWidth={{ base: "90%", lg: "60%" }}
-          mt={5}
-          mb={5}
-          whiteSpace="break-spaces"
-          bgColor={"white"}
-        >
-          <Input
-            placeholder="Search"
-            margin="1rem"
-            width="50%"
-            value={searchInput}
-            onInput={(e) => {
-              const target = e.target as HTMLInputElement;
-              setSearchInput(target.value);
-            }}
-          ></Input>
-          <Table colorScheme="blue">
-            <Tbody>
-              {snapshot.data?.snapshot &&
-                heatmaps &&
-                Object.entries(snapshot.data?.snapshot)
-                  .filter(
-                    (kvp) => fuzzySearchResult.includes(kvp[0]) || !searchInput
-                  )
-                  .map((kvp) => {
-                    const mushroom = kvp[0];
-                    const misIdentifiedAs = kvp[1];
-                    const sortedMisIdentifiedAs =
-                      sortObjectByNumValues(misIdentifiedAs);
-                    const heatmap = heatmaps[mushroom].slice(0, 30);
-
-                    const numCorrect = heatmap.filter(
-                      (result) => result.correct_answer
-                    ).length;
-                    const numIncorrect = heatmap.filter(
-                      (result) => !result.correct_answer
-                    ).length;
-
-                    const accuracy = Math.ceil(
-                      (numCorrect / (numCorrect + numIncorrect)) * 100
-                    );
-
-                    return (
-                      <Tr key={mushroom}>
-                        <Td p={3} verticalAlign="top">
-                          <Flex direction="column" gap="2rem">
-                            <Heading
-                              fontFamily={"honeyMushroom"}
-                              textTransform="capitalize"
-                              size={"lg"}
-                            >
-                              🍄 {mushroom}
-                            </Heading>
-                            <Text
-                              fontSize="lg"
-                              color={accuracy > 50 ? "green.500" : "red.400"}
-                            >
-                              {Number.isNaN(accuracy)
-                                ? ``
-                                : ` 🎯 ${accuracy}% accuracy`}
-                            </Text>
-
-                            <Container>
-                              <Heading
-                                size="sm"
-                                fontWeight="thin"
-                                fontFamily={"honeyMushroom"}
-                                color={"green.600"}
-                                visibility={
-                                  heatmap.length ? "visible" : "hidden"
-                                }
-                              >
-                                Success heatmap
-                              </Heading>
-
-                              <Grid gridTemplateColumns={"repeat(7, 0fr)"}>
-                                {heatmap.map((result) => (
-                                  <Square
-                                    size="40px"
-                                    key={result.timestamp}
-                                    bg={
-                                      result.correct_answer
-                                        ? "green.200"
-                                        : "red.200"
-                                    }
-                                  />
-                                ))}
-                              </Grid>
-                            </Container>
-                          </Flex>
-                        </Td>
-                        <Td
-                          p={3}
-                          wordBreak={"break-word"}
-                          color="blue"
-                          display="flex"
-                          flexDirection="column"
-                          alignItems="center"
-                        >
-                          <Heading
-                            size="sm"
-                            fontFamily={"honeyMushroom"}
-                            fontWeight="thin"
-                            color="black"
-                          >
-                            Misidentified as
-                          </Heading>
-                          <ol>
-                            {Object.keys(sortedMisIdentifiedAs).map(
-                              (name, i) => {
-                                return (
-                                  <li key={name}>
-                                    <Link href={`/bank/${name}`} passHref>
-                                      {name}{" "}
-                                      <Square
-                                        bg={chartColors[i]}
-                                        size="10px"
-                                        display="inline-flex"
-                                      />
-                                    </Link>
-                                  </li>
-                                );
-                              }
-                            )}
-                          </ol>
-                          {Object.keys(sortedMisIdentifiedAs).length > 0 ? (
-                            <div style={{ height: "200px", marginTop: "3rem" }}>
-                              <BarChart kvp={sortedMisIdentifiedAs} />
-                            </div>
-                          ) : (
-                            <Text color="green.400">No mistake data!</Text>
-                          )}
-                        </Td>
-                      </Tr>
-                    );
-                  })}
-            </Tbody>
-          </Table>
-        </TableContainer>
       </Flex>
     </TopLevelWrapper>
   );

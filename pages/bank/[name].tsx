@@ -76,7 +76,10 @@ const InfoBank = ({
 
       <Heading>{mushroomName} mushroom</Heading>
 
-      <Link href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}>
+      <Link
+        href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}
+        target="_blank"
+      >
         <Button m={2} bgColor="burlywood">
           More Info
         </Button>
@@ -99,6 +102,7 @@ const InfoBank = ({
               style={{ cursor: "pointer" }}
               placeholder="blur"
               blurDataURL="/loading.gif"
+              priority
             />
           ))}
         </SimpleGrid>
