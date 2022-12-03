@@ -1,6 +1,8 @@
 import { Flex, Heading } from "@chakra-ui/react";
 import { BiUser } from "react-icons/bi";
 import { CiVault } from "react-icons/ci";
+import { BsBook } from "react-icons/bs";
+import { FaRegLightbulb } from "react-icons/fa";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
@@ -27,9 +29,9 @@ const Home: NextPage = () => {
           p={5}
           textAlign="center"
           size="4xl"
-          fontFamily="honeyMushroom, mono"
-          letterSpacing="wide"
           color={brandColors[900]}
+          fontFamily="honeyMushroom"
+          letterSpacing="wide"
         >
           Mush-ine learning! 🍄
         </Heading>
@@ -55,11 +57,34 @@ const Home: NextPage = () => {
             Profile
           </CustomBtn>
 
-          <CustomBtn brandColor={200} href="/bank" icon={CiVault}>
-            Mushroom bank
-          </CustomBtn>
+          <Heading
+            size="md"
+            pt={5}
+            fontFamily="honeyMushroom, mono"
+            letterSpacing="wide"
+          >
+            Learning
+          </Heading>
+          <Flex direction={{ base: "column", md: "row" }}>
+            <CustomBtn brandColor={200} href="/insights" icon={FaRegLightbulb}>
+              Insights
+            </CustomBtn>
 
-          <Heading size="md" pt={5}>
+            <CustomBtn brandColor={200} href="/study" icon={BsBook}>
+              Recommended study
+            </CustomBtn>
+
+            <CustomBtn brandColor={200} href="/bank" icon={CiVault}>
+              Mushroom bank
+            </CustomBtn>
+          </Flex>
+
+          <Heading
+            size="md"
+            pt={5}
+            fontFamily="honeyMushroom, mono"
+            letterSpacing="wide"
+          >
             Games
           </Heading>
           <Flex direction={{ base: "column", md: "row" }}>

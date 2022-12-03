@@ -16,6 +16,10 @@ export const theme = extendTheme({
   colors: {
     brand: { ...brandColors },
   },
+  fonts: {
+    header: `'rounded', sans-serif`,
+    body: `'rounded', sans-serif`,
+  },
 });
 
 function MyApp({ Component, pageProps }: AppProps) {

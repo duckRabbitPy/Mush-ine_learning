@@ -132,10 +132,17 @@ const Forage = () => {
     <TopLevelWrapper backgroundColor="#091122">
       <Flex gap={2} direction="column" alignItems="center">
         <HomeBtn w="-moz-fit-content" mt={3} />
-        <Flex direction="column" gap={2}>
+        <Flex direction="column" gap={2} alignItems="center">
           {!gameOver && !getForageMushrooms.isRefetching && (
             <>
-              <Heading size={"md"} mb={2} pl={2} pr={2} color="white">
+              <Heading
+                size={"md"}
+                mb={2}
+                pl={2}
+                pr={2}
+                color="white"
+                fontFamily="rounded"
+              >
                 {correctMushroom?.name
                   ? `Find 🔎 the ${correctMushroom?.name} mushroom`
                   : "Forage Game 🍄"}

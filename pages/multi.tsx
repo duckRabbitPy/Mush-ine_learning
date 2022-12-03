@@ -115,7 +115,12 @@ const Multi = () => {
     <TopLevelWrapper backgroundColor="#091122">
       <Flex gap={5} direction="column" alignItems="center">
         <HomeBtn w="-moz-fit-content" mt={3} />
-        <Heading color="white" fontSize="3xl">
+        <Heading
+          color="white"
+          fontSize="3xl"
+          fontFamily={"honeyMushroom"}
+          letterSpacing="widest"
+        >
           Multi Quiz
         </Heading>
         <Flex gap={2} direction={"column"} margin={5}>

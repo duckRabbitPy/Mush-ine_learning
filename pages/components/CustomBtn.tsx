@@ -27,7 +27,7 @@ export const CustomBtn = ({
       <Button
         m={2}
         color={"white"}
-        fontFamily={"honeyMushroom"}
+        fontFamily="rounded"
         letterSpacing={"0.1rem"}
         backgroundColor={`brand.${brandColor}`}
         onClick={() => clickSound?.play()}
