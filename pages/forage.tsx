@@ -157,6 +157,7 @@ const Forage = () => {
                     alt="forage game"
                     blurDataURL={"/forage.png"}
                     className={"pulse"}
+                    priority
                   ></Image>
                   <Button
                     onClick={() => {

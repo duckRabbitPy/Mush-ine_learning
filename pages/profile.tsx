@@ -13,8 +13,6 @@ import {
   Tbody,
   Td,
   Text,
-  Th,
-  Thead,
   Tr,
 } from "@chakra-ui/react";
 import Link from "next/link";
@@ -31,7 +29,7 @@ import { currLevelInfo, sortObjectByNumValues } from "../utils/client_safe";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import TopLevelWrapper from "./components/TopLvlWrapper";
-import { BarChart } from "./components/BarChart";
+import { BarChart, chartColors } from "./components/BarChart";
 
 Chart.register(
   BarElement,
@@ -63,8 +61,6 @@ const Profile = () => {
   const heatmaps = trpc.downloadHeatMaps.useQuery({
     user_id: user?.sub ?? null,
   }).data;
-
-  console.log(heatmaps);
 
   const xpEarnedThisLevel = boundaryAhead - boundaryBehind - xpToNextLevel;
   const percentageProgress = (xpEarnedThisLevel / xpToNextLevel) * 100;
@@ -139,12 +135,6 @@ const Profile = () => {
           whiteSpace="break-spaces"
         >
           <Table colorScheme="blue">
-            <Thead>
-              <Tr>
-                <Th>Mushroom</Th>
-                <Th>Misidentified as</Th>
-              </Tr>
-            </Thead>
             <Tbody>
               {snapshot.data?.snapshot &&
                 heatmaps &&
@@ -167,55 +157,91 @@ const Profile = () => {
                   );
 
                   return (
-                    <Tr key={mushroom}>
-                      <Td p={3}>
-                        <Text
-                          fontFamily={"honeyMushroom"}
-                          textTransform="capitalize"
-                        >
-                          🍄 {mushroom}
-                        </Text>
-                        <Text>
-                          {Number.isNaN(accuracy)
-                            ? ``
-                            : `${accuracy}% accuracy`}
-                        </Text>
-                        <Grid gridTemplateColumns={"repeat(7, 0fr)"}>
-                          {heatmap.map((result) => (
-                            <Square
-                              size="20px"
-                              key={result.timestamp}
-                              bg={
-                                result.correct_answer ? "green.200" : "red.200"
-                              }
-                            />
-                          ))}
-                        </Grid>
-                      </Td>
-                      <Td p={3} wordBreak={"break-word"} color="blue">
-                        <Flex
-                          flexDirection={{ base: "column", lg: "row" }}
-                          alignItems={{ base: "flex-end", lg: "center" }}
-                        >
-                          <ol>
-                            {Object.keys(sortedMisIdentifiedAs).map((name) => {
-                              return (
-                                <li key={name}>
-                                  <Link href={`/bank/${name}`} passHref>
-                                    {name}
-                                  </Link>
-                                </li>
-                              );
-                            })}
-                          </ol>
-                          {Object.keys(sortedMisIdentifiedAs).length > 0 ? (
-                            <div style={{ height: "200px", margin: "20px" }}>
-                              <BarChart kvp={sortedMisIdentifiedAs} />
-                            </div>
-                          ) : (
-                            <Text color="green.400">No mistake data!</Text>
-                          )}
+                    <Tr key={mushroom} paddingTop="2rem">
+                      <Td p={3} verticalAlign="top">
+                        <Flex direction="column" gap="2rem">
+                          <Heading
+                            fontFamily={"honeyMushroom"}
+                            textTransform="capitalize"
+                            size={"lg"}
+                          >
+                            🍄 {mushroom}
+                          </Heading>
+                          <Text
+                            fontSize="lg"
+                            color={accuracy > 50 ? "green.500" : "red.400"}
+                          >
+                            {Number.isNaN(accuracy)
+                              ? ``
+                              : ` 🎯 ${accuracy}% accuracy`}
+                          </Text>
+
+                          <Container>
+                            <Heading
+                              size="sm"
+                              fontWeight="thin"
+                              fontFamily={"honeyMushroom"}
+                              color={"green.600"}
+                              visibility={heatmap.length ? "visible" : "hidden"}
+                            >
+                              Success heatmap
+                            </Heading>
+
+                            <Grid gridTemplateColumns={"repeat(7, 0fr)"}>
+                              {heatmap.map((result) => (
+                                <Square
+                                  size="40px"
+                                  key={result.timestamp}
+                                  bg={
+                                    result.correct_answer
+                                      ? "green.200"
+                                      : "red.200"
+                                  }
+                                />
+                              ))}
+                            </Grid>
+                          </Container>
                         </Flex>
+                      </Td>
+                      <Td
+                        p={3}
+                        wordBreak={"break-word"}
+                        color="blue"
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                      >
+                        <Heading
+                          size="sm"
+                          fontFamily={"honeyMushroom"}
+                          fontWeight="thin"
+                          color="black"
+                        >
+                          Misidentified as
+                        </Heading>
+                        <ol>
+                          {Object.keys(sortedMisIdentifiedAs).map((name, i) => {
+                            return (
+                              <li key={name}>
+                                <Link href={`/bank/${name}`} passHref>
+                                  {name}{" "}
+                                  <Square
+                                    bg={chartColors[i]}
+                                    size="10px"
+                                    display="inline-flex"
+                                  />
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ol>
+                        {Object.keys(sortedMisIdentifiedAs).length > 0 ? (
+                          <div style={{ height: "200px", marginTop: "3rem" }}>
+                            <BarChart kvp={sortedMisIdentifiedAs} />
+                          </div>
+                        ) : (
+                          <Text color="green.400">No mistake data!</Text>
+                        )}
                       </Td>
                     </Tr>
                   );

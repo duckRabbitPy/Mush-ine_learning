@@ -1,9 +1,17 @@
 import { Bar } from "react-chartjs-2";
-import { brandColors } from "../_app";
+
+export const chartColors = [
+  "#665191",
+  "#a05195",
+  "#d45087",
+  "#f95d6a",
+  "#ff7c43",
+  "#ffa600",
+];
 
 export function BarChart({ kvp }: { kvp: Record<string, number | string> }) {
-  const labels = Object.keys(kvp).slice(0, 3);
-  const data = Object.values(kvp).slice(0, 3);
+  const labels = Object.keys(kvp).slice(0, 5);
+  const data = Object.values(kvp).slice(0, 5);
   return (
     <Bar
       data={{
@@ -11,7 +19,7 @@ export function BarChart({ kvp }: { kvp: Record<string, number | string> }) {
         datasets: [
           {
             data,
-            backgroundColor: brandColors[300],
+            backgroundColor: chartColors,
             borderColor: "rgb(135, 211, 124)",
           },
         ],
@@ -36,6 +44,10 @@ export function BarChart({ kvp }: { kvp: Record<string, number | string> }) {
               display: false,
             },
             suggestedMin: 0,
+            title: {
+              display: true,
+              text: "frequency",
+            },
           },
         },
       }}
