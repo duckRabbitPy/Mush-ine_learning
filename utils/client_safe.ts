@@ -120,3 +120,7 @@ export function sortObjectByNumValues(obj: Record<string, number>) {
       return acc;
     }, {} as Record<string, number>);
 }
+
+export function uniqByFilter<T>(array: T[]) {
+  return array.filter((value, index) => array.indexOf(value) === index);
+}

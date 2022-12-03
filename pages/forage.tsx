@@ -199,6 +199,9 @@ const Forage = () => {
               Save score
             </Button>
           )}
+          {gameOver && saveScore.isSuccess && (
+            <Text color="white">Score saved! Return to home </Text>
+          )}
         </Flex>
         <Container>
           {round !== 0 && round !== 4 && getForageMushrooms.isLoading ? (

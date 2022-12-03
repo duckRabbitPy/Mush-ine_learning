@@ -1,4 +1,11 @@
-import { Button, Flex, Heading, SimpleGrid, Spinner } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Heading,
+  SimpleGrid,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
@@ -203,6 +210,9 @@ const Tile = () => {
                   >
                     Save score
                   </Button>
+                )}
+                {gameOver && saveScore.isSuccess && (
+                  <Text color="white">Score saved! Return to home </Text>
                 )}
                 <SimpleGrid
                   columns={{ base: 2, md: 3 }}

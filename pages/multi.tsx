@@ -1,4 +1,11 @@
-import { Button, Flex, SimpleGrid, Spinner, Heading } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  SimpleGrid,
+  Spinner,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
@@ -168,7 +175,7 @@ const Multi = () => {
 
               <Flex direction={"column"} gap={1}>
                 <ProgressIndicator
-                  round={round}
+                  round={gameOver ? undefined : round}
                   score={score}
                   progress={progress}
                 />
@@ -182,6 +189,9 @@ const Multi = () => {
                   >
                     Save score
                   </Button>
+                )}
+                {gameOver && saveScore.isSuccess && (
+                  <Text color="white">Score saved! Return to home </Text>
                 )}
                 {round > 0 &&
                   options?.map((name) => (
