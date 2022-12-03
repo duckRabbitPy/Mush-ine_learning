@@ -127,14 +127,25 @@ const Profile = () => {
                 <Heading
                   fontSize={"medium"}
                   style={{ textTransform: "capitalize" }}
+                  fontFamily={"honeyMushroom"}
+                  fontWeight="thin"
                 >
                   {name}
                 </Heading>
                 <Text color="blue.500">
                   {data?.percentageCorrect?.toFixed(0) ?? 0}% Correct
                 </Text>
-                <Text>{data?.correct ?? 0} correct answers</Text>
-                <Text>{data?.incorrect ?? 0} incorrect answers</Text>
+                <Text>
+                  {" "}
+                  <span style={{ color: "green" }}>
+                    {data?.correct ?? 0}
+                  </span>{" "}
+                  correct ids
+                </Text>
+                <Text>
+                  <span style={{ color: "red" }}>{data?.incorrect ?? 0}</span>{" "}
+                  incorrect ids
+                </Text>
               </Container>
             );
           })}
@@ -157,7 +168,10 @@ const Profile = () => {
               setSearchInput(target.value);
             }}
           ></Input>
-          <Table colorScheme="blue">
+          <Table
+            colorScheme="blue"
+            style={{ borderSpacing: "0 ", borderCollapse: "separate" }}
+          >
             <Tbody>
               {snapshot.data?.snapshot &&
                 heatmaps &&
