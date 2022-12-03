@@ -16,7 +16,8 @@ import {
   updateRoundMetaData,
   getCurrentLevel,
   getRoundMetadata,
-  summedWeights,
+  SummedWeights,
+  getHeatmapData,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 
@@ -139,7 +140,7 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      let snapshot = null as Record<string, summedWeights> | undefined | null;
+      let snapshot = null as Record<string, SummedWeights> | undefined | null;
       if (input.user_id) {
         const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
         const snapshotData = await getLevelSnapshot(currLevel, input.user_id);
@@ -212,6 +213,20 @@ export const appRouter = router({
         return null;
       }
       return snapshot;
+    }),
+  downloadHeatMaps: publicProcedure
+    .input(
+      z.object({
+        user_id: string().nullable(),
+      })
+    )
+    .query(async ({ input }) => {
+      if (!input.user_id) {
+        return null;
+      }
+      const mushroomNames = await getMushroomNames();
+      const heatmaps = await getHeatmapData(mushroomNames, input.user_id);
+      return heatmaps;
     }),
 });
 

@@ -150,6 +150,7 @@ const Tile = () => {
                 blurDataURL={"/tile.png"}
                 alt="tile game"
                 className={"pulse"}
+                priority
               ></Image>
               <Button
                 onClick={() => {
@@ -182,6 +183,7 @@ const Tile = () => {
                         alt="testMushroom"
                         height={350}
                         width={350}
+                        priority
                       />
                     );
                   })

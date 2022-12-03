@@ -127,6 +127,7 @@ const Multi = () => {
                 width={200}
                 blurDataURL={"/multi.png"}
                 alt="multi game"
+                priority
                 className={"pulse"}
               ></Image>
               <Button
