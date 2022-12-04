@@ -17,6 +17,7 @@ import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { useGameState } from "../hooks/useGameState";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
+import { SaveBtn } from "./components/SaveBtn";
 
 export const reactQueryConfig = {
   refetchOnMount: false,
@@ -137,6 +138,7 @@ const Forage = () => {
             <>
               <Heading
                 size={"md"}
+                mt={2}
                 mb={2}
                 pl={2}
                 pr={2}
@@ -144,10 +146,8 @@ const Forage = () => {
                 fontFamily="rounded"
               >
                 {correctMushroom?.name
-                  ? `Find 🔎 the ${correctMushroom?.name} mushroom`
+                  ? `Find 🔎 and click 👉🏼 on the ${correctMushroom?.name} mushroom`
                   : "Forage Game 🍄"}
-                {inputAnswer === correctMushroom?.name && " ✅"}
-                {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
               </Heading>
               <ProgressIndicator
                 round={round}
@@ -178,27 +178,30 @@ const Forage = () => {
                   </Button>
                 </Flex>
               ) : (
-                <Button
-                  onClick={handleNextBtn}
-                  w="-moz-fit-content"
-                  alignSelf="center"
-                >
-                  Next
-                </Button>
+                <>
+                  <Button
+                    onClick={handleNextBtn}
+                    w="-moz-fit-content"
+                    alignSelf="center"
+                    mb={5}
+                    visibility={
+                      !getForageMushrooms.isLoading && inputAnswer
+                        ? "visible"
+                        : "hidden"
+                    }
+                  >
+                    Next
+                  </Button>
+                </>
               )}
             </>
           )}
           {gameOver && <Text>Game over!</Text>}
-          {gameOver && !saveScore.isSuccess && (
-            <Button
-              onClick={handleSaveBtn}
-              w="-moz-fit-content"
-              alignSelf="center"
-              backgroundColor={saveScore?.isLoading ? "green.300" : ""}
-            >
-              Save score
-            </Button>
-          )}
+
+          <SaveBtn
+            show={gameOver && !saveScore.isSuccess}
+            handleSaveBtn={handleSaveBtn}
+          />
           {gameOver && saveScore.isSuccess && (
             <Text color="white">Score saved! Return to home </Text>
           )}

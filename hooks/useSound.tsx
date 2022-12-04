@@ -3,6 +3,7 @@ const audioFiles = {
   correctSound: "/correct.mp3",
   incorrectSound: "/incorrect.mp3",
   startSound: "/game-start.wav",
+  saveSound: "/save.mp3",
 };
 
 export function useSound() {

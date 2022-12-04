@@ -18,6 +18,7 @@ import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { useState } from "react";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
+import { SaveBtn } from "./components/SaveBtn";
 
 const Tile = () => {
   const {
@@ -202,15 +203,10 @@ const Tile = () => {
               </SimpleGrid>
 
               <Flex direction={"column"} gap={1}>
-                {gameOver && !saveScore.isSuccess && (
-                  <Button
-                    onClick={handleSaveBtn}
-                    w="-moz-fit-content"
-                    alignSelf="center"
-                  >
-                    Save score
-                  </Button>
-                )}
+                <SaveBtn
+                  show={gameOver && !saveScore.isSuccess}
+                  handleSaveBtn={handleSaveBtn}
+                />
                 {gameOver && saveScore.isSuccess && (
                   <Text color="white">Score saved! Return to home </Text>
                 )}

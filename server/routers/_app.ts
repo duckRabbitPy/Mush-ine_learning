@@ -1,9 +1,10 @@
 import { number, string, z } from "zod";
-import { reduceAnswerCount } from "../../utils/client_safe";
+import { reduceAnswerCount, uniqByFilter } from "../../utils/client_safe";
 import {
   getForageMushrooms,
   getMushroomNames,
   getMushroomSet,
+  randomArrItem,
 } from "../../utils/server_side";
 import {
   getCommonConfusions,
@@ -20,6 +21,8 @@ import {
   getHeatmapData,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudImage } from "../../types";
 
 export const appRouter = router({
   retrieveUserScore: publicProcedure
@@ -227,6 +230,51 @@ export const appRouter = router({
       const mushroomNames = await getMushroomNames();
       const heatmaps = await getHeatmapData(mushroomNames, input.user_id);
       return heatmaps;
+    }),
+  getStudyImages: publicProcedure
+    .input(
+      z.object({
+        user_id: string().nullable(),
+      })
+    )
+    .query(async ({ input }) => {
+      if (!input.user_id) {
+        return null;
+      }
+
+      const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
+      const snapshotResult = await getLevelSnapshot(currLevel, input.user_id);
+
+      const mostTroublesomeArr = snapshotResult
+        ? Object.entries(snapshotResult.snapshot).map((kvp) => {
+            const highestWeightedTuple = Object.entries(kvp[1]).sort(
+              (a, b) => b[1] - a[1]
+            )[0];
+
+            if (highestWeightedTuple) {
+              return highestWeightedTuple[0];
+            }
+          })
+        : [];
+
+      const uniqTroublesome = uniqByFilter(mostTroublesomeArr).flatMap((f) =>
+        f ? [f] : []
+      );
+
+      const chosenMushroomName = randomArrItem(uniqTroublesome);
+
+      const cloudinaryResult = await cloudinary.api.resources({
+        type: "upload",
+        prefix: `mushroom_images/${chosenMushroomName}`,
+        max_results: 10,
+      });
+
+      const images = cloudinaryResult.resources as CloudImage[];
+
+      const studyImgSrcs = images
+        .map((img: CloudImage) => img.url)
+        .flatMap((f) => (f ? [f] : []));
+      return { studyImgSrcs, chosenMushroomName };
     }),
 });
 
