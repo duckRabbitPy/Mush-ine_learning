@@ -26,3 +26,5 @@ export const SaveBtn = ({ styles, handleSaveBtn, show }: SaveProps) => {
     </Button>
   );
 };
+
+export default SaveBtn;
