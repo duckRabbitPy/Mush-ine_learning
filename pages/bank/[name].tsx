@@ -69,7 +69,7 @@ const InfoBank = ({
       user_id: user?.sub ?? null,
     },
     { enabled: !!user?.sub }
-  );
+  ).data;
 
   return (
     <Container mt={5}>
@@ -122,10 +122,14 @@ const InfoBank = ({
         <Heading as={"h2"} fontSize={"large"} mt={5}>
           Training data
         </Heading>
-        <p>You most commonly confuse {mushroomName} with: </p>
+        {lookalikes && lookalikes.length > 0 ? (
+          <p>You most commonly confuse {mushroomName} with: </p>
+        ) : (
+          <p>No trianing data</p>
+        )}
 
         <ol>
-          {lookalikes.data?.map((mushroom) => (
+          {lookalikes?.map((mushroom) => (
             <Link
               key={mushroom.misidentified_as}
               href={`/bank/${mushroom.misidentified_as}`}
