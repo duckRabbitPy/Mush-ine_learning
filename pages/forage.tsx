@@ -137,6 +137,7 @@ const Forage = () => {
             <>
               <Heading
                 size={"md"}
+                mt={2}
                 mb={2}
                 pl={2}
                 pr={2}
@@ -144,10 +145,8 @@ const Forage = () => {
                 fontFamily="rounded"
               >
                 {correctMushroom?.name
-                  ? `Find 🔎 the ${correctMushroom?.name} mushroom`
+                  ? `Find 🔎 and click 👉🏼 on the ${correctMushroom?.name} mushroom`
                   : "Forage Game 🍄"}
-                {inputAnswer === correctMushroom?.name && " ✅"}
-                {inputAnswer && inputAnswer !== correctMushroom?.name && "❌"}
               </Heading>
               <ProgressIndicator
                 round={round}
@@ -178,13 +177,21 @@ const Forage = () => {
                   </Button>
                 </Flex>
               ) : (
-                <Button
-                  onClick={handleNextBtn}
-                  w="-moz-fit-content"
-                  alignSelf="center"
-                >
-                  Next
-                </Button>
+                <>
+                  <Button
+                    onClick={handleNextBtn}
+                    w="-moz-fit-content"
+                    alignSelf="center"
+                    mb={5}
+                    visibility={
+                      !getForageMushrooms.isLoading && inputAnswer
+                        ? "visible"
+                        : "hidden"
+                    }
+                  >
+                    Next
+                  </Button>
+                </>
               )}
             </>
           )}

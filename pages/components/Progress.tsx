@@ -11,8 +11,6 @@ export function ProgressIndicator({ progress, score, round }: progressProps) {
       <Flex gap={5} justifyContent="center">
         <Text color="white">Score: {score}</Text>
         {round && <Text color="white">Round: {round}</Text>}
-      </Flex>
-      <Flex gap={2} fontSize="2xl" minHeight={"50px"}>
         {progress.map((r, i) =>
           r ? <Text key={i}>✅</Text> : <Text key={i}>❌</Text>
         )}

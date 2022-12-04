@@ -58,7 +58,7 @@ const Insights = () => {
   return (
     <TopLevelWrapper backgroundColor={"#EDF2F7"}>
       <Flex direction="column" alignItems={"center"}>
-        <Heading mb={10} mt={5}>
+        <Heading mb={10} mt={5} fontFamily="honeyMushroom">
           Mushine Insights
         </Heading>
         <HomeBtn />
