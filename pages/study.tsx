@@ -1,5 +1,5 @@
 import { useUser } from "@auth0/nextjs-auth0";
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex, Heading, Text } from "@chakra-ui/react";
 
 import {
   Chart,
@@ -9,8 +9,7 @@ import {
   LineElement,
   LinearScale,
 } from "chart.js";
-import Link from "next/link";
-import { uniqByFilter } from "../utils/client_safe";
+import Image from "next/image";
 
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
@@ -26,41 +25,30 @@ Chart.register(
 
 const Study = () => {
   const { user } = useUser();
-
-  const snapshot = trpc.downloadLevelSnapShot.useQuery({
+  const studyImgData = trpc.getStudyImages.useQuery({
     user_id: user?.sub ?? null,
-  });
+  }).data;
 
-  const mostTroublesomeArr = snapshot.data?.snapshot
-    ? Object.entries(snapshot.data?.snapshot).map((kvp) => {
-        const highWeightReccord = Object.entries(kvp[1]).sort(
-          (a, b) => b[1] - a[1]
-        )[0];
-        if (highWeightReccord) {
-          return highWeightReccord[0];
-        }
-      })
-    : [];
-
-  const uniqTroublesome = uniqByFilter(mostTroublesomeArr).flatMap((f) =>
-    f ? [f] : []
-  );
+  const images = studyImgData?.studyImgSrcs;
+  const name = studyImgData?.chosenMushroomName;
 
   return (
     <TopLevelWrapper backgroundColor={"#EDF2F7"}>
       <Flex direction="column" alignItems="center" gap="1rem">
-        <HomeBtn />
+        <HomeBtn mt={5} />
         <Heading fontFamily={"honeyMushroom"}>Homework</Heading>
+        <Text>{name} seems to be causing you problems, pay attention!</Text>
         <ul>
-          {uniqTroublesome.map((mushroomName) => {
+          {images?.map((src) => {
             return (
-              <Link
-                key={mushroomName}
-                href={`/bank/${mushroomName}`}
-                target="_blank"
-              >
-                <li>{mushroomName}</li>
-              </Link>
+              <Image
+                key={src}
+                src={src ?? ""}
+                height={800}
+                width={800}
+                alt="fullsize study mushrooms"
+                style={{ marginBottom: "1rem" }}
+              />
             );
           })}
         </ul>
