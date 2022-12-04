@@ -133,6 +133,7 @@ const InfoBank = ({
             <Link
               key={mushroom.misidentified_as}
               href={`/bank/${mushroom.misidentified_as}`}
+              target="_blank"
             >
               <li>{mushroom.misidentified_as}</li>
             </Link>

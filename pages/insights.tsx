@@ -172,7 +172,11 @@ const Insights = () => {
                           {Object.keys(sortedMisIdentifiedAs).map((name, i) => {
                             return (
                               <li key={name}>
-                                <Link href={`/bank/${name}`} passHref>
+                                <Link
+                                  href={`/bank/${name}`}
+                                  passHref
+                                  target="_blank"
+                                >
                                   {name}{" "}
                                   <Square
                                     bg={chartColors[i]}
