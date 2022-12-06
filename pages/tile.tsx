@@ -13,12 +13,13 @@ import { RoundMetadata, TrainingData } from "../utils/server_side";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
 import { returnLvl } from "../utils/client_safe";
-import { useGameState } from "../hooks/useGameState";
+import { tileDifficulty, useGameState } from "../hooks/useGameState";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { useState } from "react";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
 import { SaveBtn } from "./components/SaveBtn";
+import { DifficultySetting } from "./components/DifficultySetting";
 
 const Tile = () => {
   const {
@@ -45,11 +46,12 @@ const Tile = () => {
     user,
   } = useGameState();
 
+  const [maxIncorrect, setDifficulty] = useState(tileDifficulty.medium);
   const [roundOver, setRoundOver] = useState(false);
   const getMushroomSet = trpc.mushroomSet.useQuery(
     {
       omitArr,
-      numOptions: 8,
+      numOptions: maxIncorrect,
       user_id: user?.sub ?? null,
     },
     {
@@ -145,7 +147,12 @@ const Tile = () => {
 
   return (
     <TopLevelWrapper backgroundColor="#091122">
-      <Flex gap={5} direction="column" alignItems="center">
+      <Flex
+        gap={5}
+        direction="column"
+        alignItems="center"
+        paddingBottom="200px"
+      >
         <HomeBtn w="-moz-fit-content" mt={3} />
         <Heading color="white" fontFamily={"honeyMushroom"}>
           {" "}
@@ -164,6 +171,13 @@ const Tile = () => {
                 className={"pulse"}
                 priority
               ></Image>
+
+              <DifficultySetting
+                setDifficulty={setDifficulty}
+                difficultyNum={maxIncorrect}
+                difficultyType={tileDifficulty}
+              />
+
               <Button
                 onClick={() => {
                   setRound(round + 1);

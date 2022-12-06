@@ -13,11 +13,13 @@ import { RoundMetadata, TrainingData } from "../utils/server_side";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
 import { returnLvl } from "../utils/client_safe";
-import { useGameState } from "../hooks/useGameState";
+import { baseDifficulty, useGameState } from "../hooks/useGameState";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
 import { SaveBtn } from "./components/SaveBtn";
+import { useState } from "react";
+import { DifficultySetting } from "./components/DifficultySetting";
 
 const Multi = () => {
   const {
@@ -44,11 +46,13 @@ const Multi = () => {
     user,
   } = useGameState();
 
+  const [maxIncorrect, setDifficulty] = useState(4);
+
   const getMushroomSet = trpc.mushroomSet.useQuery(
     {
       omitArr,
       user_id: user?.sub ?? null,
-      numOptions: 3,
+      numOptions: maxIncorrect,
     },
     {
       enabled: round !== 0 && round !== 4,
@@ -121,7 +125,12 @@ const Multi = () => {
 
   return (
     <TopLevelWrapper backgroundColor="#091122">
-      <Flex gap={5} direction="column" alignItems="center">
+      <Flex
+        gap={5}
+        direction="column"
+        alignItems="center"
+        paddingBottom="200px"
+      >
         <HomeBtn w="-moz-fit-content" mt={3} />
         <Heading
           color="white"
@@ -143,6 +152,13 @@ const Multi = () => {
                 priority
                 className={"pulse"}
               ></Image>
+
+              <DifficultySetting
+                setDifficulty={setDifficulty}
+                difficultyNum={maxIncorrect}
+                difficultyType={baseDifficulty}
+              />
+
               <Button
                 onClick={() => {
                   startSound?.play();

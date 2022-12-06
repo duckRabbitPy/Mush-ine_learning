@@ -7,7 +7,13 @@ type Props = {
 };
 
 export const TopLevelWrapper = ({ children, backgroundColor }: Props) => (
-  <div style={{ backgroundColor, height: "fit-content", minHeight: "100vh" }}>
+  <div
+    style={{
+      backgroundColor,
+      height: "fit-content",
+      minHeight: "100vh",
+    }}
+  >
     {children}
   </div>
 );

@@ -14,10 +14,11 @@ import { RoundMetadata } from "../utils/server_side";
 import { extractTrainingData, returnLvl } from "../utils/client_safe";
 import { ProgressIndicator } from "./components/Progress";
 import { useCommonTrpc } from "../hooks/useCommonTrpc";
-import { useGameState } from "../hooks/useGameState";
+import { baseDifficulty, useGameState } from "../hooks/useGameState";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
 import { SaveBtn } from "./components/SaveBtn";
+import { DifficultySetting } from "./components/DifficultySetting";
 
 export const reactQueryConfig = {
   refetchOnMount: false,
@@ -50,12 +51,14 @@ const Forage = () => {
     score,
     setScore,
     user,
+    maxIncorrect,
+    setDifficulty,
   } = useGameState();
 
   const getForageMushrooms = trpc.forageMushrooms.useQuery(
     {
       omitArr,
-      maxIncorrect: 3,
+      maxIncorrect: maxIncorrect,
       user_id: user?.sub ?? null,
     },
     {
@@ -63,6 +66,7 @@ const Forage = () => {
       ...reactQueryConfig,
     }
   );
+
   const forageMushrooms = getForageMushrooms?.data;
   const correctMushroom = forageMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
@@ -131,7 +135,12 @@ const Forage = () => {
 
   return (
     <TopLevelWrapper backgroundColor="#091122">
-      <Flex gap={2} direction="column" alignItems="center">
+      <Flex
+        gap={2}
+        direction="column"
+        alignItems="center"
+        paddingBottom="200px"
+      >
         <HomeBtn w="-moz-fit-content" mt={3} />
         <Flex direction="column" gap={2} alignItems="center">
           {!gameOver && !getForageMushrooms.isRefetching && (
@@ -157,6 +166,9 @@ const Forage = () => {
 
               {round === 0 && !correctMushroom ? (
                 <Flex direction="column" gap="10">
+                  <Text color="white">
+                    You will be shown {} images. Identify the target mushroom.
+                  </Text>
                   <Image
                     src="/forage.png"
                     height={200}
@@ -166,6 +178,13 @@ const Forage = () => {
                     className={"pulse"}
                     priority
                   ></Image>
+
+                  <DifficultySetting
+                    setDifficulty={setDifficulty}
+                    difficultyNum={maxIncorrect}
+                    difficultyType={baseDifficulty}
+                  />
+
                   <Button
                     onClick={() => {
                       startSound?.play();
