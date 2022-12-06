@@ -1,33 +1,17 @@
-import {
-  Button,
-  Flex,
-  SimpleGrid,
-  Spinner,
-  Heading,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Flex, SimpleGrid, Spinner, Heading } from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { RoundMetadata, TrainingData } from "../utils/server_side";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
-import { returnLvl } from "../utils/client_safe";
-import { useGameState } from "../hooks/useGameState";
-import { useCommonTrpc } from "../hooks/useCommonTrpc";
+import { baseDifficulty, useGameState } from "../hooks/useGameState";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
 import { SaveBtn } from "./components/SaveBtn";
+import { DifficultySetting } from "./components/DifficultySetting";
 
 const Multi = () => {
-  const {
-    xpQuery,
-    saveRoundMetaData,
-    saveScore,
-    saveSnapShot,
-    saveTrainingData,
-  } = useCommonTrpc();
-
   const {
     trainingResult,
     setTrainingResult,
@@ -42,13 +26,15 @@ const Multi = () => {
     score,
     setScore,
     user,
+    maxIncorrect,
+    setDifficulty,
   } = useGameState();
 
   const getMushroomSet = trpc.mushroomSet.useQuery(
     {
       omitArr,
       user_id: user?.sub ?? null,
-      numOptions: 3,
+      numOptions: maxIncorrect,
     },
     {
       enabled: round !== 0 && round !== 4,
@@ -63,7 +49,7 @@ const Multi = () => {
   const handleSelection = async (name: string) => {
     if (name === correctMushroom) {
       correctSound?.play();
-      setScore(score + 10);
+      setScore(score + maxIncorrect * 5);
       setProgress((prev) => {
         return prev.concat(true);
       });
@@ -101,27 +87,14 @@ const Multi = () => {
     });
   };
 
-  const handleSaveBtn = async () => {
-    const user_id = user?.sub;
-    if (user_id) {
-      const preRoundLevel = returnLvl(xpQuery.data);
-      const postRoundLevel = returnLvl((xpQuery.data ?? 0) + score);
-      saveScore.mutate({ user_id, score });
-      saveTrainingData.mutate({ trainingData: trainingResult, user_id });
-      roundMetaData.length > 1 &&
-        saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
-
-      if (preRoundLevel <= postRoundLevel) {
-        saveSnapShot.mutate({ user_id: user?.sub ?? null });
-      }
-    } else {
-      throw new Error("user object lacking sub property");
-    }
-  };
-
   return (
     <TopLevelWrapper backgroundColor="#091122">
-      <Flex gap={5} direction="column" alignItems="center">
+      <Flex
+        gap={5}
+        direction="column"
+        alignItems="center"
+        paddingBottom="200px"
+      >
         <HomeBtn w="-moz-fit-content" mt={3} />
         <Heading
           color="white"
@@ -143,6 +116,13 @@ const Multi = () => {
                 priority
                 className={"pulse"}
               ></Image>
+
+              <DifficultySetting
+                setDifficulty={setDifficulty}
+                difficultyNum={maxIncorrect}
+                difficultyType={baseDifficulty}
+              />
+
               <Button
                 onClick={() => {
                   startSound?.play();
@@ -182,13 +162,11 @@ const Multi = () => {
                 />
 
                 <SaveBtn
-                  show={gameOver && !saveScore.isSuccess}
-                  handleSaveBtn={handleSaveBtn}
+                  gameOver={gameOver}
+                  score={score}
+                  trainingResult={trainingResult}
+                  roundMetaData={roundMetaData}
                 />
-
-                {gameOver && saveScore.isSuccess && (
-                  <Text color="white">Score saved! Return to home </Text>
-                )}
                 {round > 0 &&
                   options?.map((name) => (
                     <Button
