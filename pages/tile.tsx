@@ -1,20 +1,11 @@
-import {
-  Button,
-  Flex,
-  Heading,
-  SimpleGrid,
-  Spinner,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Flex, Heading, SimpleGrid, Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { RoundMetadata, TrainingData } from "../utils/server_side";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
-import { returnLvl } from "../utils/client_safe";
 import { tileDifficulty, useGameState } from "../hooks/useGameState";
-import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { useState } from "react";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
@@ -22,14 +13,6 @@ import { SaveBtn } from "./components/SaveBtn";
 import { DifficultySetting } from "./components/DifficultySetting";
 
 const Tile = () => {
-  const {
-    xpQuery,
-    saveRoundMetaData,
-    saveScore,
-    saveSnapShot,
-    saveTrainingData,
-  } = useCommonTrpc();
-
   const {
     trainingResult,
     setTrainingResult,
@@ -108,7 +91,7 @@ const Tile = () => {
   };
 
   const handleNextBtn = async () => {
-    setScore(score + maxIncorrect * 5);
+    setScore(score + maxIncorrect * 2);
     setProgress((prev) => {
       return prev.concat(true);
     });
@@ -124,25 +107,6 @@ const Tile = () => {
 
     setRoundOver(false);
     setProgress([]);
-  };
-
-  const handleSaveBtn = async () => {
-    const user_id = user?.sub;
-    const preRoundLevel = returnLvl(xpQuery.data);
-    const postRoundLevel = returnLvl((xpQuery.data ?? 0) + score);
-
-    if (user_id) {
-      saveScore.mutate({ user_id, score });
-      saveTrainingData.mutate({ trainingData: trainingResult, user_id });
-      roundMetaData.length > 1 &&
-        saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
-
-      if (preRoundLevel <= postRoundLevel) {
-        saveSnapShot.mutate({ user_id: user?.sub ?? null });
-      }
-    } else {
-      throw new Error("user object lacking sub property");
-    }
   };
 
   return (
@@ -218,12 +182,11 @@ const Tile = () => {
 
               <Flex direction={"column"} gap={1}>
                 <SaveBtn
-                  show={gameOver && !saveScore.isSuccess}
-                  handleSaveBtn={handleSaveBtn}
+                  gameOver={gameOver}
+                  score={score}
+                  trainingResult={trainingResult}
+                  roundMetaData={roundMetaData}
                 />
-                {gameOver && saveScore.isSuccess && (
-                  <Text color="white">Score saved! Return to home </Text>
-                )}
                 <SimpleGrid
                   columns={{ base: 2, md: 3 }}
                   gap={{ base: 0.5, md: 1 }}

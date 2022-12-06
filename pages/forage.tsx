@@ -11,9 +11,8 @@ import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { RoundMetadata } from "../utils/server_side";
-import { extractTrainingData, returnLvl } from "../utils/client_safe";
+import { extractTrainingData } from "../utils/client_safe";
 import { ProgressIndicator } from "./components/Progress";
-import { useCommonTrpc } from "../hooks/useCommonTrpc";
 import { baseDifficulty, useGameState } from "../hooks/useGameState";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
@@ -27,14 +26,6 @@ export const reactQueryConfig = {
 };
 
 const Forage = () => {
-  const {
-    xpQuery,
-    saveRoundMetaData,
-    saveScore,
-    saveSnapShot,
-    saveTrainingData,
-  } = useCommonTrpc();
-
   const {
     trainingResult,
     setTrainingResult,
@@ -111,26 +102,6 @@ const Forage = () => {
 
     setInputAnswer(null);
     setRound(round + 1);
-  };
-
-  const handleSaveBtn = async () => {
-    const user_id = user?.sub;
-    if (user_id) {
-      const preRoundLevel = returnLvl(xpQuery.data);
-      const postRoundLevel = returnLvl((xpQuery.data ?? 0) + score);
-
-      saveScore.mutate({ user_id, score });
-      saveTrainingData.mutate({ trainingData: trainingResult, user_id });
-
-      roundMetaData.length > 1 &&
-        saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
-
-      if (preRoundLevel <= postRoundLevel) {
-        saveSnapShot.mutate({ user_id: user?.sub ?? null });
-      }
-    } else {
-      throw new Error("user object lacking sub property");
-    }
   };
 
   return (
@@ -218,12 +189,11 @@ const Forage = () => {
           {gameOver && <Text>Game over!</Text>}
 
           <SaveBtn
-            show={gameOver && !saveScore.isSuccess}
-            handleSaveBtn={handleSaveBtn}
+            gameOver={gameOver}
+            score={score}
+            trainingResult={trainingResult}
+            roundMetaData={roundMetaData}
           />
-          {gameOver && saveScore.isSuccess && (
-            <Text color="white">Score saved! Return to home </Text>
-          )}
         </Flex>
         <Container>
           {round !== 0 && round !== 4 && getForageMushrooms.isLoading ? (
