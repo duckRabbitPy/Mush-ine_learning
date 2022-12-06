@@ -77,7 +77,7 @@ const Forage = () => {
 
   const handleNextBtn = async () => {
     if (answerCorrect) {
-      setScore(score + 10);
+      setScore(score + maxIncorrect * 2);
       setProgress((prev) => {
         return prev.concat(true);
       });

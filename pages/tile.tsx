@@ -108,7 +108,7 @@ const Tile = () => {
   };
 
   const handleNextBtn = async () => {
-    setScore(score + 10);
+    setScore(score + maxIncorrect * 5);
     setProgress((prev) => {
       return prev.concat(true);
     });

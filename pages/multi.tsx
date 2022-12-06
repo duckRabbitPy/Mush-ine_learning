@@ -67,7 +67,7 @@ const Multi = () => {
   const handleSelection = async (name: string) => {
     if (name === correctMushroom) {
       correctSound?.play();
-      setScore(score + 10);
+      setScore(score + maxIncorrect * 5);
       setProgress((prev) => {
         return prev.concat(true);
       });
