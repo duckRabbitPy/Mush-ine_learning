@@ -27,3 +27,5 @@ export function DifficultySetting({
     </RadioGroup>
   );
 }
+
+export default DifficultySetting;
