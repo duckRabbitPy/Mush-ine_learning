@@ -256,6 +256,24 @@ export async function getLevelSnapshot(level: number, user_id: string) {
     .catch((error: Error) => console.log(error));
 }
 
+export async function getMostTroublesome(user_id: string) {
+  return await db
+    .query(
+      `SELECT misidentified_as FROM mushine_training_weightings WHERE user_id = $1 GROUP BY misidentified_as ORDER BY SUM(weight) desc LIMIT 8;`,
+      [user_id]
+    )
+    .then(
+      (
+        result: QueryResult<
+          Pick<Mushine_training_weightings, "misidentified_as">
+        >
+      ) => {
+        return result.rows.map((mushroom) => mushroom.misidentified_as);
+      }
+    )
+    .catch((error: Error) => console.log(error));
+}
+
 function aggregateWeightings(
   trainingWeightings: Pick<
     Mushine_training_weightings,

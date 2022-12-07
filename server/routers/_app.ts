@@ -1,5 +1,5 @@
 import { number, string, z } from "zod";
-import { reduceAnswerCount, uniqByFilter } from "../../utils/client_safe";
+import { reduceAnswerCount } from "../../utils/client_safe";
 import {
   getForageMushrooms,
   getMushroomNames,
@@ -19,6 +19,7 @@ import {
   getRoundMetadata,
   SummedWeights,
   getHeatmapData,
+  getMostTroublesome,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 import { v2 as cloudinary } from "cloudinary";
@@ -242,26 +243,13 @@ export const appRouter = router({
         return null;
       }
 
-      const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
-      const snapshotResult = await getLevelSnapshot(currLevel, input.user_id);
+      const mostTroublesomeData = await getMostTroublesome(input.user_id);
 
-      const mostTroublesomeArr = snapshotResult
-        ? Object.entries(snapshotResult.snapshot).map((kvp) => {
-            const highestWeightedTuple = Object.entries(kvp[1]).sort(
-              (a, b) => b[1] - a[1]
-            )[0];
+      if (!mostTroublesomeData) {
+        return null;
+      }
 
-            if (highestWeightedTuple) {
-              return highestWeightedTuple[0];
-            }
-          })
-        : [];
-
-      const uniqTroublesome = uniqByFilter(mostTroublesomeArr).flatMap((f) =>
-        f ? [f] : []
-      );
-
-      const chosenMushroomName = randomArrItem(uniqTroublesome);
+      const chosenMushroomName = randomArrItem(mostTroublesomeData);
 
       const cloudinaryResult = await cloudinary.api.resources({
         type: "upload",

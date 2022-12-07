@@ -38,6 +38,7 @@ export async function buildForageMushrooms(
 ): Promise<ForageMushroom[]> {
   let testMushroomArr = [];
   let count = 0;
+
   for (const mushroomName of mushroomNames.slice()) {
     if (count >= number) break;
 
@@ -51,20 +52,13 @@ export async function buildForageMushrooms(
       return img.url?.replace("upload", "upload/q_80");
     });
 
-    if (!srcArr) {
-      testMushroomArr.push({
-        name: mushroomName,
-        src: "/shroomschool.png",
-        correctMatch: false,
-      });
-    } else {
-      const src = randomArrItem(srcArr);
-      testMushroomArr.push({
-        name: mushroomName,
-        src: src || "/shroomschool.png",
-        correctMatch: false,
-      });
-    }
+    const src = randomArrItem(srcArr);
+    testMushroomArr.push({
+      name: mushroomName,
+      src: src || "/shroomschool.png",
+      correctMatch: false,
+    });
+
     count++;
   }
 
