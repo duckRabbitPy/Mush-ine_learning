@@ -37,7 +37,11 @@ const Study = () => {
       <Flex direction="column" alignItems="center" gap="1rem">
         <HomeBtn mt={5} />
         <Heading fontFamily={"honeyMushroom"}>Homework</Heading>
-        <Text>{name} seems to be causing you problems, pay attention!</Text>
+        {images ? (
+          <Text>{name} seems to be causing you problems, pay attention!</Text>
+        ) : (
+          <Text>⚠️ Not enough data for personalised recommendations</Text>
+        )}
         <ul>
           {images?.map((src) => {
             return (

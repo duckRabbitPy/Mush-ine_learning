@@ -177,26 +177,6 @@ export async function getHeatmapData(
   return heatmaps;
 }
 
-export async function getCommonConfusions(name: string, user_id: string) {
-  const misidentifiedArr = await db
-    .query(
-      `SELECT weight, misidentified_as FROM mushine_training_weightings WHERE correct_mushroom = $1 AND user_id = $2`,
-      [name, user_id]
-    )
-    .then((result: QueryResult<Mushine_training_weightings>) => {
-      return result.rows;
-    })
-    .catch((error: Error) => console.log(error));
-
-  if (!misidentifiedArr) return [];
-
-  const ranked = Object.entries(aggregateWeightings(misidentifiedArr))
-    .sort((a, b) => b[1] - a[1])
-    .map(([name]) => ({ misidentified_as: name }));
-
-  return ranked.slice(0, 3);
-}
-
 export async function saveLevelSnapshot(
   storedMushrooms: string[],
   user_id: string
@@ -253,6 +233,24 @@ export async function getLevelSnapshot(level: number, user_id: string) {
     .then((result: QueryResult<Pick<LevelSnapshot, "snapshot" | "level">>) => {
       return result.rows[0];
     })
+    .catch((error: Error) => console.log(error));
+}
+
+export async function getMostTroublesome(user_id: string) {
+  return await db
+    .query(
+      `SELECT misidentified_as FROM mushine_training_weightings WHERE user_id = $1 GROUP BY misidentified_as ORDER BY SUM(weight) desc LIMIT 8;`,
+      [user_id]
+    )
+    .then(
+      (
+        result: QueryResult<
+          Pick<Mushine_training_weightings, "misidentified_as">
+        >
+      ) => {
+        return result.rows.map((mushroom) => mushroom.misidentified_as);
+      }
+    )
     .catch((error: Error) => console.log(error));
 }
 

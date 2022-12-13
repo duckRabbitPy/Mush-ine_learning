@@ -43,7 +43,7 @@ const Forage = () => {
     setScore,
     user,
     maxIncorrect,
-    setDifficulty,
+    setMaxIncorrect,
   } = useGameState();
 
   const getForageMushrooms = trpc.forageMushrooms.useQuery(
@@ -125,9 +125,17 @@ const Forage = () => {
                 color="white"
                 fontFamily="rounded"
               >
-                {correctMushroom?.name
-                  ? `Find 🔎 and click 👉🏼 on the ${correctMushroom?.name} mushroom`
-                  : "Forage Game 🍄"}
+                {correctMushroom?.name ? (
+                  <span>
+                    Find 🔎 and click on 👉🏼 the{" "}
+                    <span style={{ color: "greenyellow" }}>
+                      {correctMushroom?.name}
+                    </span>{" "}
+                    mushroom
+                  </span>
+                ) : (
+                  "Forage Game 🍄"
+                )}
               </Heading>
               <ProgressIndicator
                 round={round}
@@ -151,7 +159,7 @@ const Forage = () => {
                   ></Image>
 
                   <DifficultySetting
-                    setDifficulty={setDifficulty}
+                    setMaxIncorrect={setMaxIncorrect}
                     difficultyNum={maxIncorrect}
                     difficultyType={baseDifficulty}
                   />
@@ -237,6 +245,7 @@ const Forage = () => {
                         color={
                           testMushroom.correctMatch ? "green.300" : "white"
                         }
+                        height={10}
                       >
                         {inputAnswer ? testMushroom.name : ""}
                       </Text>

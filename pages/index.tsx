@@ -10,8 +10,10 @@ import AuthStatus from "./components/AuthStatus";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import CustomBtn from "./components/CustomBtn";
 import { brandColors } from "./_app";
+import { useUser } from "@auth0/nextjs-auth0";
 
 const Home: NextPage = () => {
+  const { user } = useUser();
   return (
     <TopLevelWrapper backgroundColor="#F2E1C3">
       <Head>
@@ -53,7 +55,13 @@ const Home: NextPage = () => {
           align="center"
           mt={5}
         >
-          <CustomBtn brandColor={200} href="/profile" icon={BiUser}>
+          <CustomBtn
+            brandColor={200}
+            href="/profile"
+            icon={BiUser}
+            styles={{ disabled: !user?.sub }}
+            tooltipContent={!user?.sub ? "Sign in required" : undefined}
+          >
             Profile
           </CustomBtn>
 
@@ -66,11 +74,23 @@ const Home: NextPage = () => {
             Learning
           </Heading>
           <Flex direction={{ base: "column", md: "row" }}>
-            <CustomBtn brandColor={200} href="/insights" icon={FaRegLightbulb}>
+            <CustomBtn
+              brandColor={200}
+              href="/insights"
+              icon={FaRegLightbulb}
+              styles={{ disabled: !user?.sub }}
+              tooltipContent={!user?.sub ? "Sign in required" : undefined}
+            >
               Insights
             </CustomBtn>
 
-            <CustomBtn brandColor={200} href="/study" icon={BsBook}>
+            <CustomBtn
+              brandColor={200}
+              href="/study"
+              icon={BsBook}
+              styles={{ disabled: !user?.sub }}
+              tooltipContent={!user?.sub ? "Sign in required" : undefined}
+            >
               Recommended study
             </CustomBtn>
 

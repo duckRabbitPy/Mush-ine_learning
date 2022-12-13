@@ -17,3 +17,5 @@ export function useSound() {
 function createSound(path: string) {
   return typeof Audio !== "undefined" ? new Audio(path) : undefined;
 }
+
+export default useSound;

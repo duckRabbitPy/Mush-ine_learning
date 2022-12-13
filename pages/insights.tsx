@@ -26,6 +26,7 @@ import TopLevelWrapper from "./components/TopLvlWrapper";
 import { BarChart, chartColors } from "./components/BarChart";
 import { useState } from "react";
 import Fuse from "fuse.js";
+import CustomBtn from "./components/CustomBtn";
 
 Chart.register(
   BarElement,
@@ -82,11 +83,11 @@ const Insights = () => {
                 (kvp) => fuzzySearchResult.includes(kvp[0]) || !searchInput
               )
               .map((kvp) => {
-                const mushroom = kvp[0];
+                const mushroomName = kvp[0];
                 const misIdentifiedAs = kvp[1];
                 const sortedMisIdentifiedAs =
                   sortObjectByNumValues(misIdentifiedAs);
-                const heatmap = heatmaps[mushroom].slice(0, 30);
+                const heatmap = heatmaps[mushroomName].slice(0, 30);
 
                 const numCorrect = heatmap.filter(
                   (result) => result.correct_answer
@@ -100,7 +101,7 @@ const Insights = () => {
                 );
 
                 return (
-                  <Container key={mushroom}>
+                  <Container key={mushroomName}>
                     <Container
                       p={3}
                       verticalAlign="top"
@@ -112,7 +113,7 @@ const Insights = () => {
                           textTransform="capitalize"
                           size={"lg"}
                         >
-                          🍄 {mushroom}
+                          🍄 {mushroomName}
                         </Heading>
                         <Text
                           fontSize="lg"
@@ -120,10 +121,17 @@ const Insights = () => {
                         >
                           {Number.isNaN(accuracy)
                             ? ``
-                            : ` 🎯 ${accuracy}% accuracy`}
+                            : `🎯 ${accuracy}% accuracy`}
                         </Text>
+                        <CustomBtn
+                          brandColor={300}
+                          href={`/bank/${mushroomName}`}
+                          styles={{ size: "xs", margin: 0 }}
+                        >
+                          Study
+                        </CustomBtn>
 
-                        <Container>
+                        <Container padding={0}>
                           <Heading
                             size="sm"
                             fontWeight="thin"
