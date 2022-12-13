@@ -1,12 +1,17 @@
-import { Button, Container, Heading, Icon, SimpleGrid } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Flex,
+  Heading,
+  Icon,
+  SimpleGrid,
+} from "@chakra-ui/react";
 import { GetStaticProps } from "next";
 import { v2 as cloudinary } from "cloudinary";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { CloudImage } from "../../types";
-import { trpc } from "../../utils/trpc";
-import { useUser } from "@auth0/nextjs-auth0";
 import { getMushroomNames } from "../../utils/server_side";
 import HomeBtn from "../components/HomeBtn";
 import { BsGrid3X3GapFill } from "react-icons/bs";
@@ -57,98 +62,73 @@ const InfoBank = ({
   mushroomSrcList: string[] | undefined;
   mushroomName: string;
 }) => {
-  const { user } = useUser();
   const [expandIndex, setExpandIndex] = useState<number | null>(null);
   const visibleMushrooms = mushroomSrcList?.filter(
     (_, index) => index === expandIndex || expandIndex === null
   );
 
-  const lookalikes = trpc.trainingData.useQuery(
-    {
-      name: mushroomName,
-      user_id: user?.sub ?? null,
-    },
-    { enabled: !!user?.sub }
-  ).data;
-
   return (
-    <Container mt={5}>
+    <Container mt={5} width={"100%"} maxWidth={expandIndex ? "70%" : "60ch"}>
       <HomeBtn style={{ alignSelf: "center" }} />
       <Link href="/bank">
         <Button m={2}>Bank menu </Button>
       </Link>
-
-      <Heading>{mushroomName} mushroom</Heading>
-
-      {expandIndex === null && (
-        <SimpleGrid columns={{ base: 3, lg: 4 }} gap={1}>
-          {visibleMushrooms?.map((imgSrc, index) => (
-            <Image
-              key={imgSrc}
-              src={imgSrc}
-              alt="mushroom image"
-              width={200}
-              height={200}
-              onClick={() => setExpandIndex(index)}
-              style={{ cursor: "pointer" }}
-              placeholder="blur"
-              blurDataURL="/loading.gif"
-              priority
-            />
-          ))}
-        </SimpleGrid>
-      )}
-      {expandIndex !== null && (
-        <Container>
-          <Button onClick={() => setExpandIndex(null)} m={2}>
-            Expand Full gallery
-            <Icon as={BsGrid3X3GapFill} ml={2} />
-          </Button>
-          {visibleMushrooms?.map((imgSrc) => (
-            <Image
-              key={imgSrc}
-              src={imgSrc}
-              alt="mushroom image"
-              width={1000}
-              height={1000}
-              placeholder="blur"
-              blurDataURL="/loading.gif"
-            />
-          ))}
-        </Container>
-      )}
-
-      <Container>
-        <Heading as={"h2"} fontSize={"large"} mt={5}>
-          Training data
-        </Heading>
-        {lookalikes && lookalikes.length > 0 ? (
-          <p>You most commonly confuse {mushroomName} with: </p>
-        ) : (
-          <p>No trianing data</p>
+      <Heading mb={2}>{mushroomName} mushroom</Heading>
+      <Flex direction={"column"} alignItems={"center"}>
+        {expandIndex === null && (
+          <SimpleGrid
+            columns={{ base: 1, lg: 2 }}
+            gap={1}
+            width={{ base: "50%", lg: "100%" }}
+          >
+            {visibleMushrooms?.map((imgSrc, index) => (
+              <Image
+                key={imgSrc}
+                src={imgSrc}
+                alt="mushroom image"
+                width={1000}
+                height={1000}
+                onClick={() => setExpandIndex(index)}
+                style={{ cursor: "pointer" }}
+                placeholder="blur"
+                blurDataURL="/loading.gif"
+                priority
+              />
+            ))}
+          </SimpleGrid>
+        )}
+        {expandIndex !== null && (
+          <>
+            <Button onClick={() => setExpandIndex(null)} m={2}>
+              Gallery
+              <Icon as={BsGrid3X3GapFill} ml={2} />
+            </Button>
+            {visibleMushrooms?.map((imgSrc) => (
+              <Image
+                key={imgSrc}
+                src={imgSrc}
+                alt="mushroom image"
+                width={2000}
+                height={2000}
+                placeholder="blur"
+                blurDataURL="/loading.gif"
+                priority
+              />
+            ))}
+          </>
         )}
 
-        <ol>
-          {lookalikes?.map((mushroom) => (
-            <Link
-              key={mushroom.misidentified_as}
-              href={`/bank/${mushroom.misidentified_as}`}
-              target="_blank"
-            >
-              <li>{mushroom.misidentified_as}</li>
-            </Link>
-          ))}
-        </ol>
-      </Container>
-
-      <Link
-        href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}
-        target="_blank"
-      >
-        <Button m={2} bgColor="burlywood">
-          More Info
-        </Button>
-      </Link>
+        <Link
+          href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}
+          target="_blank"
+        >
+          {expandIndex === null && (
+            <Button m={2} bgColor="burlywood">
+              More Info
+            </Button>
+          )}
+        </Link>
+      </Flex>
     </Container>
   );
 };

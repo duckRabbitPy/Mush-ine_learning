@@ -152,11 +152,15 @@ const Tile = () => {
               </Button>
             </Flex>
           )}
-          {roundOver && (
-            <Button onClick={handleNextBtn} width="fit-content">
-              Next
-            </Button>
-          )}
+
+          <Button
+            onClick={handleNextBtn}
+            width="fit-content"
+            visibility={roundOver ? "visible" : "hidden"}
+          >
+            Next
+          </Button>
+
           {round > 0 && !getMushroomSet.isRefetching && (
             <Flex gap={2} flexDirection="column" alignItems="center">
               {getMushroomSet.isLoading && !gameOver && (

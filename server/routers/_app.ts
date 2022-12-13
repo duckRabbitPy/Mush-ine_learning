@@ -7,7 +7,6 @@ import {
   randomArrItem,
 } from "../../utils/server_side";
 import {
-  getCommonConfusions,
   updateScore,
   getScoreByUserId,
   createUser,
@@ -122,18 +121,6 @@ export const appRouter = router({
 
       const metaArr = { forage, multi, tile };
       return metaArr;
-    }),
-  trainingData: publicProcedure
-    .input(
-      z.object({
-        user_id: z.string().nullable(),
-        name: z.string(),
-      })
-    )
-    .query(async ({ input }) => {
-      if (!input.user_id) return null;
-      const confusions = await getCommonConfusions(input.name, input.user_id);
-      return confusions;
     }),
   forageMushrooms: publicProcedure
     .input(

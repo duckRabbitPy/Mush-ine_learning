@@ -57,7 +57,7 @@ const Profile = () => {
     <TopLevelWrapper backgroundColor={"#EDF2F7"}>
       <Flex direction="column" alignItems={"center"}>
         <Heading mb={10} mt={5} fontFamily={"honeyMushroom"}>
-          Profile - {user?.name}
+          Profile {user?.name && `- ${user?.name}`}
         </Heading>
         <HomeBtn />
 
@@ -76,56 +76,58 @@ const Profile = () => {
             <Text color="green.400" mt={5} fontSize="2xl" fontFamily="rounded">
               XP: {xpQuery.data ?? 0}
             </Text>
+
+            <Text color="blue.600" fontFamily="rounded">
+              xp to next level: {xpToNextLevel}
+            </Text>
+            <Progress
+              m={3}
+              hasStripe
+              value={percentageProgress > 0 ? percentageProgress : 0.5}
+              height={5}
+              border="1px gray solid"
+              width="80%"
+            />
+
+            <Heading fontSize="large" mb={2} mt={5} fontFamily="rounded">
+              Stats for level {snapshot.data?.level}
+            </Heading>
+            <SimpleGrid columns={3} m={5}>
+              {Object.entries(metaArr ?? {}).map((kvp) => {
+                const name = kvp[0];
+                const data = kvp[1];
+                return (
+                  <Container key={name} fontFamily="rounded">
+                    <Heading
+                      fontSize="3xl"
+                      style={{ textTransform: "capitalize" }}
+                      fontFamily={"honeyMushroom"}
+                      fontWeight="thin"
+                    >
+                      {name}
+                    </Heading>
+                    <Text color="blue.500" fontFamily="rounded" fontSize={"xl"}>
+                      {data?.percentageCorrect?.toFixed(0) ?? 0}% Correct
+                    </Text>
+                    <Text>
+                      {" "}
+                      <span style={{ color: "green" }}>
+                        {data?.correct ?? 0}
+                      </span>{" "}
+                      correct ids
+                    </Text>
+                    <Text>
+                      <span style={{ color: "red" }}>
+                        {data?.incorrect ?? 0}
+                      </span>{" "}
+                      incorrect ids
+                    </Text>
+                  </Container>
+                );
+              })}
+            </SimpleGrid>
           </>
         )}
-
-        <Text color="blue.600" fontFamily="rounded">
-          xp to next level: {xpToNextLevel}
-        </Text>
-        <Progress
-          m={3}
-          hasStripe
-          value={percentageProgress > 0 ? percentageProgress : 0.5}
-          height={5}
-          border="1px gray solid"
-          width="80%"
-        />
-
-        <Heading fontSize="large" mb={2} mt={5} fontFamily="rounded">
-          Stats for level {snapshot.data?.level}
-        </Heading>
-        <SimpleGrid columns={3} m={5}>
-          {Object.entries(metaArr ?? {}).map((kvp) => {
-            const name = kvp[0];
-            const data = kvp[1];
-            return (
-              <Container key={name} fontFamily="rounded">
-                <Heading
-                  fontSize="3xl"
-                  style={{ textTransform: "capitalize" }}
-                  fontFamily={"honeyMushroom"}
-                  fontWeight="thin"
-                >
-                  {name}
-                </Heading>
-                <Text color="blue.500" fontFamily="rounded" fontSize={"xl"}>
-                  {data?.percentageCorrect?.toFixed(0) ?? 0}% Correct
-                </Text>
-                <Text>
-                  {" "}
-                  <span style={{ color: "green" }}>
-                    {data?.correct ?? 0}
-                  </span>{" "}
-                  correct ids
-                </Text>
-                <Text>
-                  <span style={{ color: "red" }}>{data?.incorrect ?? 0}</span>{" "}
-                  incorrect ids
-                </Text>
-              </Container>
-            );
-          })}
-        </SimpleGrid>
       </Flex>
     </TopLevelWrapper>
   );

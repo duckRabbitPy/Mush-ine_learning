@@ -1,4 +1,11 @@
-import { Button, ButtonProps, Text } from "@chakra-ui/react";
+import {
+  Button,
+  ButtonProps,
+  Text,
+  Card,
+  CardHeader,
+  CardBody,
+} from "@chakra-ui/react";
 import { useCommonTrpc } from "../../hooks/useCommonTrpc";
 import { useGameState } from "../../hooks/useGameState";
 import { useSound } from "../../hooks/useSound";
@@ -58,32 +65,43 @@ export const SaveBtn = ({
   const user_id = user?.sub;
   const currXp = xpQuery.data;
   const { saveSound } = useSound();
-  console.log(saveScore.isSuccess);
   return (
     <>
-      <Button
-        onClick={() => {
-          saveSound?.play();
-          handleSaveBtn(
-            user_id || null,
-            currXp || null,
-            score,
-            saveTrainingData,
-            saveRoundMetaData,
-            saveSnapShot,
-            saveScore,
-            trainingResult,
-            roundMetaData
-          );
-        }}
-        w="-moz-fit-content"
-        alignSelf="center"
-        backgroundColor="#B8E6F3"
-        visibility={gameOver && !saveScore.isSuccess ? "visible" : "hidden"}
-        {...styles}
-      >
-        Save score
-      </Button>
+      {user_id && (
+        <Button
+          onClick={() => {
+            saveSound?.play();
+            handleSaveBtn(
+              user_id || null,
+              currXp || null,
+              score,
+              saveTrainingData,
+              saveRoundMetaData,
+              saveSnapShot,
+              saveScore,
+              trainingResult,
+              roundMetaData
+            );
+          }}
+          w="-moz-fit-content"
+          alignSelf="center"
+          backgroundColor="#B8E6F3"
+          visibility={gameOver && !saveScore.isSuccess ? "visible" : "hidden"}
+          {...styles}
+        >
+          Save score
+        </Button>
+      )}
+
+      {!user_id && gameOver && (
+        <Card bg="white">
+          <CardHeader>Enjoying the games? 🥳 🍄</CardHeader>
+          <CardBody>
+            Sign in via the home page to earn experience, level up, get
+            personalised insights and receive identification study guidance.
+          </CardBody>
+        </Card>
+      )}
       <div>
         {gameOver && saveScore.isSuccess && (
           <Text color="white">Score saved! Return to home </Text>
