@@ -43,7 +43,7 @@ const Forage = () => {
     setScore,
     user,
     maxIncorrect,
-    setDifficulty,
+    setMaxIncorrect,
   } = useGameState();
 
   const getForageMushrooms = trpc.forageMushrooms.useQuery(
@@ -159,7 +159,7 @@ const Forage = () => {
                   ></Image>
 
                   <DifficultySetting
-                    setDifficulty={setDifficulty}
+                    setMaxIncorrect={setMaxIncorrect}
                     difficultyNum={maxIncorrect}
                     difficultyType={baseDifficulty}
                   />

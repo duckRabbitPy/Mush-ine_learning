@@ -29,7 +29,7 @@ const Tile = () => {
     user,
   } = useGameState();
 
-  const [maxIncorrect, setDifficulty] = useState(tileDifficulty.medium);
+  const [maxIncorrect, setMaxIncorrect] = useState(tileDifficulty.medium);
   const [roundOver, setRoundOver] = useState(false);
   const getMushroomSet = trpc.mushroomSet.useQuery(
     {
@@ -137,7 +137,7 @@ const Tile = () => {
               ></Image>
 
               <DifficultySetting
-                setDifficulty={setDifficulty}
+                setMaxIncorrect={setMaxIncorrect}
                 difficultyNum={maxIncorrect}
                 difficultyType={tileDifficulty}
               />

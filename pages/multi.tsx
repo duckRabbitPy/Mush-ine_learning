@@ -27,7 +27,7 @@ const Multi = () => {
     setScore,
     user,
     maxIncorrect,
-    setDifficulty,
+    setMaxIncorrect,
   } = useGameState();
 
   const getMushroomSet = trpc.mushroomSet.useQuery(
@@ -118,7 +118,7 @@ const Multi = () => {
               ></Image>
 
               <DifficultySetting
-                setDifficulty={setDifficulty}
+                setMaxIncorrect={setMaxIncorrect}
                 difficultyNum={maxIncorrect}
                 difficultyType={baseDifficulty}
               />
