@@ -30,7 +30,7 @@ const Multi = () => {
     setMaxIncorrect,
   } = useGameState();
 
-  const getMushroomSet = trpc.mushroomSet.useQuery(
+  const getMushroomSet = trpc.retrieveMushroomSet.useQuery(
     {
       omitArr,
       user_id: user?.sub ?? null,

@@ -39,11 +39,11 @@ Chart.register(
 const Insights = () => {
   const { user } = useUser();
 
-  const snapshot = trpc.downloadLevelSnapShot.useQuery({
+  const snapshot = trpc.getLevelSnapShot.useQuery({
     user_id: user?.sub ?? null,
   });
 
-  const heatmaps = trpc.downloadHeatMaps.useQuery({
+  const heatmaps = trpc.getHeatMaps.useQuery({
     user_id: user?.sub ?? null,
   }).data;
 
@@ -198,7 +198,11 @@ const Insights = () => {
                         </ol>
                         {Object.keys(sortedMisIdentifiedAs).length > 0 ? (
                           <div style={{ height: "200px", marginTop: "3rem" }}>
-                            <BarChart kvp={sortedMisIdentifiedAs} />
+                            <BarChart
+                              kvp={sortedMisIdentifiedAs}
+                              max={5}
+                              yAxisTitle="frequency"
+                            />
                           </div>
                         ) : (
                           <Text color="green.400" padding="2rem">

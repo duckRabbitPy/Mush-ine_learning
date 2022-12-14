@@ -46,7 +46,7 @@ const Forage = () => {
     setMaxIncorrect,
   } = useGameState();
 
-  const getForageMushrooms = trpc.forageMushrooms.useQuery(
+  const getForageMushrooms = trpc.retrieveForageMushrooms.useQuery(
     {
       omitArr,
       maxIncorrect: maxIncorrect,

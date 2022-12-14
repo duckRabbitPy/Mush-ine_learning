@@ -1,5 +1,11 @@
 import { Bar } from "react-chartjs-2";
 
+type BarchartProps = {
+  kvp: Record<string, number | string>;
+  yAxisTitle: string;
+  max?: number;
+};
+
 export const chartColors = [
   "#665191",
   "#a05195",
@@ -8,9 +14,9 @@ export const chartColors = [
   "#ffa600",
 ];
 
-export function BarChart({ kvp }: { kvp: Record<string, number | string> }) {
-  const labels = Object.keys(kvp).slice(0, 5);
-  const data = Object.values(kvp).slice(0, 5);
+export function BarChart({ kvp, max, yAxisTitle }: BarchartProps) {
+  const labels = Object.keys(kvp).slice(0, max ?? undefined);
+  const data = Object.values(kvp).slice(0, max ?? undefined);
   return (
     <Bar
       data={{
@@ -45,7 +51,7 @@ export function BarChart({ kvp }: { kvp: Record<string, number | string> }) {
             suggestedMin: 0,
             title: {
               display: true,
-              text: "frequency",
+              text: yAxisTitle,
             },
           },
         },

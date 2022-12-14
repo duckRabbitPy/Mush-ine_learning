@@ -19,6 +19,7 @@ import {
   SummedWeights,
   getHeatmapData,
   getMostTroublesome,
+  getActivity,
 } from "../database/model";
 import { publicProcedure, router } from "../trpc";
 import { v2 as cloudinary } from "cloudinary";
@@ -122,7 +123,7 @@ export const appRouter = router({
       const metaArr = { forage, multi, tile };
       return metaArr;
     }),
-  forageMushrooms: publicProcedure
+  retrieveForageMushrooms: publicProcedure
     .input(
       z.object({
         omitArr: z.array(z.string()),
@@ -144,7 +145,7 @@ export const appRouter = router({
       );
       return forageMushrooms;
     }),
-  mushroomSet: publicProcedure
+  retrieveMushroomSet: publicProcedure
     .input(
       z.object({
         omitArr: z.array(z.string()),
@@ -183,7 +184,7 @@ export const appRouter = router({
       const snapshot = await saveLevelSnapshot(mushrooms, input.user_id);
       return snapshot;
     }),
-  downloadLevelSnapShot: publicProcedure
+  getLevelSnapShot: publicProcedure
     .input(
       z.object({
         level: number().optional(),
@@ -205,7 +206,7 @@ export const appRouter = router({
       }
       return snapshot;
     }),
-  downloadHeatMaps: publicProcedure
+  getHeatMaps: publicProcedure
     .input(
       z.object({
         user_id: string().nullable(),
@@ -218,6 +219,29 @@ export const appRouter = router({
       const mushroomNames = await getMushroomNames();
       const heatmaps = await getHeatmapData(mushroomNames, input.user_id);
       return heatmaps;
+    }),
+  retrieveActivity: publicProcedure
+    .input(
+      z.object({
+        user_id: string().nullable(),
+      })
+    )
+    .query(async ({ input }) => {
+      if (!input.user_id) {
+        return null;
+      }
+      const activityhistory = await getActivity(input.user_id);
+
+      let lastThirtyActive: Record<string, number> = {};
+
+      const maxThirtyDays = activityhistory.slice(0, 30);
+      maxThirtyDays.forEach((activityRecord) => {
+        const day = new Date(activityRecord.day).toLocaleDateString();
+        lastThirtyActive[day as keyof typeof lastThirtyActive] =
+          activityRecord.roundcount;
+      });
+
+      return lastThirtyActive;
     }),
   getStudyImages: publicProcedure
     .input(

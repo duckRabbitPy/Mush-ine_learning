@@ -49,6 +49,11 @@ export type TimeAndResult = Pick<
   "timestamp" | "correct_answer"
 >;
 
+export type Activity = {
+  day: string;
+  roundcount: number;
+};
+
 export type Heatmaps = Record<MushroomName, TimeAndResult[]>;
 
 export type SummedWeights = Record<MushroomName, number>;
@@ -175,6 +180,21 @@ export async function getHeatmapData(
     }
   }
   return heatmaps;
+}
+
+export async function getActivity(user_id: string) {
+  const activity = await db
+    .query(
+      `SELECT date_trunc('day', mushine_round_metadata.timestamp) "day", count(*) roundcount
+      FROM mushine_round_metadata
+      WHERE user_id = $1
+      GROUP by 1
+      ORDER BY day`,
+      [user_id]
+    )
+    .then((result: QueryResult<Activity>) => result.rows);
+
+  return activity;
 }
 
 export async function saveLevelSnapshot(

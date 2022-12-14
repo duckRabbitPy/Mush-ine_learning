@@ -20,6 +20,7 @@ import {
 
 import { currLevelInfo } from "../utils/client_safe";
 import { trpc } from "../utils/trpc";
+import BarChart from "./components/BarChart";
 import HomeBtn from "./components/HomeBtn";
 import TopLevelWrapper from "./components/TopLvlWrapper";
 
@@ -37,7 +38,7 @@ const Profile = () => {
     user_id: user?.sub ?? null,
   });
 
-  const snapshot = trpc.downloadLevelSnapShot.useQuery({
+  const snapshot = trpc.getLevelSnapShot.useQuery({
     user_id: user?.sub ?? null,
   });
 
@@ -49,6 +50,11 @@ const Profile = () => {
     xpQuery.data,
     snapshot.data?.level
   );
+  const activity = trpc.retrieveActivity.useQuery({
+    user_id: user?.sub ?? null,
+  }).data;
+
+  console.log(activity);
 
   const xpEarnedThisLevel = boundaryAhead - boundaryBehind - xpToNextLevel;
   const percentageProgress = (xpEarnedThisLevel / xpToNextLevel) * 100;
@@ -128,6 +134,7 @@ const Profile = () => {
             </SimpleGrid>
           </>
         )}
+        {activity && <BarChart kvp={activity} yAxisTitle="rounds completed" />}
       </Flex>
     </TopLevelWrapper>
   );

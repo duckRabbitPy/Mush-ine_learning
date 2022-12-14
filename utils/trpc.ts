@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { httpBatchLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import type { AppRouter } from "../server/routers/_app";
