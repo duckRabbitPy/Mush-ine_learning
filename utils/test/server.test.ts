@@ -3,7 +3,7 @@ import {
   getMushroomNames,
   getForageMushrooms,
   buildForageMushrooms,
-  getAllMushroomImgPaths,
+  getMushroomImgPaths,
   tailoredNamePool,
 } from "../server_side";
 import { v2 as cloudinary } from "cloudinary";
@@ -111,9 +111,9 @@ describe("test getForageMushrooms", async () => {
   });
 });
 
-describe("test getAllMushroomImgPaths", async () => {
+describe("test getMushroomImgPaths", async () => {
   it("get all image paths returns strings containing cloudinary domain", async () =>
-    getAllMushroomImgPaths("medusa").then((res) =>
+    getMushroomImgPaths("medusa").then((res) =>
       expect(res.every((i) => i.match(/cloudinary/))).toBe(true)
     ));
 });

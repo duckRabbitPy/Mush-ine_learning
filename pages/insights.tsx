@@ -22,11 +22,14 @@ import {
 import { sortObjectByNumValues } from "../utils/client_safe";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
+import Image from "next/image";
 import TopLevelWrapper from "./components/TopLvlWrapper";
 import { BarChart, chartColors } from "./components/BarChart";
 import { useState } from "react";
 import Fuse from "fuse.js";
 import CustomBtn from "./components/CustomBtn";
+import { GetStaticProps } from "next/types";
+import { getMushroomImgPaths, getMushroomNames } from "../utils/server_side";
 
 Chart.register(
   BarElement,
@@ -36,7 +39,30 @@ Chart.register(
   CategoryScale
 );
 
-const Insights = () => {
+export const getStaticProps: GetStaticProps = async () => {
+  const mushroomNames = await getMushroomNames();
+
+  for (const mushroom of mushroomNames) {
+    await getMushroomImgPaths(mushroom, 1);
+  }
+  const srcPromises = mushroomNames.map((mushroom) => {
+    return getMushroomImgPaths(mushroom, 1).then((srcArr) => {
+      return { [mushroom]: srcArr[0] };
+    });
+  });
+
+  const srcMapArr = await Promise.all(srcPromises);
+
+  const thumbnails = Object.assign({}, ...srcMapArr) as Record<string, string>;
+
+  return {
+    props: {
+      thumbnails,
+    },
+  };
+};
+
+const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
   const { user } = useUser();
 
   const snapshot = trpc.getLevelSnapShot.useQuery({
@@ -101,9 +127,15 @@ const Insights = () => {
                 );
 
                 return (
-                  <Container key={mushroomName}>
+                  <Container
+                    key={mushroomName}
+                    border="black 2px solid"
+                    bg={"white"}
+                    pt={3}
+                    pb={3}
+                  >
                     <Container
-                      p={3}
+                      p={0}
                       verticalAlign="top"
                       display={{ base: "block", md: "flex" }}
                     >
@@ -115,6 +147,13 @@ const Insights = () => {
                         >
                           🍄 {mushroomName}
                         </Heading>
+
+                        <Image
+                          src={thumbnails[mushroomName]}
+                          alt={mushroomName}
+                          height={200}
+                          width={200}
+                        ></Image>
                         <Text
                           fontSize="lg"
                           color={accuracy > 50 ? "green.500" : "red.400"}
@@ -131,7 +170,7 @@ const Insights = () => {
                           Study
                         </CustomBtn>
 
-                        <Container padding={0}>
+                        <Container padding={0} justifyContent="space-between">
                           <Heading
                             size="sm"
                             fontWeight="thin"
@@ -159,23 +198,21 @@ const Insights = () => {
                       </Flex>
 
                       <Flex
-                        p={3}
                         wordBreak={"break-word"}
                         color="blue"
                         display="flex"
                         flexDirection="column"
                         alignItems="center"
                       >
-                        {sortedMisIdentifiedAs.length > 0 && (
-                          <Heading
-                            size="sm"
-                            fontFamily={"honeyMushroom"}
-                            fontWeight="thin"
-                            color="black"
-                          >
-                            Misidentified as
-                          </Heading>
-                        )}
+                        <Heading
+                          size="sm"
+                          fontFamily={"honeyMushroom"}
+                          fontWeight="thin"
+                          color="black"
+                        >
+                          Misidentified as
+                        </Heading>
+
                         <ol>
                           {Object.keys(sortedMisIdentifiedAs).map((name, i) => {
                             return (
@@ -197,7 +234,12 @@ const Insights = () => {
                           })}
                         </ol>
                         {Object.keys(sortedMisIdentifiedAs).length > 0 ? (
-                          <div style={{ height: "200px", marginTop: "3rem" }}>
+                          <div
+                            style={{
+                              height: "200px",
+                              marginTop: "3rem",
+                            }}
+                          >
                             <BarChart
                               kvp={sortedMisIdentifiedAs}
                               max={5}

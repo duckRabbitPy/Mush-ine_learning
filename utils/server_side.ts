@@ -65,13 +65,14 @@ export async function buildForageMushrooms(
   return testMushroomArr;
 }
 
-export async function getAllMushroomImgPaths(
-  mushroomName: string
+export async function getMushroomImgPaths(
+  mushroomName: string,
+  max?: number
 ): Promise<string[]> {
   const images = (await cloudinary.api.resources({
     type: "upload",
     prefix: `mushroom_images/${mushroomName}`,
-    max_results: 9,
+    max_results: max || 9,
   })) as { resources: CloudImage[] };
 
   const srcArr = images.resources
@@ -138,7 +139,7 @@ export async function getMushroomSet(
     return null;
   }
   const correctMushroom = randomArrItem(mushroomNamePool);
-  const mushroomImgSrcs = await getAllMushroomImgPaths(correctMushroom);
+  const mushroomImgSrcs = await getMushroomImgPaths(correctMushroom);
 
   const correctIndex = mushroomNamePool.findIndex((x) => x === correctMushroom);
   mushroomNamePool.splice(correctIndex, 1);
