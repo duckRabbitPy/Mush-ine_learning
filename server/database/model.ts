@@ -127,9 +127,9 @@ export async function updateRoundMetaData(
     "correct_answer" | "game_type" | "correct_mushroom"
   >[]
 ) {
-  for (const roundData of metadataInput) {
+  const roundMetaDataRes = metadataInput.map((roundData) => {
     const { correct_answer, correct_mushroom, game_type } = roundData;
-    await db
+    return db
       .query(
         `INSERT INTO mushine_round_metadata (user_id, game_type, current_level, correct_mushroom, correct_answer, timestamp) VALUES ($1, $2, $3, $4, $5, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
         [user_id, game_type, current_level, correct_mushroom, correct_answer]
@@ -138,7 +138,9 @@ export async function updateRoundMetaData(
         return result.rows[0];
       })
       .catch((error: Error) => console.log(error));
-  }
+  });
+
+  return Promise.all(roundMetaDataRes);
 }
 
 export async function getRoundMetadata(user_id: string, current_level: number) {

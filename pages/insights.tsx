@@ -42,18 +42,15 @@ Chart.register(
 export const getStaticProps: GetStaticProps = async () => {
   const mushroomNames = await getMushroomNames();
 
-  for (const mushroom of mushroomNames) {
-    await getMushroomImgPaths(mushroom, 1);
-  }
   const srcPromises = mushroomNames.map((mushroom) => {
     return getMushroomImgPaths(mushroom, 1).then((srcArr) => {
       return { [mushroom]: srcArr[0] };
     });
   });
 
-  const srcMapArr = await Promise.all(srcPromises);
+  const srcArr = await Promise.all(srcPromises);
 
-  const thumbnails = Object.assign({}, ...srcMapArr) as Record<string, string>;
+  const thumbnails = Object.assign({}, ...srcArr) as Record<string, string>;
 
   return {
     props: {

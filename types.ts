@@ -13,6 +13,10 @@ export type CloudImage = {
   url: string | null | undefined;
 };
 
+export type CloudinaryResult = {
+  resources: CloudImage[];
+};
+
 export type SubfolderResult = {
   name: string;
   path: string;
