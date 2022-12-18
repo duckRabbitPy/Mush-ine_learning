@@ -118,8 +118,11 @@ const Tile = () => {
         paddingBottom="200px"
       >
         <HomeBtn w="-moz-fit-content" mt={3} />
-        <Heading color="white" fontFamily={"honeyMushroom"}>
-          {" "}
+        <Heading
+          color="white"
+          fontFamily={"honeyMushroom"}
+          letterSpacing="widest"
+        >
           Tile Game
         </Heading>
         <Flex gap={2} direction={"column"} alignItems="center">
