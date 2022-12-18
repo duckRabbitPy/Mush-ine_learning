@@ -104,6 +104,12 @@ const Multi = () => {
         >
           Multi Quiz
         </Heading>
+        {!gameOver && (
+          <Heading color="white" fontSize={"sm"} fontFamily="rounded">
+            What mushroom is this?
+          </Heading>
+        )}
+
         <Flex gap={2} direction={"column"} margin={5}>
           {round < 1 && (
             <Flex direction="column" gap="10">

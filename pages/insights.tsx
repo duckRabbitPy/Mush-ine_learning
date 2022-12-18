@@ -69,7 +69,9 @@ const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
 
   const mushroomNames =
     snapshot.data?.snapshot &&
-    Object.entries(snapshot.data?.snapshot).map((kvp) => kvp[0]);
+    Object.entries(snapshot.data?.snapshot).map(
+      ([mushroomName]) => mushroomName
+    );
 
   const fuse = new Fuse(mushroomNames ?? []);
   const fuzzySearchResult = fuse.search(searchInput).map((res) => res.item);
@@ -100,11 +102,10 @@ const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
             heatmaps &&
             Object.entries(snapshot.data?.snapshot)
               .filter(
-                (kvp) => fuzzySearchResult.includes(kvp[0]) || !searchInput
+                ([mushroomName]) =>
+                  fuzzySearchResult.includes(mushroomName) || !searchInput
               )
-              .map((kvp) => {
-                const mushroomName = kvp[0];
-                const misIdentifiedAs = kvp[1];
+              .map(([mushroomName, misIdentifiedAs]) => {
                 const sortedMisIdentifiedAs =
                   sortObjectByNumValues(misIdentifiedAs);
                 const heatmap = heatmaps[mushroomName].slice(0, 30);
