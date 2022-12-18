@@ -7,8 +7,9 @@ Learning to identify mushrooms from books and websites is hard! Mush-ine learnin
 
 Complete mushroom identification games to earn XP points and level up! Your results are used to build a model of your successes and failures which informs the options you are presented in games. The more levels you complete the better the app understands the mistakes you make and can reccommend mushrooms to study. You can view this data yourself on the insights page and the study page.
 
-### Disclaimer:
-This app will help you build familiarity with canonical examples of edible mushroom species. The decision to eat a wild mushroom requires 100% certainty. There are many harmful and even deadly mushroom species in the UK. This app is a good starting place but <b>IS NOT A SUBSTITUTE for proper research, careful examination and informed expert opinion</b>
+This app will help you build familiarity with canonical examples of edible mushroom species. The decision to eat a wild mushroom requires 100% certainty in edibility. There are many harmful and even deadly mushroom species in the UK. This app is a good starting place but <b>IS NOT A SUBSTITUTE for proper research, careful examination and informed expert opinion.
+
+</b>
 
 
 ## Game modes
