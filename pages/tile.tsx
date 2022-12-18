@@ -135,7 +135,7 @@ const Tile = () => {
             />
           )}
           {round < 1 && (
-            <Flex direction="column" gap="10">
+            <Flex direction="column" gap="10" minHeight={300}>
               <Image
                 src="/tile.png"
                 height={200}
