@@ -97,6 +97,10 @@ const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
 
         {snapshot.isLoading && <Spinner color={brandColors[200]} />}
 
+        {!snapshot.isLoading &&
+          !snapshot?.data?.snapshot &&
+          "⚠️ Not enough data for insights"}
+
         <SimpleGrid gap="100px">
           {snapshot.data?.snapshot &&
             heatmaps &&

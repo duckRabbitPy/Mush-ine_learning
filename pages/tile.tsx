@@ -31,6 +31,7 @@ const Tile = () => {
 
   const [maxIncorrect, setMaxIncorrect] = useState(tileDifficulty.medium);
   const [roundOver, setRoundOver] = useState(false);
+  const gameOver = round > 5;
   const getMushroomSet = trpc.retrieveMushroomSet.useQuery(
     {
       omitArr,
@@ -38,14 +39,14 @@ const Tile = () => {
       user_id: user?.sub ?? null,
     },
     {
-      enabled: round !== 0 && round !== 4,
+      enabled: round !== 0 && !gameOver,
       ...reactQueryConfig,
     }
   );
 
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
-  const gameOver = round > 3;
+
   const { correctSound, incorrectSound, startSound } = useSound();
 
   const handleSelection = async (name: string) => {
@@ -126,9 +127,15 @@ const Tile = () => {
           Tile Game
         </Heading>
         <Flex gap={2} direction={"column"} alignItems="center">
-          <ProgressIndicator round={round} score={score} progress={progress} />
+          {!gameOver && (
+            <ProgressIndicator
+              round={round}
+              score={score}
+              progress={progress}
+            />
+          )}
           {round < 1 && (
-            <Flex direction="column" gap="10">
+            <Flex direction="column" gap="10" minHeight={300}>
               <Image
                 src="/tile.png"
                 height={200}
@@ -170,7 +177,7 @@ const Tile = () => {
                 <Spinner color="white" />
               )}
 
-              {!gameOver && (
+              {!gameOver && round !== 0 && !getMushroomSet.isLoading && (
                 <Heading color="white" fontSize={"sm"} fontFamily="rounded">
                   What mushroom is this?
                 </Heading>

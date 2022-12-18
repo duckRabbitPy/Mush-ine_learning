@@ -87,27 +87,33 @@ describe("Level correctly determined based on XP", () => {
     assert.equal(lvl, 0);
   });
 
+  it("level correct with 51 xp", () => {
+    const currXp = 51;
+    const lvl = returnLvl(currXp);
+    assert.equal(lvl, 1);
+  });
+
   it("level correct 200 xp", () => {
     const currXp = 200;
     const lvl = returnLvl(currXp);
-    assert.equal(lvl, 1);
+    assert.equal(lvl, 2);
   });
 
   it("level correct 450 xp", () => {
     const currXp = 450;
     const lvl = returnLvl(currXp);
-    assert.equal(lvl, 2);
+    assert.equal(lvl, 3);
   });
 
   it("level correct 1190 xp", () => {
     const currXp = 1190;
     const lvl = returnLvl(currXp);
-    assert.equal(lvl, 3);
+    assert.equal(lvl, 4);
   });
 
   it("level correct 10000 xp", () => {
     const currXp = 10000;
     const lvl = returnLvl(currXp);
-    assert.equal(lvl, 13);
+    assert.equal(lvl, 14);
   });
 });

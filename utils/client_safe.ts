@@ -95,7 +95,7 @@ export function returnLvl(xp: number | undefined | null | void) {
 
   const level = levelBoundaries.reduce((acc, curr, i, arr) => {
     if (curr <= XP && XP < arr[i + 1]) {
-      acc = i;
+      acc = i + 1;
     }
     return acc;
   }, 0);
