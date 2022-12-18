@@ -33,7 +33,7 @@ const Study = () => {
       <Flex direction="column" alignItems="center" gap="1rem">
         <HomeBtn mt={5} />
         <Heading fontFamily={"honeyMushroom"}>Homework</Heading>
-        {images && (
+        {images && images.length > 0 && (
           <Text>{name} seems to be causing you problems, pay attention!</Text>
         )}
         {!isLoading && images && images?.length < 1 && (

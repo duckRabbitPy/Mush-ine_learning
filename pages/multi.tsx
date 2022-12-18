@@ -30,6 +30,7 @@ const Multi = () => {
     setMaxIncorrect,
   } = useGameState();
 
+  const gameOver = round > 5;
   const getMushroomSet = trpc.retrieveMushroomSet.useQuery(
     {
       omitArr,
@@ -37,13 +38,13 @@ const Multi = () => {
       numOptions: maxIncorrect,
     },
     {
-      enabled: round !== 0 && round !== 4,
+      enabled: round !== 0 && !gameOver,
       ...reactQueryConfig,
     }
   );
   const correctMushroom = getMushroomSet.data?.correctMushroom;
   const options = getMushroomSet.data?.options;
-  const gameOver = round > 3;
+
   const { correctSound, incorrectSound, startSound } = useSound();
 
   const handleSelection = async (name: string) => {
@@ -104,7 +105,7 @@ const Multi = () => {
         >
           Multi Quiz
         </Heading>
-        {!gameOver && (
+        {!gameOver && round !== 0 && !getMushroomSet.isLoading && (
           <Heading color="white" fontSize={"sm"} fontFamily="rounded">
             What mushroom is this?
           </Heading>

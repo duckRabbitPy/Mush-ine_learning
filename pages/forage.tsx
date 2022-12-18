@@ -51,7 +51,7 @@ const Forage = () => {
       maxIncorrect: maxIncorrect,
     },
     {
-      enabled: round !== 0 && round !== 4,
+      enabled: round !== 0 && round !== 6,
       ...reactQueryConfig,
     }
   );
@@ -60,7 +60,7 @@ const Forage = () => {
   const correctMushroom = forageMushrooms?.filter((t) => t.correctMatch)[0];
   const gameOver =
     (forageMushrooms && forageMushrooms?.length < 1 && omitArr.length > 0) ||
-    round > 3;
+    round > 5;
   const answerCorrect = inputAnswer === correctMushroom?.name;
   const { correctSound, incorrectSound, startSound } = useSound();
 
@@ -129,8 +129,7 @@ const Forage = () => {
                   size={"md"}
                   mt={2}
                   mb={2}
-                  pl={2}
-                  pr={2}
+                  p={2}
                   color="white"
                   fontFamily="rounded"
                 >
@@ -202,7 +201,7 @@ const Forage = () => {
           {gameOver && <Text>Game over!</Text>}
         </Flex>
         <Container>
-          {round !== 0 && round !== 4 && getForageMushrooms.isLoading ? (
+          {round !== 0 && !gameOver && getForageMushrooms.isLoading ? (
             <Spinner color="white" />
           ) : (
             <SimpleGrid columns={2} gap={2}>
