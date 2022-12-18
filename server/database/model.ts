@@ -49,6 +49,11 @@ export type TimeAndResult = Pick<
   "timestamp" | "correct_answer"
 >;
 
+export type Activity = {
+  day: string;
+  roundcount: number;
+};
+
 export type Heatmaps = Record<MushroomName, TimeAndResult[]>;
 
 export type SummedWeights = Record<MushroomName, number>;
@@ -122,9 +127,9 @@ export async function updateRoundMetaData(
     "correct_answer" | "game_type" | "correct_mushroom"
   >[]
 ) {
-  for (const roundData of metadataInput) {
+  const roundMetaDataRes = metadataInput.map((roundData) => {
     const { correct_answer, correct_mushroom, game_type } = roundData;
-    await db
+    return db
       .query(
         `INSERT INTO mushine_round_metadata (user_id, game_type, current_level, correct_mushroom, correct_answer, timestamp) VALUES ($1, $2, $3, $4, $5, to_timestamp(${Date.now()} / 1000.0)) RETURNING *`,
         [user_id, game_type, current_level, correct_mushroom, correct_answer]
@@ -133,7 +138,9 @@ export async function updateRoundMetaData(
         return result.rows[0];
       })
       .catch((error: Error) => console.log(error));
-  }
+  });
+
+  return Promise.all(roundMetaDataRes);
 }
 
 export async function getRoundMetadata(user_id: string, current_level: number) {
@@ -175,6 +182,21 @@ export async function getHeatmapData(
     }
   }
   return heatmaps;
+}
+
+export async function getActivity(user_id: string) {
+  const activity = await db
+    .query(
+      `SELECT date_trunc('day', mushine_round_metadata.timestamp) "day", count(*) roundcount
+      FROM mushine_round_metadata
+      WHERE user_id = $1
+      GROUP by 1
+      ORDER BY day`,
+      [user_id]
+    )
+    .then((result: QueryResult<Activity>) => result.rows);
+
+  return activity;
 }
 
 export async function saveLevelSnapshot(

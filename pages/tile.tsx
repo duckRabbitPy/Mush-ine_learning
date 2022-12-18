@@ -31,7 +31,7 @@ const Tile = () => {
 
   const [maxIncorrect, setMaxIncorrect] = useState(tileDifficulty.medium);
   const [roundOver, setRoundOver] = useState(false);
-  const getMushroomSet = trpc.mushroomSet.useQuery(
+  const getMushroomSet = trpc.retrieveMushroomSet.useQuery(
     {
       omitArr,
       numOptions: maxIncorrect,

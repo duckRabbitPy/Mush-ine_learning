@@ -1,4 +1,3 @@
-import { useUser } from "@auth0/nextjs-auth0";
 import { Flex, Heading, Text } from "@chakra-ui/react";
 
 import {
@@ -24,22 +23,20 @@ Chart.register(
 );
 
 const Study = () => {
-  const { user } = useUser();
-  const studyImgData = trpc.getStudyImages.useQuery({
-    user_id: user?.sub ?? null,
-  }).data;
+  const { isLoading, data } = trpc.getStudyImages.useQuery();
 
-  const images = studyImgData?.studyImgSrcs;
-  const name = studyImgData?.chosenMushroomName;
+  const images = data?.studyImgSrcs;
+  const name = data?.chosenMushroomName;
 
   return (
     <TopLevelWrapper backgroundColor={"#EDF2F7"}>
       <Flex direction="column" alignItems="center" gap="1rem">
         <HomeBtn mt={5} />
         <Heading fontFamily={"honeyMushroom"}>Homework</Heading>
-        {images ? (
+        {images && (
           <Text>{name} seems to be causing you problems, pay attention!</Text>
-        ) : (
+        )}
+        {!isLoading && images && images?.length < 1 && (
           <Text>⚠️ Not enough data for personalised recommendations</Text>
         )}
         <ul>

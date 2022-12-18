@@ -41,16 +41,14 @@ const Forage = () => {
     setProgress,
     score,
     setScore,
-    user,
     maxIncorrect,
     setMaxIncorrect,
   } = useGameState();
 
-  const getForageMushrooms = trpc.forageMushrooms.useQuery(
+  const getForageMushrooms = trpc.retrieveForageMushrooms.useQuery(
     {
       omitArr,
       maxIncorrect: maxIncorrect,
-      user_id: user?.sub ?? null,
     },
     {
       enabled: round !== 0 && round !== 4,
