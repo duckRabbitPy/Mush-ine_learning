@@ -1,34 +1,54 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Welcome to Mush-ine learning
 
-## Getting Started
 
-First, run the development server:
+## Learn to identify edible mushrooms that grow in the UK
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+Learning to identify mushrooms from books and websites is hard! Mush-ine learning is an online application designed to train users to identify canonical examples of edible mushroom species. 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Complete mushroom identification games to earn XP points and level up! Your results are used to build a model of your successes and failures which informs the options you are presented in games. The more levels you complete the better the app understands the mistakes you make and can reccommend mushrooms to study. You can view this data yourself on the insights page and the study page.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Game modes
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
++ Forage
++ Multi
++ Tile 
 
-## Learn More
+<br>
 
-To learn more about Next.js, take a look at the following resources:
+### Forage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+In Forage game mode you are presented with a number of mushroom images, and given a target mushroom to find out of the options. Only one of the options is correct.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<img width="631" alt="Screenshot 2022-12-18 at 17 27 33" src="https://user-images.githubusercontent.com/78092825/208311148-c257179a-78b5-4ad0-8a2b-813700003e78.png">
 
-## Deploy on Vercel
+<br>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Multi
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+In Multi game mode you are presented with a set of different images of the same mushroom and a number of multiple choice options. Your task is to select the mushroom option that the set of images belong to. 
+
+
+<img width="736" alt="Screenshot 2022-12-18 at 16 40 42" src="https://user-images.githubusercontent.com/78092825/208310453-38069f6d-50fe-4f2c-83ee-1e4c17f8d2fc.png">
+
+<br>
+
+### Tile
+In Tile game mode you are given a single image of a mushroom, and are presented with many options, you can choose as many times as you like, but for a good score you will want to select the correct option on the first attempt.
+
+<img width="778" alt="Screenshot 2022-12-18 at 16 43 11" src="https://user-images.githubusercontent.com/78092825/208310455-9324b131-acf4-4818-a9d2-f9bc0753ca5f.png">
+
+<br>
+
+## Insights 
+On the insights page you can search for different mushrooms and see a heatmap of your successes and failures, importantly you can see a ranked list of the mushrooms that you have historically mistaken the target mushroom for. You can use this information to guide your study.
+
+
+<img width="604" alt="Screenshot 2022-12-18 at 16 35 41" src="https://user-images.githubusercontent.com/78092825/208310449-ebb1cfc5-038c-404b-8154-e89a68428425.png">
+
+
+<br>
+
+### Disclaimer:
+This app will help you build familiarity with canonical examples of edible mushroom species. The decision to eat a wild mushroom requires 100% certainty. There are many harmful and even deadly mushroom species in the UK. This app is a good starting place but <b>IS NOT A SUBSTITUTE for proper research, careful examination and informed expert opinion</b>
+
