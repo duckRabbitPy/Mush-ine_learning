@@ -118,8 +118,11 @@ const Tile = () => {
         paddingBottom="200px"
       >
         <HomeBtn w="-moz-fit-content" mt={3} />
-        <Heading color="white" fontFamily={"honeyMushroom"}>
-          {" "}
+        <Heading
+          color="white"
+          fontFamily={"honeyMushroom"}
+          letterSpacing="widest"
+        >
           Tile Game
         </Heading>
         <Flex gap={2} direction={"column"} alignItems="center">
@@ -167,6 +170,11 @@ const Tile = () => {
                 <Spinner color="white" />
               )}
 
+              {!gameOver && (
+                <Heading color="white" fontSize={"sm"} fontFamily="rounded">
+                  What mushroom is this?
+                </Heading>
+              )}
               <SimpleGrid columns={1} gap={1} width="fit-content">
                 {getMushroomSet.data?.mushroomImgSrcs
                   .map((src) => {

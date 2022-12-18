@@ -206,7 +206,7 @@ export function tailoredNamePool(
   const misidentified = snapshot[correctAnswer];
   const ranked = Object.entries(misidentified)
     .sort(([, weightA], [, weightB]) => Number(weightB) - Number(weightA))
-    .map((kvp) => kvp[0])
+    .map(([mushroomName]) => mushroomName)
     .slice(0, Math.round(maxOptions / 2));
 
   const highRankedRemoved = mushroomNamePool.filter(

@@ -65,7 +65,7 @@ const Profile = () => {
               mt={5}
               fontSize="2xl"
               fontWeight={"extrabold"}
-              fontFamily={"honeyMushroom"}
+              fontFamily={"rounded"}
             >
               Level {snapshot.data?.level}
             </Text>
@@ -89,9 +89,7 @@ const Profile = () => {
               Stats for level {snapshot.data?.level}
             </Heading>
             <SimpleGrid columns={3} m={5}>
-              {Object.entries(metaArr ?? {}).map((kvp) => {
-                const name = kvp[0];
-                const data = kvp[1];
+              {Object.entries(metaArr ?? {}).map(([name, data]) => {
                 return (
                   <Container key={name} fontFamily="rounded">
                     <Heading
@@ -124,8 +122,10 @@ const Profile = () => {
             </SimpleGrid>
           </>
         )}
-        {activity && <BarChart kvp={activity} yAxisTitle="rounds completed" />}
       </Flex>
+      <Container maxWidth={"40%"}>
+        {activity && <BarChart kvp={activity} yAxisTitle="rounds completed" />}
+      </Container>
     </TopLevelWrapper>
   );
 };

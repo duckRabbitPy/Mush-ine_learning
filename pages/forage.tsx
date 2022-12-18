@@ -114,27 +114,34 @@ const Forage = () => {
         <Flex direction="column" gap={2} alignItems="center">
           {!gameOver && !getForageMushrooms.isRefetching && (
             <>
-              <Heading
-                size={"md"}
-                mt={2}
-                mb={2}
-                pl={2}
-                pr={2}
-                color="white"
-                fontFamily="rounded"
-              >
-                {correctMushroom?.name ? (
-                  <span>
-                    Find 🔎 and click on 👉🏼 the{" "}
-                    <span style={{ color: "greenyellow" }}>
-                      {correctMushroom?.name}
-                    </span>{" "}
-                    mushroom
-                  </span>
-                ) : (
-                  "Forage Game 🍄"
-                )}
-              </Heading>
+              {
+                <Heading
+                  mt={2}
+                  letterSpacing="widest"
+                  fontFamily={"honeyMushroom"}
+                  color="white"
+                >
+                  Forage
+                </Heading>
+              }
+              {correctMushroom?.name && (
+                <Heading
+                  size={"md"}
+                  mt={2}
+                  mb={2}
+                  pl={2}
+                  pr={2}
+                  color="white"
+                  fontFamily="rounded"
+                >
+                  Find 🔎 and click on 👉🏼 the{" "}
+                  <span style={{ color: "greenyellow" }}>
+                    {correctMushroom?.name}
+                  </span>{" "}
+                  mushroom
+                </Heading>
+              )}
+
               <ProgressIndicator
                 round={round}
                 score={score}
@@ -193,13 +200,6 @@ const Forage = () => {
             </>
           )}
           {gameOver && <Text>Game over!</Text>}
-
-          <SaveBtn
-            gameOver={gameOver}
-            score={score}
-            trainingResult={trainingResult}
-            roundMetaData={roundMetaData}
-          />
         </Flex>
         <Container>
           {round !== 0 && round !== 4 && getForageMushrooms.isLoading ? (
@@ -215,6 +215,7 @@ const Forage = () => {
                       display="flex"
                       justifyContent="center"
                       flexDirection="column"
+                      alignItems="center"
                     >
                       <Image
                         onClick={() => {
@@ -253,6 +254,12 @@ const Forage = () => {
             </SimpleGrid>
           )}
         </Container>
+        <SaveBtn
+          gameOver={gameOver}
+          score={score}
+          trainingResult={trainingResult}
+          roundMetaData={roundMetaData}
+        />
       </Flex>
     </TopLevelWrapper>
   );
