@@ -1,4 +1,3 @@
-import { useUser } from "@auth0/nextjs-auth0";
 import {
   Container,
   Flex,
@@ -6,6 +5,7 @@ import {
   Heading,
   Input,
   SimpleGrid,
+  Spinner,
   Square,
   Text,
 } from "@chakra-ui/react";
@@ -30,6 +30,7 @@ import Fuse from "fuse.js";
 import CustomBtn from "./components/CustomBtn";
 import { GetStaticProps } from "next/types";
 import { getMushroomImgPaths, getMushroomNames } from "../utils/server_side";
+import { brandColors } from "./_app";
 
 Chart.register(
   BarElement,
@@ -60,15 +61,9 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
-  const { user } = useUser();
+  const snapshot = trpc.retrieveLevelSnapShot.useQuery();
 
-  const snapshot = trpc.getLevelSnapShot.useQuery({
-    user_id: user?.sub ?? null,
-  });
-
-  const heatmaps = trpc.getHeatMaps.useQuery({
-    user_id: user?.sub ?? null,
-  }).data;
+  const heatmaps = trpc.getHeatMaps.useQuery().data;
 
   const [searchInput, setSearchInput] = useState("");
 
@@ -97,6 +92,8 @@ const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
             setSearchInput(target.value);
           }}
         ></Input>
+
+        {snapshot.isLoading && <Spinner color={brandColors[200]} />}
 
         <SimpleGrid gap="100px">
           {snapshot.data?.snapshot &&
@@ -179,10 +176,10 @@ const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
                           </Heading>
 
                           <Grid gridTemplateColumns={"repeat(7, 0fr)"}>
-                            {heatmap.map((result) => (
+                            {heatmap.map((result, i) => (
                               <Square
                                 size="40px"
-                                key={result.timestamp}
+                                key={i}
                                 bg={
                                   result.correct_answer
                                     ? "green.200"

@@ -1,4 +1,3 @@
-import { useUser } from "@auth0/nextjs-auth0";
 import { Flex, Heading, Text } from "@chakra-ui/react";
 
 import {
@@ -24,10 +23,7 @@ Chart.register(
 );
 
 const Study = () => {
-  const { user } = useUser();
-  const { isLoading, data } = trpc.getStudyImages.useQuery({
-    user_id: user?.sub ?? null,
-  });
+  const { isLoading, data } = trpc.getStudyImages.useQuery();
 
   const images = data?.studyImgSrcs;
   const name = data?.chosenMushroomName;

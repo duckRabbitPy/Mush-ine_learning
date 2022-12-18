@@ -41,7 +41,6 @@ const Forage = () => {
     setProgress,
     score,
     setScore,
-    user,
     maxIncorrect,
     setMaxIncorrect,
   } = useGameState();
@@ -50,7 +49,6 @@ const Forage = () => {
     {
       omitArr,
       maxIncorrect: maxIncorrect,
-      user_id: user?.sub ?? null,
     },
     {
       enabled: round !== 0 && round !== 4,

@@ -34,27 +34,17 @@ Chart.register(
 
 const Profile = () => {
   const { user } = useUser();
-  const xpQuery = trpc.retrieveUserScore.useQuery({
-    user_id: user?.sub ?? null,
-  });
+  const xpQuery = trpc.retrieveUserScore.useQuery();
 
-  const snapshot = trpc.getLevelSnapShot.useQuery({
-    user_id: user?.sub ?? null,
-  });
+  const snapshot = trpc.retrieveLevelSnapShot.useQuery();
 
-  const metaArr = trpc.retrieveRoundMetadata.useQuery({
-    user_id: user?.sub ?? null,
-  }).data;
+  const metaArr = trpc.retrieveRoundMetadata.useQuery().data;
 
   const { xpToNextLevel, boundaryAhead, boundaryBehind } = currLevelInfo(
     xpQuery.data,
     snapshot.data?.level
   );
-  const activity = trpc.retrieveActivity.useQuery({
-    user_id: user?.sub ?? null,
-  }).data;
-
-  console.log(activity);
+  const activity = trpc.retrieveActivity.useQuery().data;
 
   const xpEarnedThisLevel = boundaryAhead - boundaryBehind - xpToNextLevel;
   const percentageProgress = (xpEarnedThisLevel / xpToNextLevel) * 100;

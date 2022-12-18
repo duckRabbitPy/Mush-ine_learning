@@ -1,4 +1,4 @@
-import { number, string, z } from "zod";
+import { number, z } from "zod";
 import { reduceAnswerCount } from "../../utils/client_safe";
 import {
   getForageMushrooms,
@@ -21,46 +21,39 @@ import {
   getMostTroublesome,
   getActivity,
 } from "../database/model";
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudImage } from "../../types";
 
 export const appRouter = router({
-  retrieveUserScore: publicProcedure
-    .input(z.object({ user_id: z.string().nullable() }))
-    .query(async ({ input }) => {
-      if (!input.user_id) {
-        return 0;
-      }
-      const userScore = await getScoreByUserId(input.user_id);
-      return userScore ?? 0;
-    }),
-  storeUserScore: publicProcedure
+  retrieveUserScore: protectedProcedure.query(async ({ ctx }) => {
+    const userScore = await getScoreByUserId(ctx.user_id);
+    return userScore ?? 0;
+  }),
+  storeUserScore: protectedProcedure
     .input(
       z.object({
-        user_id: z.string(),
         score: z.number(),
       })
     )
-    .mutation(async ({ input }) => {
-      let xp = await getScoreByUserId(input.user_id);
+    .mutation(async ({ input, ctx }) => {
+      let xp = await getScoreByUserId(ctx.user_id);
       if (!xp) {
-        await createUser(input.user_id);
+        await createUser(ctx.user_id);
         xp = 0;
       }
       const newXp = xp + input.score;
-      const newScore = await updateScore(newXp, input.user_id);
+      const newScore = await updateScore(newXp, ctx.user_id);
       return {
         user: {
-          user_id: input.user_id,
+          user_id: ctx.user_id,
           score: newScore,
         },
       };
     }),
-  storeTrainingData: publicProcedure
+  storeTrainingData: protectedProcedure
     .input(
       z.object({
-        user_id: z.string(),
         trainingData: z.array(
           z.object({
             misidentifiedMushroom: z.string().nullable(),
@@ -69,17 +62,16 @@ export const appRouter = router({
         ),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const lastSession = await updateTrainingData(
         input.trainingData,
-        input.user_id
+        ctx.user_id
       );
       return lastSession;
     }),
-  storeRoundMetadata: publicProcedure
+  storeRoundMetadata: protectedProcedure
     .input(
       z.object({
-        user_id: z.string(),
         roundMetadata: z.array(
           z.object({
             game_type: z.enum(["forage", "tile", "multi"]),
@@ -89,55 +81,39 @@ export const appRouter = router({
         ),
       })
     )
-    .mutation(async ({ input }) => {
-      const current_level = await getCurrentLevel(input.user_id);
+    .mutation(async ({ input, ctx }) => {
+      const current_level = await getCurrentLevel(ctx.user_id);
       const roundMetadata = input.roundMetadata;
-      await updateRoundMetaData(
-        input.user_id,
-        current_level ?? 0,
-        roundMetadata
-      );
+      await updateRoundMetaData(ctx.user_id, current_level ?? 0, roundMetadata);
     }),
-  retrieveRoundMetadata: publicProcedure
-    .input(
-      z.object({
-        user_id: z.string().nullable(),
-      })
-    )
-    .query(async ({ input }) => {
-      if (!input.user_id) {
-        return null;
-      }
-      const currLevel = await getCurrentLevel(input.user_id);
-      const stats = await getRoundMetadata(input.user_id, currLevel ?? 0);
-      const forage = reduceAnswerCount(
-        stats?.filter((r) => r.game_type === "forage")
-      );
-      const multi = reduceAnswerCount(
-        stats?.filter((r) => r.game_type === "multi")
-      );
-      const tile = reduceAnswerCount(
-        stats?.filter((r) => r.game_type == "tile")
-      );
+  retrieveRoundMetadata: protectedProcedure.query(async ({ ctx }) => {
+    const currLevel = await getCurrentLevel(ctx.user_id);
+    const stats = await getRoundMetadata(ctx.user_id, currLevel ?? 0);
+    const forage = reduceAnswerCount(
+      stats?.filter((r) => r.game_type === "forage")
+    );
+    const multi = reduceAnswerCount(
+      stats?.filter((r) => r.game_type === "multi")
+    );
+    const tile = reduceAnswerCount(stats?.filter((r) => r.game_type == "tile"));
 
-      const metaArr = { forage, multi, tile };
-      return metaArr;
-    }),
-  retrieveForageMushrooms: publicProcedure
+    const metaArr = { forage, multi, tile };
+    return metaArr;
+  }),
+  retrieveForageMushrooms: protectedProcedure
     .input(
       z.object({
         omitArr: z.array(z.string()),
         maxIncorrect: z.number(),
-        user_id: z.string().nullable(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       let snapshot = null as Record<string, SummedWeights> | undefined | null;
-      if (input.user_id) {
-        const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
-        const snapshotData = await getLevelSnapshot(currLevel, input.user_id);
-        snapshot = snapshotData?.snapshot;
-      }
+
+      const currLevel = (await getCurrentLevel(ctx.user_id)) ?? 0;
+      const snapshotData = await getLevelSnapshot(currLevel, ctx.user_id);
+      snapshot = snapshotData?.snapshot;
+
       const forageMushrooms = await getForageMushrooms(
         input.omitArr,
         input.maxIncorrect,
@@ -170,35 +146,24 @@ export const appRouter = router({
 
       return mushroomSet;
     }),
-  saveLevelSnapShot: publicProcedure
+  saveLevelSnapShot: protectedProcedure.mutation(async ({ ctx }) => {
+    const mushrooms = await getMushroomNames();
+    const snapshot = await saveLevelSnapshot(mushrooms, ctx.user_id);
+    return snapshot;
+  }),
+  retrieveLevelSnapShot: protectedProcedure
     .input(
-      z.object({
-        user_id: string().nullable(),
-      })
+      z
+        .object({
+          level: number(),
+        })
+        .optional()
     )
-    .mutation(async ({ input }) => {
-      if (!input.user_id) {
-        return null;
-      }
-      const mushrooms = await getMushroomNames();
-      const snapshot = await saveLevelSnapshot(mushrooms, input.user_id);
-      return snapshot;
-    }),
-  getLevelSnapShot: publicProcedure
-    .input(
-      z.object({
-        level: number().optional(),
-        user_id: string().nullable(),
-      })
-    )
-    .query(async ({ input }) => {
-      if (!input.user_id) {
-        return null;
-      }
-      const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
+    .query(async ({ input, ctx }) => {
+      const currLevel = (await getCurrentLevel(ctx.user_id)) ?? 0;
       const snapshot = await getLevelSnapshot(
-        input.level ?? currLevel,
-        input.user_id
+        input?.level ?? currLevel,
+        ctx.user_id
       );
 
       if (!snapshot) {
@@ -206,75 +171,47 @@ export const appRouter = router({
       }
       return snapshot;
     }),
-  getHeatMaps: publicProcedure
-    .input(
-      z.object({
-        user_id: string().nullable(),
-      })
-    )
-    .query(async ({ input }) => {
-      if (!input.user_id) {
-        return null;
-      }
-      const mushroomNames = await getMushroomNames();
-      const heatmaps = await getHeatmapData(mushroomNames, input.user_id);
-      return heatmaps;
-    }),
-  retrieveActivity: publicProcedure
-    .input(
-      z.object({
-        user_id: string().nullable(),
-      })
-    )
-    .query(async ({ input }) => {
-      if (!input.user_id) {
-        return null;
-      }
-      const activityhistory = await getActivity(input.user_id);
+  getHeatMaps: protectedProcedure.query(async ({ ctx }) => {
+    const mushroomNames = await getMushroomNames();
+    const heatmaps = await getHeatmapData(mushroomNames, ctx.user_id);
+    return heatmaps;
+  }),
+  retrieveActivity: protectedProcedure.query(async ({ ctx }) => {
+    const activityhistory = await getActivity(ctx.user_id);
 
-      let lastThirtyActive: Record<string, number> = {};
+    let lastThirtyActive: Record<string, number> = {};
 
-      const maxThirtyDays = activityhistory.slice(0, 30);
-      maxThirtyDays.forEach((activityRecord) => {
-        const day = new Date(activityRecord.day).toLocaleDateString();
-        lastThirtyActive[day as keyof typeof lastThirtyActive] =
-          activityRecord.roundcount;
-      });
+    const maxThirtyDays = activityhistory.slice(0, 30);
+    maxThirtyDays.forEach((activityRecord) => {
+      const day = new Date(activityRecord.day).toLocaleDateString();
+      lastThirtyActive[day as keyof typeof lastThirtyActive] =
+        activityRecord.roundcount;
+    });
 
-      return lastThirtyActive;
-    }),
-  getStudyImages: publicProcedure
-    .input(
-      z.object({
-        user_id: string().nullable(),
-      })
-    )
-    .query(async ({ input }) => {
-      if (!input.user_id) {
-        return null;
-      }
+    return lastThirtyActive;
+  }),
+  getStudyImages: protectedProcedure.query(async ({ ctx }) => {
+    const mostTroublesomeData = await getMostTroublesome(ctx.user_id);
 
-      const mostTroublesomeData = await getMostTroublesome(input.user_id);
+    if (!mostTroublesomeData) {
+      return null;
+    }
 
-      if (!mostTroublesomeData) {
-        return null;
-      }
+    const chosenMushroomName = randomArrItem(mostTroublesomeData);
 
-      const chosenMushroomName = randomArrItem(mostTroublesomeData);
+    const cloudinaryResult = await cloudinary.api.resources({
+      type: "upload",
+      prefix: `mushroom_images/${chosenMushroomName}`,
+      max_results: 10,
+    });
 
-      const cloudinaryResult = await cloudinary.api.resources({
-        type: "upload",
-        prefix: `mushroom_images/${chosenMushroomName}`,
-        max_results: 10,
-      });
+    const images = cloudinaryResult.resources as CloudImage[];
 
-      const images = cloudinaryResult.resources as CloudImage[];
-
-      const studyImgSrcs = images
-        .map((img: CloudImage) => img.url)
-        .flatMap((f) => (f ? [f] : []));
-      return { studyImgSrcs, chosenMushroomName };
-    }),
+    const studyImgSrcs = images
+      .map((img: CloudImage) => img.url)
+      .flatMap((f) => (f ? [f] : []));
+    return { studyImgSrcs, chosenMushroomName };
+  }),
 });
 
 export type AppRouter = typeof appRouter;
