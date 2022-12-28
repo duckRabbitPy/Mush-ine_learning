@@ -1,4 +1,11 @@
-import { Mushine_round_metadata } from "../server/database/model";
+import Fuse from "fuse.js";
+import { sortOptions } from "../pages/insights";
+import {
+  Heatmaps,
+  Mushine_round_metadata,
+  SummedWeights,
+  TimeAndResult,
+} from "../server/database/model";
 import { ForageMushroom, TrainingData } from "./server_side";
 
 export function extractTrainingData(
@@ -123,4 +130,50 @@ export function sortObjectByNumValues(obj: Record<string, number>) {
 
 export function uniqByFilter<T>(array: T[]) {
   return array.filter((value, index) => array.indexOf(value) === index);
+}
+
+export function heatMapAccuracy(heatmap: TimeAndResult[]) {
+  const numCorrect = heatmap.filter((result) => result.correct_answer).length;
+  const numIncorrect = heatmap.filter(
+    (result) => !result.correct_answer
+  ).length;
+
+  return Math.ceil((numCorrect / (numCorrect + numIncorrect)) * 100);
+}
+
+export function sortInsightData(
+  chartData: [string, SummedWeights][] | undefined,
+  heatmaps: Heatmaps | undefined,
+  filter: sortOptions
+) {
+  if (!heatmaps || !chartData) return chartData;
+
+  return chartData.sort((a, b) => {
+    if (filter === sortOptions.Alphabetical) {
+      return a[0].localeCompare(b[0]);
+    }
+    const heatmapA = heatmaps[a[0]];
+    const accuracyA = heatMapAccuracy(heatmapA);
+
+    const heatmapB = heatmaps[b[0]];
+    const accuracyB = heatMapAccuracy(heatmapB);
+
+    if (accuracyA < accuracyB)
+      return filter === sortOptions.HighAccuracyFirst ? 1 : -1;
+    if (accuracyA > accuracyB)
+      return filter === sortOptions.HighAccuracyFirst ? -1 : 1;
+    return 0;
+  });
+}
+
+export function filterInsightData(
+  searchInput: string,
+  mushroomNames: string[],
+  insightData: [string, SummedWeights][] | undefined
+) {
+  const fuse = new Fuse(mushroomNames ?? []);
+  const fuzzySearchResult = fuse.search(searchInput).map((res) => res.item);
+  return insightData?.filter(
+    ([mushroomName]) => fuzzySearchResult.includes(mushroomName) || !searchInput
+  );
 }
