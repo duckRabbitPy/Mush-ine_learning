@@ -1,7 +1,7 @@
 import { Button, Container, Flex, Heading } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
 import Link from "next/link";
-import { getMushroomNames } from "../../utils/server_side";
+import { getMushroomNames } from "../../scripts/init";
 import HomeBtn from "../components/HomeBtn";
 import TopLevelWrapper from "../components/TopLvlWrapper";
 

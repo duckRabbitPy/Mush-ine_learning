@@ -1,8 +1,9 @@
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 import { randomUUID } from "crypto";
-import { getMushroomNames } from "../../../utils/server_side";
+
 import db from "../connection";
+import { getMushroomNames } from "../../../scripts/init";
 
 // ts-node migration-1.ts
 export async function initTables() {
