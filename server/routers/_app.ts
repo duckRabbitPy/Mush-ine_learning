@@ -2,8 +2,8 @@ import { number, z } from "zod";
 import { reduceAnswerCount } from "../../utils/client_safe";
 import {
   getForageMushrooms,
-  getMushroomNames,
   getMushroomSet,
+  getStoredMushroomNames,
   randomArrItem,
 } from "../../utils/server_side";
 import {
@@ -147,7 +147,7 @@ export const appRouter = router({
       return mushroomSet;
     }),
   saveLevelSnapShot: protectedProcedure.mutation(async ({ ctx }) => {
-    const mushrooms = await getMushroomNames();
+    const mushrooms = await getStoredMushroomNames();
     const snapshot = await saveLevelSnapshot(mushrooms, ctx.user_id);
     return snapshot;
   }),
@@ -172,7 +172,7 @@ export const appRouter = router({
       return snapshot;
     }),
   getHeatMaps: protectedProcedure.query(async ({ ctx }) => {
-    const mushroomNames = await getMushroomNames();
+    const mushroomNames = await getStoredMushroomNames();
     const heatmaps = await getHeatmapData(mushroomNames, ctx.user_id);
     return heatmaps;
   }),

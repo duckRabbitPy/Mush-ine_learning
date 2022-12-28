@@ -12,9 +12,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { CloudImage } from "../../types";
-import { getMushroomNames } from "../../utils/server_side";
 import HomeBtn from "../components/HomeBtn";
 import { BsGrid3X3GapFill } from "react-icons/bs";
+import { getMushroomNames } from "../../scripts/init";
 
 export async function getStaticPaths() {
   const mushroomNames = await getMushroomNames();

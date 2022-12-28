@@ -34,12 +34,11 @@ import Image from "next/image";
 import TopLevelWrapper from "./components/TopLvlWrapper";
 import { BarChart, chartColors } from "./components/BarChart";
 import { useState } from "react";
-import Fuse from "fuse.js";
 import CustomBtn from "./components/CustomBtn";
 import { GetStaticProps } from "next/types";
-import { getMushroomImgPaths, getMushroomNames } from "../utils/server_side";
+import { getMushroomImgPaths } from "../utils/server_side";
 import { brandColors } from "./_app";
-import { Heatmaps, SummedWeights } from "../server/database/model";
+import { getMushroomNames } from "../scripts/init";
 
 Chart.register(
   BarElement,
