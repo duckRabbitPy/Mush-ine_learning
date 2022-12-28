@@ -34,10 +34,10 @@ export async function getMushroomNames() {
 
 export async function buildForageMushrooms(
   mushroomNames: string[],
-  number: number
+  max: number
 ): Promise<ForageMushroom[]> {
   const testMushroomRes = mushroomNames.map((mushroomName, index) => {
-    if (index > number) return null;
+    if (index > max) return null;
     return cloudinary.api
       .resources({
         type: "upload",
@@ -118,7 +118,6 @@ export async function getForageMushrooms(
     }
     return mushroom;
   });
-
   return shuffleArrayCopy(testMushrooms);
 }
 
