@@ -3,7 +3,7 @@ dotenv.config({ path: ".env.local" });
 import { randomUUID } from "crypto";
 
 import db from "../connection";
-import { getMushroomNames } from "../../../scripts/init";
+import { appRouter } from "../../routers/_app";
 
 // ts-node migration-1.ts
 export async function initTables() {
@@ -26,7 +26,9 @@ export async function initTables() {
 }
 
 export async function initTrainingMushroomSet() {
-  const trainingMushrooms = await getMushroomNames();
+  const caller = appRouter.createCaller({ user: undefined });
+  const trainingMushrooms = await caller.getMushroomNames();
+
   for (const mushroomName of trainingMushrooms) {
     const uuid = randomUUID();
     await db

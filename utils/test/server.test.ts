@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
-  getMushroomNames,
   getForageMushrooms,
   buildForageMushrooms,
   getMushroomImgPaths,
   tailoredNamePool,
 } from "../server_side";
 import { v2 as cloudinary } from "cloudinary";
+import { getMushroomNamesFromCloud } from "../../scripts/init";
 
 cloudinary.config({
   cloud_name: import.meta.env.VITE_cloud_name,
@@ -55,9 +55,9 @@ const SNAPSHOT = {
   "the-great-wood-mushroom": {},
 };
 
-describe("getMushroomNames returns an array of mushroom names", () => {
+describe("getMushroomNamesFromCloud returns an array of mushroom names", () => {
   it("array contains medusa", async () => {
-    getMushroomNames().then((res) => expect(res).includes("medusa"));
+    getMushroomNamesFromCloud().then((res) => expect(res).includes("medusa"));
   });
 });
 
