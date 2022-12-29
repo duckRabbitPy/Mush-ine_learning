@@ -1,12 +1,13 @@
 import { Button, Container, Flex, Heading } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
 import Link from "next/link";
-import { trpc } from "../../utils/trpc";
+import { appRouter } from "../../server/routers/_app";
 import HomeBtn from "../components/HomeBtn";
 import TopLevelWrapper from "../components/TopLvlWrapper";
 
 export const getStaticProps: GetStaticProps = async () => {
-  const mushroomNames = await trpc.getMushroomNames.useQuery();
+  const caller = appRouter.createCaller({ user: undefined });
+  const mushroomNames = await caller.getMushroomNames();
   return {
     props: {
       mushroomNames,

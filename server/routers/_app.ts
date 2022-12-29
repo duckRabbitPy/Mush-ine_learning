@@ -35,8 +35,6 @@ export const appRouter = router({
       "utf8"
     );
 
-    console.log(JSON.parse(mushroomNames).mushroomNames);
-
     return JSON.parse(mushroomNames).mushroomNames as string[];
   }),
   retrieveUserScore: protectedProcedure.query(async ({ ctx }) => {
