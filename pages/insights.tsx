@@ -38,7 +38,7 @@ import CustomBtn from "./components/CustomBtn";
 import { GetStaticProps } from "next/types";
 import { getMushroomImgPaths } from "../utils/server_side";
 import { brandColors } from "./_app";
-import { getMushroomNames } from "../scripts/init";
+import { appRouter } from "../server/routers/_app";
 
 Chart.register(
   BarElement,
@@ -55,8 +55,12 @@ export enum sortOptions {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const mushroomNames = await getMushroomNames();
+  const caller = appRouter.createCaller({ user: undefined });
+  const mushroomNames = await caller.getMushroomNames();
 
+  if (!mushroomNames) {
+    throw new Error("Mushroom names not available at build time");
+  }
   const srcPromises = mushroomNames.map((mushroom) => {
     return getMushroomImgPaths(mushroom, 1).then((srcArr) => {
       return { [mushroom]: srcArr[0] };

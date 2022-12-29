@@ -1,4 +1,5 @@
 import { number, z } from "zod";
+import { promises as fs } from "fs";
 import { reduceAnswerCount } from "../../utils/client_safe";
 import {
   getForageMushrooms,
@@ -24,8 +25,20 @@ import {
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudImage } from "../../types";
+import path from "path";
 
 export const appRouter = router({
+  getMushroomNames: publicProcedure.query(async () => {
+    const jsonDirectory = path.join(process.cwd(), "server/fileSystemData");
+    const mushroomNames = await fs.readFile(
+      jsonDirectory + "/mushroomNames.json",
+      "utf8"
+    );
+
+    console.log(JSON.parse(mushroomNames).mushroomNames);
+
+    return JSON.parse(mushroomNames).mushroomNames as string[];
+  }),
   retrieveUserScore: protectedProcedure.query(async ({ ctx }) => {
     const userScore = await getScoreByUserId(ctx.user_id);
     return userScore ?? 0;

@@ -14,10 +14,15 @@ import { useState } from "react";
 import { CloudImage } from "../../types";
 import HomeBtn from "../components/HomeBtn";
 import { BsGrid3X3GapFill } from "react-icons/bs";
-import { getMushroomNames } from "../../scripts/init";
+import { appRouter } from "../../server/routers/_app";
 
 export async function getStaticPaths() {
-  const mushroomNames = await getMushroomNames();
+  const caller = appRouter.createCaller({ user: undefined });
+  const mushroomNames = await caller.getMushroomNames();
+
+  if (!mushroomNames) {
+    throw new Error("Mushroom names not available at build time");
+  }
   const paths = mushroomNames.map((mushroomName) => {
     return {
       params: {
