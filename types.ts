@@ -21,3 +21,5 @@ export type SubfolderResult = {
   name: string;
   path: string;
 };
+
+export type Thumbnails = Record<string, string>;

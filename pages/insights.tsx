@@ -39,6 +39,7 @@ import { GetStaticProps } from "next/types";
 import { getMushroomImgPaths } from "../utils/server_side";
 import { brandColors } from "./_app";
 import { appRouter } from "../server/routers/_app";
+import { Thumbnails } from "../types";
 
 Chart.register(
   BarElement,
@@ -48,7 +49,7 @@ Chart.register(
   CategoryScale
 );
 
-export enum sortOptions {
+export enum SortOptions {
   "Alphabetical",
   "HighAccuracyFirst",
   "LowAccuracyFirst",
@@ -68,7 +69,7 @@ export const getStaticProps: GetStaticProps = async () => {
   });
 
   const srcArr = await Promise.all(srcPromises);
-  const thumbnails = Object.assign({}, ...srcArr) as Record<string, string>;
+  const thumbnails = Object.assign({}, ...srcArr) as Thumbnails;
 
   return {
     props: {
@@ -77,11 +78,11 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
+const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
   const snapshot = trpc.retrieveLevelSnapShot.useQuery();
   const heatmaps = trpc.getHeatMaps.useQuery().data;
   const [searchInput, setSearchInput] = useState("");
-  const [order, setOrder] = useState(sortOptions.Alphabetical);
+  const [order, setOrder] = useState(SortOptions.Alphabetical);
 
   const insightData =
     snapshot.data?.snapshot && Object.entries(snapshot.data?.snapshot);
@@ -117,11 +118,11 @@ const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
 
         <RadioGroup onChange={(e) => setOrder(Number(e))} value={String(order)}>
           <Stack direction="row" mb={5}>
-            <Radio value={String(sortOptions.Alphabetical)}>Alphabetical</Radio>
-            <Radio value={String(sortOptions.HighAccuracyFirst)}>
+            <Radio value={String(SortOptions.Alphabetical)}>Alphabetical</Radio>
+            <Radio value={String(SortOptions.HighAccuracyFirst)}>
               High accuracy
             </Radio>
-            <Radio value={String(sortOptions.LowAccuracyFirst)}>
+            <Radio value={String(SortOptions.LowAccuracyFirst)}>
               Low accuracy
             </Radio>
           </Stack>

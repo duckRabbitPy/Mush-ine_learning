@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { sortOptions } from "../pages/insights";
+import { SortOptions } from "../pages/insights";
 import {
   Heatmaps,
   Mushine_round_metadata,
@@ -144,12 +144,12 @@ export function heatMapAccuracy(heatmap: TimeAndResult[]) {
 export function sortInsightData(
   chartData: [string, SummedWeights][] | undefined,
   heatmaps: Heatmaps | undefined,
-  filter: sortOptions
+  filter: SortOptions
 ) {
   if (!heatmaps || !chartData) return chartData;
 
   return chartData.sort((a, b) => {
-    if (filter === sortOptions.Alphabetical) {
+    if (filter === SortOptions.Alphabetical) {
       return a[0].localeCompare(b[0]);
     }
     const heatmapA = heatmaps[a[0]];
@@ -159,9 +159,9 @@ export function sortInsightData(
     const accuracyB = heatMapAccuracy(heatmapB);
 
     if (accuracyA < accuracyB)
-      return filter === sortOptions.HighAccuracyFirst ? 1 : -1;
+      return filter === SortOptions.HighAccuracyFirst ? 1 : -1;
     if (accuracyA > accuracyB)
-      return filter === sortOptions.HighAccuracyFirst ? -1 : 1;
+      return filter === SortOptions.HighAccuracyFirst ? -1 : 1;
     return 0;
   });
 }
