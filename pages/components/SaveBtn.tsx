@@ -86,6 +86,7 @@ export const SaveBtn = ({
           w="-moz-fit-content"
           alignSelf="center"
           backgroundColor="#B8E6F3"
+          disabled={saveScore.isLoading}
           visibility={gameOver && !saveScore.isSuccess ? "visible" : "hidden"}
           {...styles}
         >

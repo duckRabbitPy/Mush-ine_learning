@@ -147,7 +147,7 @@ const Forage = () => {
                 progress={progress}
               />
 
-              {round === 0 && !correctMushroom ? (
+              {round === 0 && !getForageMushrooms.data ? (
                 <Flex direction="column" gap="10">
                   <Text color="white">
                     You will be shown {} images. Identify the target mushroom.

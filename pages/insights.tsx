@@ -11,6 +11,7 @@ import {
   Square,
   Stack,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import {
@@ -201,13 +202,25 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
 
                         <Grid gridTemplateColumns={"repeat(7, 0fr)"}>
                           {heatmap.map((result, i) => (
-                            <Square
-                              size="40px"
-                              key={i}
-                              bg={
-                                result.correct_answer ? "green.200" : "red.200"
+                            <Tooltip
+                              label={new Date(result.timestamp).toLocaleString(
+                                "en",
+                                { dateStyle: "medium", timeStyle: "short" }
+                              )}
+                              backgroundColor={
+                                result.correct_answer ? "green.500" : "red.500"
                               }
-                            />
+                            >
+                              <Square
+                                size="40px"
+                                key={i}
+                                bg={
+                                  result.correct_answer
+                                    ? "green.200"
+                                    : "red.200"
+                                }
+                              />
+                            </Tooltip>
                           ))}
                         </Grid>
                       </Container>
