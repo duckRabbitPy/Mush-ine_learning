@@ -1,18 +1,19 @@
+import { v2 as cloudinary } from "cloudinary";
+cloudinary.config({
+  cloud_name: import.meta.env.VITE_cloud_name,
+  api_key: import.meta.env.VITE_api_key,
+  api_secret: import.meta.env.VITE_api_secret,
+});
+
 import { describe, expect, it } from "vitest";
 import {
   getForageMushrooms,
   buildForageMushrooms,
   getMushroomImgPaths,
   tailoredNamePool,
-} from "../server_side";
-import { v2 as cloudinary } from "cloudinary";
-import { getMushroomNamesFromCloud } from "../../scripts/init";
+} from "../serverSideFunctions";
 
-cloudinary.config({
-  cloud_name: import.meta.env.VITE_cloud_name,
-  api_key: import.meta.env.VITE_api_key,
-  api_secret: import.meta.env.VITE_api_secret,
-});
+import { getMushroomNamesFromCloud } from "../../scripts/init";
 
 const SNAPSHOT = {
   field: {},

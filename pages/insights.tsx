@@ -24,11 +24,10 @@ import {
 } from "chart.js";
 
 import {
-  filterInsightData,
   heatMapAccuracy,
   sortInsightData,
   sortObjectByNumValues,
-} from "../utils/client_safe";
+} from "../utils/pureFunctions";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import Image from "next/image";
@@ -37,10 +36,11 @@ import { BarChart, chartColors } from "./components/BarChart";
 import { useState } from "react";
 import CustomBtn from "./components/CustomBtn";
 import { GetStaticProps } from "next/types";
-import { getMushroomImgPaths } from "../utils/server_side";
+import { getMushroomImgPaths } from "../utils/serverSideFunctions";
 import { brandColors } from "./_app";
 import { appRouter } from "../server/routers/_app";
-import { Thumbnails } from "../types";
+import { InsightSortOptions, SummedWeights, Thumbnails } from "../global_types";
+import Fuse from "fuse.js";
 
 Chart.register(
   BarElement,
@@ -49,12 +49,6 @@ Chart.register(
   LinearScale,
   CategoryScale
 );
-
-export enum SortOptions {
-  "Alphabetical",
-  "HighAccuracyFirst",
-  "LowAccuracyFirst",
-}
 
 export const getStaticProps: GetStaticProps = async () => {
   const caller = appRouter.createCaller({ user: undefined });
@@ -79,11 +73,23 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
+export function filterInsightData(
+  searchInput: string,
+  mushroomNames: string[],
+  insightData: [string, SummedWeights][] | undefined
+) {
+  const fuse = new Fuse(mushroomNames ?? []);
+  const fuzzySearchResult = fuse.search(searchInput).map((res) => res.item);
+  return insightData?.filter(
+    ([mushroomName]) => fuzzySearchResult.includes(mushroomName) || !searchInput
+  );
+}
+
 const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
   const snapshot = trpc.retrieveLevelSnapShot.useQuery();
   const heatmaps = trpc.getHeatMaps.useQuery().data;
   const [searchInput, setSearchInput] = useState("");
-  const [order, setOrder] = useState(SortOptions.Alphabetical);
+  const [order, setOrder] = useState(InsightSortOptions.Alphabetical);
 
   const insightData =
     snapshot.data?.snapshot && Object.entries(snapshot.data?.snapshot);
@@ -119,11 +125,13 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
 
         <RadioGroup onChange={(e) => setOrder(Number(e))} value={String(order)}>
           <Stack direction="row" mb={5}>
-            <Radio value={String(SortOptions.Alphabetical)}>Alphabetical</Radio>
-            <Radio value={String(SortOptions.HighAccuracyFirst)}>
+            <Radio value={String(InsightSortOptions.Alphabetical)}>
+              Alphabetical
+            </Radio>
+            <Radio value={String(InsightSortOptions.HighAccuracyFirst)}>
               High accuracy
             </Radio>
-            <Radio value={String(SortOptions.LowAccuracyFirst)}>
+            <Radio value={String(InsightSortOptions.LowAccuracyFirst)}>
               Low accuracy
             </Radio>
           </Stack>
@@ -203,6 +211,7 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                         <Grid gridTemplateColumns={"repeat(7, 0fr)"}>
                           {heatmap.map((result, i) => (
                             <Tooltip
+                              key={i}
                               label={new Date(result.timestamp).toLocaleString(
                                 "en",
                                 { dateStyle: "medium", timeStyle: "short" }

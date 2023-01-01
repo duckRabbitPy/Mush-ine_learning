@@ -1,11 +1,13 @@
 import { v2 as cloudinary } from "cloudinary";
 import storedMushrooms from "../server/fileSystemData/mushroomNames.json";
 import {
+  CloudImage,
+  CloudinaryResult,
   Game_types,
-  MushroomName as MushroomName,
+  MushroomName,
   SummedWeights,
-} from "../server/database/model";
-import { CloudImage, CloudinaryResult } from "../types";
+} from "../global_types";
+import { randomArrItem } from "./pureFunctions";
 
 export type ForageMushroom = {
   name: string;
@@ -167,13 +169,6 @@ export async function getMushroomSet(
   };
 }
 
-export function randomArrItem<Type>(arr: Type[]) {
-  const min = 0;
-  const max = Math.floor(arr.length - 1);
-  const index = Math.floor(Math.random() * (max - min + 1)) + min;
-  return arr[index];
-}
-
 export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
   const arr = unshuffledArr.slice();
   let currIndex = 0;
@@ -196,7 +191,11 @@ export function tailoredNamePool(
   if (!snapshot) {
     return mushroomNamePool;
   }
+
   const misidentified = snapshot[correctAnswer];
+
+  if (!misidentified) return mushroomNamePool;
+
   const ranked = Object.entries(misidentified)
     .sort(([, weightA], [, weightB]) => Number(weightB) - Number(weightA))
     .map(([mushroomName]) => mushroomName)

@@ -23,3 +23,31 @@ export type SubfolderResult = {
 };
 
 export type Thumbnails = Record<string, string>;
+
+export type MushroomName = string;
+
+export type Game_types = "forage" | "multi" | "tile";
+
+export type Mushine_round_metadata = {
+  id: number;
+  game_type: Game_types;
+  current_level: number;
+  correct_mushroom: MushroomName;
+  correct_answer: boolean;
+  timestamp: string;
+};
+
+export type TimeAndResult = Pick<
+  Mushine_round_metadata,
+  "timestamp" | "correct_answer"
+>;
+
+export type Heatmaps = Record<MushroomName, TimeAndResult[]>;
+
+export type SummedWeights = Record<MushroomName, number>;
+
+export enum InsightSortOptions {
+  "Alphabetical",
+  "HighAccuracyFirst",
+  "LowAccuracyFirst",
+}

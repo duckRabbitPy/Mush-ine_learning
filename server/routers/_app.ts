@@ -1,12 +1,11 @@
 import { number, z } from "zod";
 import { promises as fs } from "fs";
-import { reduceAnswerCount } from "../../utils/client_safe";
+import { randomArrItem, reduceAnswerCount } from "../../utils/pureFunctions";
 import {
   getForageMushrooms,
   getMushroomSet,
   getStoredMushroomNames,
-  randomArrItem,
-} from "../../utils/server_side";
+} from "../../utils/serverSideFunctions";
 import {
   updateScore,
   getScoreByUserId,
@@ -17,14 +16,13 @@ import {
   updateRoundMetaData,
   getCurrentLevel,
   getRoundMetadata,
-  SummedWeights,
   getHeatmapData,
   getMostTroublesome,
   getActivity,
 } from "../database/model";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { v2 as cloudinary } from "cloudinary";
-import { CloudImage } from "../../types";
+import { CloudImage, SummedWeights } from "../../global_types";
 import path from "path";
 
 export const appRouter = router({

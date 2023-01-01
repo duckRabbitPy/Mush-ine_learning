@@ -10,8 +10,8 @@ import {
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { RoundMetadata } from "../utils/server_side";
-import { extractTrainingData } from "../utils/client_safe";
+import { RoundMetadata } from "../utils/serverSideFunctions";
+import { extractTrainingData } from "../utils/pureFunctions";
 import { ProgressIndicator } from "./components/Progress";
 import { baseDifficulty, useGameState } from "../hooks/useGameState";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";

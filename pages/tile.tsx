@@ -2,7 +2,7 @@ import { Button, Flex, Heading, SimpleGrid, Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { RoundMetadata, TrainingData } from "../utils/server_side";
+import { RoundMetadata, TrainingData } from "../utils/serverSideFunctions";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
 import { tileDifficulty, useGameState } from "../hooks/useGameState";

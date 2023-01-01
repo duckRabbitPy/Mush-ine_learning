@@ -18,7 +18,7 @@ import {
   LinearScale,
 } from "chart.js";
 
-import { currLevelInfo } from "../utils/client_safe";
+import { currLevelInfo } from "../utils/pureFunctions";
 import { trpc } from "../utils/trpc";
 import BarChart from "./components/BarChart";
 import HomeBtn from "./components/HomeBtn";

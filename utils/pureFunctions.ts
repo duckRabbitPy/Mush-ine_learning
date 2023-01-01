@@ -1,12 +1,11 @@
-import Fuse from "fuse.js";
-import { SortOptions } from "../pages/insights";
 import {
   Heatmaps,
   Mushine_round_metadata,
+  InsightSortOptions,
   SummedWeights,
   TimeAndResult,
-} from "../server/database/model";
-import { ForageMushroom, TrainingData } from "./server_side";
+} from "../global_types";
+import { ForageMushroom, TrainingData } from "./serverSideFunctions";
 
 export function extractTrainingData(
   testMushrooms: ForageMushroom[],
@@ -128,10 +127,6 @@ export function sortObjectByNumValues(obj: Record<string, number>) {
     }, {} as Record<string, number>);
 }
 
-export function uniqByFilter<T>(array: T[]) {
-  return array.filter((value, index) => array.indexOf(value) === index);
-}
-
 export function heatMapAccuracy(heatmap: TimeAndResult[]) {
   const numCorrect = heatmap.filter((result) => result.correct_answer).length;
   const numIncorrect = heatmap.filter(
@@ -144,12 +139,12 @@ export function heatMapAccuracy(heatmap: TimeAndResult[]) {
 export function sortInsightData(
   chartData: [string, SummedWeights][] | undefined,
   heatmaps: Heatmaps | undefined,
-  filter: SortOptions
+  filter: InsightSortOptions
 ) {
   if (!heatmaps || !chartData) return chartData;
 
   return chartData.sort((a, b) => {
-    if (filter === SortOptions.Alphabetical) {
+    if (filter === InsightSortOptions.Alphabetical) {
       return a[0].localeCompare(b[0]);
     }
     const heatmapA = heatmaps[a[0]];
@@ -159,21 +154,16 @@ export function sortInsightData(
     const accuracyB = heatMapAccuracy(heatmapB);
 
     if (accuracyA < accuracyB)
-      return filter === SortOptions.HighAccuracyFirst ? 1 : -1;
+      return filter === InsightSortOptions.HighAccuracyFirst ? 1 : -1;
     if (accuracyA > accuracyB)
-      return filter === SortOptions.HighAccuracyFirst ? -1 : 1;
+      return filter === InsightSortOptions.HighAccuracyFirst ? -1 : 1;
     return 0;
   });
 }
 
-export function filterInsightData(
-  searchInput: string,
-  mushroomNames: string[],
-  insightData: [string, SummedWeights][] | undefined
-) {
-  const fuse = new Fuse(mushroomNames ?? []);
-  const fuzzySearchResult = fuse.search(searchInput).map((res) => res.item);
-  return insightData?.filter(
-    ([mushroomName]) => fuzzySearchResult.includes(mushroomName) || !searchInput
-  );
+export function randomArrItem<Type>(arr: Type[]) {
+  const min = 0;
+  const max = Math.floor(arr.length - 1);
+  const index = Math.floor(Math.random() * (max - min + 1)) + min;
+  return arr[index];
 }
