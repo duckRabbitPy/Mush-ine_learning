@@ -285,8 +285,9 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                           />
                         </div>
                       ) : (
-                        <Text color="green.400" padding="2rem">
-                          No mistake data!
+                        <Text color="blue.600" padding="2rem">
+                          No misidentification data! <br></br>
+                          <br></br> *updated next level
                         </Text>
                       )}
                     </Flex>

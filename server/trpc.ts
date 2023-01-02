@@ -1,9 +1,18 @@
 import { TRPCError, initTRPC } from "@trpc/server";
-import { Context } from "./context";
+import { Context, TestContext } from "./context";
 
-const t = initTRPC.context<Context>().create();
+function getContext(isTest: boolean) {
+  if (isTest) {
+    return initTRPC.context<TestContext>().create();
+  } else {
+    return initTRPC.context<Context>().create();
+  }
+}
+
+const t = getContext(!!process.env.VITEST);
 
 const authChecker = t.middleware(({ ctx, next }) => {
+  console.log(ctx);
   if (!ctx.user?.sub) {
     throw new TRPCError({
       code: "UNAUTHORIZED",

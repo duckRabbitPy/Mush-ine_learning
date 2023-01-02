@@ -73,68 +73,76 @@ const InfoBank = ({
   );
 
   return (
-    <Container mt={5} width={"100%"} maxWidth={expandIndex ? "70%" : "60ch"}>
-      <HomeBtn style={{ alignSelf: "center" }} />
-      <Link href="/bank">
-        <Button m={2}>Bank menu </Button>
-      </Link>
-      <Heading mb={2}>{mushroomName} mushroom</Heading>
-      <Flex direction={"column"} alignItems={"center"}>
-        {expandIndex === null && (
-          <SimpleGrid
-            columns={{ base: 1, lg: 2 }}
-            gap={1}
-            width={{ base: "50%", lg: "100%" }}
-          >
-            {visibleMushrooms?.map((imgSrc, index) => (
-              <Image
-                key={imgSrc}
-                src={imgSrc}
-                alt="mushroom image"
-                width={1000}
-                height={1000}
-                onClick={() => setExpandIndex(index)}
-                style={{ cursor: "pointer" }}
-                placeholder="blur"
-                blurDataURL="/loading.gif"
-                priority
-              />
-            ))}
-          </SimpleGrid>
-        )}
-        {expandIndex !== null && (
-          <>
-            <Button onClick={() => setExpandIndex(null)} m={2}>
-              Gallery
-              <Icon as={BsGrid3X3GapFill} ml={2} />
-            </Button>
-            {visibleMushrooms?.map((imgSrc) => (
-              <Image
-                key={imgSrc}
-                src={imgSrc}
-                alt="mushroom image"
-                width={2000}
-                height={2000}
-                placeholder="blur"
-                blurDataURL="/loading.gif"
-                priority
-              />
-            ))}
-          </>
-        )}
-
-        <Link
-          href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}
-          target="_blank"
-        >
-          {expandIndex === null && (
-            <Button m={2} bgColor="burlywood">
-              More Info
-            </Button>
-          )}
+    <div>
+      <Container mt={5} width={"100%"} maxWidth={expandIndex ? "70%" : "60ch"}>
+        <HomeBtn style={{ alignSelf: "center" }} />
+        <Link href="/bank">
+          <Button m={2}>Bank menu </Button>
         </Link>
-      </Flex>
-    </Container>
+        <Heading mb={2}>{mushroomName} mushroom</Heading>
+        <Flex direction={"column"} alignItems={"center"}>
+          {expandIndex === null && (
+            <SimpleGrid
+              columns={{ base: 1, lg: 2 }}
+              gap={1}
+              width={{ base: "50%", lg: "100%" }}
+            >
+              {visibleMushrooms?.map((imgSrc, index) => (
+                <Image
+                  key={imgSrc}
+                  src={imgSrc}
+                  alt="mushroom image"
+                  width={1000}
+                  height={1000}
+                  onClick={() => setExpandIndex(index)}
+                  style={{ cursor: "pointer" }}
+                  placeholder="blur"
+                  blurDataURL="/loading.gif"
+                  priority
+                />
+              ))}
+            </SimpleGrid>
+          )}
+          {expandIndex !== null && (
+            <>
+              <Button onClick={() => setExpandIndex(null)} m={2}>
+                Gallery
+                <Icon as={BsGrid3X3GapFill} ml={2} />
+              </Button>
+              {visibleMushrooms?.map((imgSrc) => (
+                <Image
+                  key={imgSrc}
+                  src={imgSrc}
+                  alt="mushroom image"
+                  width={2000}
+                  height={2000}
+                  placeholder="blur"
+                  blurDataURL="/loading.gif"
+                  priority
+                />
+              ))}
+            </>
+          )}
+
+          <Link
+            href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}
+            target="_blank"
+          >
+            {expandIndex === null && (
+              <Button m={2} bgColor="burlywood">
+                More Info
+              </Button>
+            )}
+          </Link>
+        </Flex>
+      </Container>
+      <iframe
+        src="https://species.nbnatlas.org/species/BMSSYS0000042282"
+        width="1000"
+        height="1000"
+        allowFullScreen
+      ></iframe>
+    </div>
   );
 };
 

@@ -14,6 +14,7 @@ import { useUser } from "@auth0/nextjs-auth0";
 
 const Home: NextPage = () => {
   const { user } = useUser();
+
   return (
     <TopLevelWrapper backgroundColor="#F2E1C3">
       <Head>

@@ -1,7 +1,7 @@
+import db from "./connection";
 import { QueryResult } from "pg";
 import { returnLvl } from "../../utils/pureFunctions";
 import { TrainingData } from "../../utils/serverSideFunctions";
-import db from "./connection";
 
 type Mushine_learning_user = {
   id: number;
@@ -120,7 +120,15 @@ export async function updateRoundMetaData(
   return Promise.all(roundMetaDataRes);
 }
 
-export async function getRoundMetadata(user_id: string, current_level: number) {
+export async function getRoundMetadata(
+  user_id: string,
+  current_level: number
+): Promise<
+  Pick<
+    Mushine_round_metadata,
+    "game_type" | "correct_mushroom" | "correct_answer"
+  >[]
+> {
   return db
     .query(
       "SELECT game_type, correct_mushroom, correct_answer FROM mushine_round_metadata WHERE user_id = $1 AND current_level = $2;",
@@ -161,7 +169,7 @@ export async function getHeatmapData(
   return heatmaps;
 }
 
-export async function getActivity(user_id: string) {
+export async function getActivity(user_id: string): Promise<Activity[]> {
   const activity = await db
     .query(
       `SELECT date_trunc('day', mushine_round_metadata.timestamp) "day", count(*) roundcount
@@ -225,7 +233,10 @@ export async function getCurrentLevel(user_id: string) {
   return returnLvl(currXp);
 }
 
-export async function getLevelSnapshot(level: number, user_id: string) {
+export async function getLevelSnapshot(
+  level: number,
+  user_id: string
+): Promise<Pick<LevelSnapshot, "snapshot" | "level">> {
   return await db
     .query(
       `SELECT snapshot, level FROM mushine_level_snapshots WHERE level = $1 AND user_id = $2`,
