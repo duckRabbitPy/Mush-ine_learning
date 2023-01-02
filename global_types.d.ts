@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 export as namespace GlobalTypes;
 
 type CloudImage = {
@@ -47,9 +48,3 @@ type TimeAndResult = Pick<
 type Heatmaps = Record<MushroomName, TimeAndResult[]>;
 
 type SummedWeights = Record<MushroomName, number>;
-
-enum InsightSortOptions {
-  "Alphabetical",
-  "HighAccuracyFirst",
-  "LowAccuracyFirst",
-}

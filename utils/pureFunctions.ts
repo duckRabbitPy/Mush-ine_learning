@@ -1,6 +1,7 @@
+import { InsightSortOptions } from "../global_enums";
 import { ForageMushroom, TrainingData } from "./serverSideFunctions";
 
-export function extractTrainingData(
+export function updateForageTrainingData(
   testMushrooms: ForageMushroom[],
   trainingData: TrainingData[] | undefined
 ) {
@@ -10,12 +11,13 @@ export function extractTrainingData(
   };
 
   const weightingObj: Record<string, number> = {};
-  const testMushroomSlice = testMushrooms && testMushrooms.slice();
-  testMushroomSlice?.forEach((mushroom) => {
+
+  testMushrooms?.forEach((mushroom) => {
     if (!mushroom.correctMatch) {
       weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
     }
   });
+
   trainingResult.misidentifiedMushroom = testMushrooms?.filter(
     (m) => m.correctMatch
   )[0].name;

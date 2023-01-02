@@ -39,8 +39,8 @@ import { GetStaticProps } from "next/types";
 import { getMushroomImgPaths } from "../utils/serverSideFunctions";
 import { brandColors } from "./_app";
 import { appRouter } from "../server/routers/_app";
-
 import Fuse from "fuse.js";
+import { InsightSortOptions } from "../global_enums";
 
 Chart.register(
   BarElement,
