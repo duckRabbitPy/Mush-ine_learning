@@ -39,7 +39,7 @@ import { GetStaticProps } from "next/types";
 import { getMushroomImgPaths } from "../utils/serverSideFunctions";
 import { brandColors } from "./_app";
 import { appRouter } from "../server/routers/_app";
-import { InsightSortOptions, SummedWeights, Thumbnails } from "../global_types";
+
 import Fuse from "fuse.js";
 
 Chart.register(

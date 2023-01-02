@@ -1,4 +1,6 @@
-export type CloudImage = {
+export as namespace GlobalTypes;
+
+type CloudImage = {
   asset_id: string | null | undefined;
   public_id: string | null | undefined;
   format: string | null | undefined;
@@ -13,22 +15,22 @@ export type CloudImage = {
   url: string | null | undefined;
 };
 
-export type CloudinaryResult = {
+type CloudinaryResult = {
   resources: CloudImage[];
 };
 
-export type SubfolderResult = {
+type SubfolderResult = {
   name: string;
   path: string;
 };
 
-export type Thumbnails = Record<string, string>;
+type Thumbnails = Record<string, string>;
 
-export type MushroomName = string;
+type MushroomName = string;
 
-export type Game_types = "forage" | "multi" | "tile";
+type Game_types = "forage" | "multi" | "tile";
 
-export type Mushine_round_metadata = {
+type Mushine_round_metadata = {
   id: number;
   game_type: Game_types;
   current_level: number;
@@ -37,16 +39,16 @@ export type Mushine_round_metadata = {
   timestamp: string;
 };
 
-export type TimeAndResult = Pick<
+type TimeAndResult = Pick<
   Mushine_round_metadata,
   "timestamp" | "correct_answer"
 >;
 
-export type Heatmaps = Record<MushroomName, TimeAndResult[]>;
+type Heatmaps = Record<MushroomName, TimeAndResult[]>;
 
-export type SummedWeights = Record<MushroomName, number>;
+type SummedWeights = Record<MushroomName, number>;
 
-export enum InsightSortOptions {
+enum InsightSortOptions {
   "Alphabetical",
   "HighAccuracyFirst",
   "LowAccuracyFirst",

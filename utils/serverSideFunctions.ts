@@ -1,12 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import storedMushrooms from "../server/fileSystemData/mushroomNames.json";
-import {
-  CloudImage,
-  CloudinaryResult,
-  Game_types,
-  MushroomName,
-  SummedWeights,
-} from "../global_types";
+
 import { randomArrItem } from "./pureFunctions";
 
 export type ForageMushroom = {

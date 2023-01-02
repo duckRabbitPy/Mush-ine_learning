@@ -2,13 +2,6 @@ import { QueryResult } from "pg";
 import { returnLvl } from "../../utils/pureFunctions";
 import { TrainingData } from "../../utils/serverSideFunctions";
 import db from "./connection";
-import {
-  Heatmaps,
-  Mushine_round_metadata,
-  MushroomName,
-  SummedWeights,
-  TimeAndResult,
-} from "../../global_types";
 
 type Mushine_learning_user = {
   id: number;

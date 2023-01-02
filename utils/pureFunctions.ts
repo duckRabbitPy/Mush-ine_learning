@@ -1,10 +1,3 @@
-import {
-  Heatmaps,
-  Mushine_round_metadata,
-  InsightSortOptions,
-  SummedWeights,
-  TimeAndResult,
-} from "../global_types";
 import { ForageMushroom, TrainingData } from "./serverSideFunctions";
 
 export function extractTrainingData(

@@ -2,7 +2,6 @@ import { Button, Container, Flex, Heading } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
 import Link from "next/link";
 import { appRouter } from "../../server/routers/_app";
-import { Thumbnails } from "../../global_types";
 import { getMushroomImgPaths } from "../../utils/serverSideFunctions";
 import HomeBtn from "../components/HomeBtn";
 import Image from "next/image";

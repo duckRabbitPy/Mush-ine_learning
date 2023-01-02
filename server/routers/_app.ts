@@ -22,7 +22,7 @@ import {
 } from "../database/model";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { v2 as cloudinary } from "cloudinary";
-import { CloudImage, SummedWeights } from "../../global_types";
+
 import path from "path";
 
 export const appRouter = router({

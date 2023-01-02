@@ -2,7 +2,6 @@ import * as dotenv from "dotenv";
 import * as fs from "fs";
 dotenv.config({ path: ".env.local" });
 import { v2 as cloudinary } from "cloudinary";
-import { SubfolderResult } from "../global_types";
 
 export async function getMushroomNamesFromCloud() {
   const images = (await cloudinary.api.sub_folders("mushroom_images")) as

@@ -11,7 +11,7 @@ import { v2 as cloudinary } from "cloudinary";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { CloudImage } from "../../global_types";
+
 import HomeBtn from "../components/HomeBtn";
 import { BsGrid3X3GapFill } from "react-icons/bs";
 import { appRouter } from "../../server/routers/_app";
