@@ -4,7 +4,6 @@ export function extractTrainingData(
   testMushrooms: ForageMushroom[],
   trainingData: TrainingData[] | undefined
 ) {
-  const trainingDataCopy = trainingData?.slice() ?? [];
   const trainingResult: TrainingData = {
     misidentifiedMushroom: null,
     weightingData: null,
@@ -22,6 +21,8 @@ export function extractTrainingData(
   )[0].name;
 
   trainingResult.weightingData = weightingObj;
+
+  const trainingDataCopy = trainingData?.slice() ?? [];
   trainingDataCopy.push(trainingResult);
 
   return trainingDataCopy;

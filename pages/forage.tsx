@@ -67,35 +67,29 @@ const Forage = () => {
   const handleNextBtn = async () => {
     if (answerCorrect) {
       setScore(score + maxIncorrect * 2);
-      setProgress((prev) => {
-        return prev.concat(true);
-      });
-    } else if (!answerCorrect) {
+      setProgress((prev) => prev.concat(true));
+    } else {
       const trainingData = forageMushrooms
         ? extractTrainingData(forageMushrooms, trainingResult)
         : [];
 
       setTrainingResult(trainingData);
-      setProgress((prev) => {
-        return prev.concat(false);
-      });
+      setProgress((prev) => prev.concat(false));
     }
 
-    correctMushroom &&
-      setRoundMetaData((prev: RoundMetadata[]) => {
-        return prev.concat({
-          correct_mushroom: correctMushroom.name,
-          correct_answer: answerCorrect,
-          game_type: "forage",
-        });
+    setRoundMetaData((prev: RoundMetadata[]) => {
+      if (!correctMushroom) return prev;
+      return prev.concat({
+        correct_mushroom: correctMushroom.name,
+        correct_answer: answerCorrect,
+        game_type: "forage",
       });
+    });
 
     setOmitArr((prev) => {
-      if (omitArr && correctMushroom?.name) {
-        const newOmitArr = [...prev, correctMushroom.name];
-        return newOmitArr;
-      }
-      return prev;
+      return omitArr && correctMushroom?.name
+        ? [...prev, correctMushroom.name]
+        : prev;
     });
 
     setInputAnswer(null);
