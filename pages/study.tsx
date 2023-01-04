@@ -34,7 +34,7 @@ const Study = () => {
         <HomeBtn mt={5} />
         <Heading fontFamily={"honeyMushroom"}>Homework</Heading>
         {images && images.length > 0 && (
-          <Text>{name} seems to be causing you problems, pay attention!</Text>
+          <Text>{`${name} seems to be causing you problems, pay attention!`}</Text>
         )}
         {!isLoading && images && images?.length < 1 && (
           <Text>⚠️ Not enough data for personalised recommendations</Text>
