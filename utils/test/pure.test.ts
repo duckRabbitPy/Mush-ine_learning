@@ -1,5 +1,5 @@
 import { assert, describe, it } from "vitest";
-import { currLevelInfo, returnLvl } from "../client_safe";
+import { currLevelInfo, returnLvl } from "../pureFunctions";
 
 describe("curr level undefined", () => {
   const currXp = 0;

@@ -9,8 +9,8 @@ import {
 import { useCommonTrpc } from "../../hooks/useCommonTrpc";
 import { useGameState } from "../../hooks/useGameState";
 import { useSound } from "../../hooks/useSound";
-import { returnLvl } from "../../utils/client_safe";
-import { RoundMetadata, TrainingData } from "../../utils/server_side";
+import { returnLvl } from "../../utils/pureFunctions";
+import { RoundMetadata, TrainingData } from "../../utils/serverSideFunctions";
 
 type SaveProps = {
   styles?: ButtonProps;
@@ -86,6 +86,7 @@ export const SaveBtn = ({
           w="-moz-fit-content"
           alignSelf="center"
           backgroundColor="#B8E6F3"
+          disabled={saveScore.isLoading}
           visibility={gameOver && !saveScore.isSuccess ? "visible" : "hidden"}
           {...styles}
         >

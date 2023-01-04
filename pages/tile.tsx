@@ -2,7 +2,7 @@ import { Button, Flex, Heading, SimpleGrid, Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { RoundMetadata, TrainingData } from "../utils/server_side";
+import { RoundMetadata, TrainingData } from "../utils/serverSideFunctions";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
 import { tileDifficulty, useGameState } from "../hooks/useGameState";
@@ -52,38 +52,36 @@ const Tile = () => {
   const handleSelection = async (name: string) => {
     if (name !== correctMushroom) {
       incorrectSound?.play();
-      const trainingDataCopy = trainingResult?.slice() ?? [];
+
       const newResult: TrainingData = {
         misidentifiedMushroom: correctMushroom ?? null,
         weightingData: { [name]: 5 },
       };
+
+      const trainingDataCopy = trainingResult?.slice() ?? [];
       trainingDataCopy.push(newResult);
       setTrainingResult(trainingDataCopy);
 
-      correctMushroom &&
-        setRoundMetaData((prev: RoundMetadata[]) => {
-          return prev.concat({
-            correct_mushroom: correctMushroom,
-            correct_answer: false,
-            game_type: "tile",
-          });
+      setRoundMetaData((prev: RoundMetadata[]) => {
+        if (!correctMushroom) return prev;
+        return prev.concat({
+          correct_mushroom: correctMushroom,
+          correct_answer: false,
+          game_type: "tile",
         });
-
-      setProgress((prev) => {
-        return prev.concat(false);
       });
+      setProgress((prev) => prev.concat(false));
     } else {
       correctSound?.play();
       setRoundOver(true);
 
-      correctMushroom &&
-        setRoundMetaData((prev: RoundMetadata[]) => {
-          return prev.concat({
-            correct_mushroom: correctMushroom,
-            correct_answer: true,
-            game_type: "tile",
-          });
+      setRoundMetaData((prev: RoundMetadata[]) => {
+        return prev.concat({
+          correct_mushroom: correctMushroom,
+          correct_answer: true,
+          game_type: "tile",
         });
+      });
 
       setProgress((prev) => {
         return prev.concat(true);
@@ -93,9 +91,7 @@ const Tile = () => {
 
   const handleNextBtn = async () => {
     setScore(score + maxIncorrect * 2);
-    setProgress((prev) => {
-      return prev.concat(true);
-    });
+    setProgress((prev) => prev.concat(true));
 
     setRound(round + 1);
     setOmitArr((prev) => {

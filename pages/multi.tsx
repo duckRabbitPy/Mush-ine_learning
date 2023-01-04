@@ -2,7 +2,7 @@ import { Button, Flex, SimpleGrid, Spinner, Heading } from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { RoundMetadata, TrainingData } from "../utils/server_side";
+import { RoundMetadata, TrainingData } from "../utils/serverSideFunctions";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
 import { baseDifficulty, useGameState } from "../hooks/useGameState";
@@ -54,13 +54,15 @@ const Multi = () => {
       setProgress((prev) => {
         return prev.concat(true);
       });
-    } else if (name !== correctMushroom) {
+    } else {
       incorrectSound?.play();
-      const trainingDataCopy = trainingResult?.slice() ?? [];
+
       const newResult: TrainingData = {
         misidentifiedMushroom: correctMushroom ?? null,
         weightingData: { [name]: 20 },
       };
+
+      const trainingDataCopy = trainingResult?.slice() ?? [];
       trainingDataCopy.push(newResult);
       setTrainingResult(trainingDataCopy);
       setProgress((prev) => {
@@ -70,21 +72,17 @@ const Multi = () => {
 
     setRound(round + 1);
 
-    correctMushroom &&
-      setRoundMetaData((prev: RoundMetadata[]) => {
-        return prev.concat({
-          correct_mushroom: correctMushroom,
-          correct_answer: name === correctMushroom,
-          game_type: "multi",
-        });
+    setRoundMetaData((prev: RoundMetadata[]) => {
+      if (!correctMushroom) return prev;
+      return prev.concat({
+        correct_mushroom: correctMushroom,
+        correct_answer: name === correctMushroom,
+        game_type: "multi",
       });
+    });
 
     setOmitArr((prev) => {
-      if (omitArr && correctMushroom) {
-        const newOmitArr = [...prev, correctMushroom];
-        return newOmitArr;
-      }
-      return prev;
+      return correctMushroom ? [...prev, correctMushroom] : prev;
     });
   };
 

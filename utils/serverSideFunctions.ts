@@ -1,11 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import storedMushrooms from "../server/fileSystemData/mushroomNames.json";
-import {
-  Game_types,
-  MushroomName as MushroomName,
-  SummedWeights,
-} from "../server/database/model";
-import { CloudImage, CloudinaryResult } from "../types";
+
+import { randomArrItem } from "./pureFunctions";
 
 export type ForageMushroom = {
   name: string;
@@ -30,9 +26,13 @@ export async function getStoredMushroomNames() {
 
 export async function buildForageMushrooms(
   mushroomNames: string[],
+  correctMatch: string,
   max: number
 ): Promise<ForageMushroom[]> {
-  const testMushroomRes = mushroomNames.map((mushroomName, index) => {
+  const options = shuffleArrayCopy(mushroomNames);
+  options.unshift(correctMatch);
+
+  const forageMushrooms = options.map((mushroomName, index) => {
     if (index > max) return null;
     return cloudinary.api
       .resources({
@@ -48,12 +48,12 @@ export async function buildForageMushrooms(
               "upload",
               "upload/q_80"
             ) || "/shroomschool.png",
-          correctMatch: false,
+          correctMatch: mushroomName === correctMatch,
         };
       });
   });
 
-  const testMushroomArr = await Promise.all(testMushroomRes);
+  const testMushroomArr = await Promise.all(forageMushrooms);
 
   return testMushroomArr.flatMap((f) => (f ? [f] : []));
 }
@@ -84,13 +84,14 @@ export async function getForageMushrooms(
 ) {
   const allMushroomNames = await getStoredMushroomNames();
 
-  const chosen = randomArrItem(allMushroomNames);
+  const correctMatch = randomArrItem(allMushroomNames);
+
   const mushroomNamePool = allMushroomNames
     .filter((mushroomName) => !omitArr.includes(mushroomName))
-    .filter((mushroom) => mushroom !== chosen);
+    .filter((mushroom) => mushroom !== correctMatch);
 
   const tailoredMushroomPool = tailoredNamePool(
-    chosen,
+    correctMatch,
     mushroomNamePool,
     snapshot,
     maxIncorrect,
@@ -102,12 +103,13 @@ export async function getForageMushrooms(
   }
 
   const forageMushrooms = await buildForageMushrooms(
-    [...tailoredMushroomPool, chosen],
+    [...tailoredMushroomPool],
+    correctMatch,
     maxIncorrect
   );
 
   const testMushrooms = forageMushrooms.map((mushroom) => {
-    if (mushroom.name === chosen) {
+    if (mushroom.name === correctMatch) {
       return { ...mushroom, correctMatch: true };
     }
     return { ...mushroom, correctMatch: false };
@@ -167,13 +169,6 @@ export async function getMushroomSet(
   };
 }
 
-export function randomArrItem<Type>(arr: Type[]) {
-  const min = 0;
-  const max = Math.floor(arr.length - 1);
-  const index = Math.floor(Math.random() * (max - min + 1)) + min;
-  return arr[index];
-}
-
 export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
   const arr = unshuffledArr.slice();
   let currIndex = 0;
@@ -196,7 +191,11 @@ export function tailoredNamePool(
   if (!snapshot) {
     return mushroomNamePool;
   }
+
   const misidentified = snapshot[correctAnswer];
+
+  if (!misidentified) return mushroomNamePool;
+
   const ranked = Object.entries(misidentified)
     .sort(([, weightA], [, weightB]) => Number(weightB) - Number(weightA))
     .map(([mushroomName]) => mushroomName)

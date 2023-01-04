@@ -5,14 +5,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && yarn initNames",
-    "test": "vitest run --silent=false",
+    "test": "yarn vitest run --silent=false",
     "test:pure": "yarn vitest run ./utils/test/level.test.ts --silent=false",
     "test:server": "yarn vitest run ./utils/test/server.test.ts --silent=false",
+    "test:trpc": "yarn vitest run ./server/routers/test/trpc.test.ts --silent=false",
+    "check": "tsc --noEmit",
     "start": "next start",
     "lint": "next lint",
     "initDB": "npx ts-node --skip-project ./server/database/migrations/migration-1.ts",
     "initNames": "npx ts-node --skip-project ./scripts/init.ts"
   },
+  "main": "./pages/_app.tsx",
   "dependencies": {
     "@auth0/nextjs-auth0": "^1.9.2",
     "@chakra-ui/react": "^2.4.2",
@@ -49,6 +52,7 @@
     "eslint": "8.25.0",
     "eslint-config-next": "13.0.3",
     "typescript": "4.8.4",
+    "vite": "^4.0.3",
     "vitest": "^0.24.5"
   }
 }

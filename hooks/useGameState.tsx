@@ -1,6 +1,6 @@
 import { useUser } from "@auth0/nextjs-auth0";
 import { useState } from "react";
-import { RoundMetadata, TrainingData } from "../utils/server_side";
+import { RoundMetadata, TrainingData } from "../utils/serverSideFunctions";
 
 export const baseDifficulty = {
   easy: 2,

@@ -1,35 +1,30 @@
-import Fuse from "fuse.js";
-import { sortOptions } from "../pages/insights";
-import {
-  Heatmaps,
-  Mushine_round_metadata,
-  SummedWeights,
-  TimeAndResult,
-} from "../server/database/model";
-import { ForageMushroom, TrainingData } from "./server_side";
+import { InsightSortOptions } from "../global_enums";
+import { ForageMushroom, TrainingData } from "./serverSideFunctions";
 
-export function extractTrainingData(
+export function updateForageTrainingData(
   testMushrooms: ForageMushroom[],
   trainingData: TrainingData[] | undefined
 ) {
-  const trainingDataCopy = trainingData?.slice() ?? [];
   const trainingResult: TrainingData = {
     misidentifiedMushroom: null,
     weightingData: null,
   };
 
   const weightingObj: Record<string, number> = {};
-  const testMushroomSlice = testMushrooms && testMushrooms.slice();
-  testMushroomSlice?.forEach((mushroom) => {
+
+  testMushrooms?.forEach((mushroom) => {
     if (!mushroom.correctMatch) {
       weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
     }
   });
+
   trainingResult.misidentifiedMushroom = testMushrooms?.filter(
     (m) => m.correctMatch
   )[0].name;
 
   trainingResult.weightingData = weightingObj;
+
+  const trainingDataCopy = trainingData?.slice() ?? [];
   trainingDataCopy.push(trainingResult);
 
   return trainingDataCopy;
@@ -128,10 +123,6 @@ export function sortObjectByNumValues(obj: Record<string, number>) {
     }, {} as Record<string, number>);
 }
 
-export function uniqByFilter<T>(array: T[]) {
-  return array.filter((value, index) => array.indexOf(value) === index);
-}
-
 export function heatMapAccuracy(heatmap: TimeAndResult[]) {
   const numCorrect = heatmap.filter((result) => result.correct_answer).length;
   const numIncorrect = heatmap.filter(
@@ -144,12 +135,12 @@ export function heatMapAccuracy(heatmap: TimeAndResult[]) {
 export function sortInsightData(
   chartData: [string, SummedWeights][] | undefined,
   heatmaps: Heatmaps | undefined,
-  filter: sortOptions
+  filter: InsightSortOptions
 ) {
   if (!heatmaps || !chartData) return chartData;
 
   return chartData.sort((a, b) => {
-    if (filter === sortOptions.Alphabetical) {
+    if (filter === InsightSortOptions.Alphabetical) {
       return a[0].localeCompare(b[0]);
     }
     const heatmapA = heatmaps[a[0]];
@@ -159,21 +150,16 @@ export function sortInsightData(
     const accuracyB = heatMapAccuracy(heatmapB);
 
     if (accuracyA < accuracyB)
-      return filter === sortOptions.HighAccuracyFirst ? 1 : -1;
+      return filter === InsightSortOptions.HighAccuracyFirst ? 1 : -1;
     if (accuracyA > accuracyB)
-      return filter === sortOptions.HighAccuracyFirst ? -1 : 1;
+      return filter === InsightSortOptions.HighAccuracyFirst ? -1 : 1;
     return 0;
   });
 }
 
-export function filterInsightData(
-  searchInput: string,
-  mushroomNames: string[],
-  insightData: [string, SummedWeights][] | undefined
-) {
-  const fuse = new Fuse(mushroomNames ?? []);
-  const fuzzySearchResult = fuse.search(searchInput).map((res) => res.item);
-  return insightData?.filter(
-    ([mushroomName]) => fuzzySearchResult.includes(mushroomName) || !searchInput
-  );
+export function randomArrItem<Type>(arr: Type[]) {
+  const min = 0;
+  const max = Math.floor(arr.length - 1);
+  const index = Math.floor(Math.random() * (max - min + 1)) + min;
+  return arr[index];
 }

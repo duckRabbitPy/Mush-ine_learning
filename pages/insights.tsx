@@ -11,6 +11,7 @@ import {
   Square,
   Stack,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import {
@@ -23,11 +24,10 @@ import {
 } from "chart.js";
 
 import {
-  filterInsightData,
   heatMapAccuracy,
   sortInsightData,
   sortObjectByNumValues,
-} from "../utils/client_safe";
+} from "../utils/pureFunctions";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import Image from "next/image";
@@ -36,9 +36,11 @@ import { BarChart, chartColors } from "./components/BarChart";
 import { useState } from "react";
 import CustomBtn from "./components/CustomBtn";
 import { GetStaticProps } from "next/types";
-import { getMushroomImgPaths } from "../utils/server_side";
+import { getMushroomImgPaths } from "../utils/serverSideFunctions";
 import { brandColors } from "./_app";
 import { appRouter } from "../server/routers/_app";
+import Fuse from "fuse.js";
+import { InsightSortOptions } from "../global_enums";
 
 Chart.register(
   BarElement,
@@ -47,12 +49,6 @@ Chart.register(
   LinearScale,
   CategoryScale
 );
-
-export enum sortOptions {
-  "Alphabetical",
-  "HighAccuracyFirst",
-  "LowAccuracyFirst",
-}
 
 export const getStaticProps: GetStaticProps = async () => {
   const caller = appRouter.createCaller({ user: undefined });
@@ -68,7 +64,7 @@ export const getStaticProps: GetStaticProps = async () => {
   });
 
   const srcArr = await Promise.all(srcPromises);
-  const thumbnails = Object.assign({}, ...srcArr) as Record<string, string>;
+  const thumbnails = Object.assign({}, ...srcArr) as Thumbnails;
 
   return {
     props: {
@@ -77,11 +73,23 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
+export function filterInsightData(
+  searchInput: string,
+  mushroomNames: string[],
+  insightData: [string, SummedWeights][] | undefined
+) {
+  const fuse = new Fuse(mushroomNames ?? []);
+  const fuzzySearchResult = fuse.search(searchInput).map((res) => res.item);
+  return insightData?.filter(
+    ([mushroomName]) => fuzzySearchResult.includes(mushroomName) || !searchInput
+  );
+}
+
+const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
   const snapshot = trpc.retrieveLevelSnapShot.useQuery();
   const heatmaps = trpc.getHeatMaps.useQuery().data;
   const [searchInput, setSearchInput] = useState("");
-  const [order, setOrder] = useState(sortOptions.Alphabetical);
+  const [order, setOrder] = useState(InsightSortOptions.Alphabetical);
 
   const insightData =
     snapshot.data?.snapshot && Object.entries(snapshot.data?.snapshot);
@@ -117,11 +125,13 @@ const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
 
         <RadioGroup onChange={(e) => setOrder(Number(e))} value={String(order)}>
           <Stack direction="row" mb={5}>
-            <Radio value={String(sortOptions.Alphabetical)}>Alphabetical</Radio>
-            <Radio value={String(sortOptions.HighAccuracyFirst)}>
+            <Radio value={String(InsightSortOptions.Alphabetical)}>
+              Alphabetical
+            </Radio>
+            <Radio value={String(InsightSortOptions.HighAccuracyFirst)}>
               High accuracy
             </Radio>
-            <Radio value={String(sortOptions.LowAccuracyFirst)}>
+            <Radio value={String(InsightSortOptions.LowAccuracyFirst)}>
               Low accuracy
             </Radio>
           </Stack>
@@ -200,13 +210,26 @@ const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
 
                         <Grid gridTemplateColumns={"repeat(7, 0fr)"}>
                           {heatmap.map((result, i) => (
-                            <Square
-                              size="40px"
+                            <Tooltip
                               key={i}
-                              bg={
-                                result.correct_answer ? "green.200" : "red.200"
+                              label={new Date(result.timestamp).toLocaleString(
+                                "en",
+                                { dateStyle: "medium", timeStyle: "short" }
+                              )}
+                              backgroundColor={
+                                result.correct_answer ? "green.500" : "red.500"
                               }
-                            />
+                            >
+                              <Square
+                                size="40px"
+                                key={i}
+                                bg={
+                                  result.correct_answer
+                                    ? "green.200"
+                                    : "red.200"
+                                }
+                              />
+                            </Tooltip>
                           ))}
                         </Grid>
                       </Container>
@@ -262,8 +285,9 @@ const Insights = ({ thumbnails }: { thumbnails: Record<string, string> }) => {
                           />
                         </div>
                       ) : (
-                        <Text color="green.400" padding="2rem">
-                          No mistake data!
+                        <Text color="blue.600" padding="2rem">
+                          No misidentification data! <br></br>
+                          <br></br> *updated next level
                         </Text>
                       )}
                     </Flex>

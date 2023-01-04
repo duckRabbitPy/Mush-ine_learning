@@ -10,8 +10,8 @@ import {
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { RoundMetadata } from "../utils/server_side";
-import { extractTrainingData } from "../utils/client_safe";
+import { RoundMetadata } from "../utils/serverSideFunctions";
+import { updateForageTrainingData } from "../utils/pureFunctions";
 import { ProgressIndicator } from "./components/Progress";
 import { baseDifficulty, useGameState } from "../hooks/useGameState";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
@@ -67,40 +67,41 @@ const Forage = () => {
   const handleNextBtn = async () => {
     if (answerCorrect) {
       setScore(score + maxIncorrect * 2);
-      setProgress((prev) => {
-        return prev.concat(true);
-      });
-    } else if (!answerCorrect) {
+      setProgress((prev) => prev.concat(true));
+    } else {
       const trainingData = forageMushrooms
-        ? extractTrainingData(forageMushrooms, trainingResult)
+        ? updateForageTrainingData(forageMushrooms, trainingResult)
         : [];
 
       setTrainingResult(trainingData);
-      setProgress((prev) => {
-        return prev.concat(false);
-      });
+      setProgress((prev) => prev.concat(false));
     }
 
-    correctMushroom &&
-      setRoundMetaData((prev: RoundMetadata[]) => {
-        return prev.concat({
-          correct_mushroom: correctMushroom.name,
-          correct_answer: answerCorrect,
-          game_type: "forage",
-        });
+    setRoundMetaData((prev: RoundMetadata[]) => {
+      if (!correctMushroom) return prev;
+      return prev.concat({
+        correct_mushroom: correctMushroom.name,
+        correct_answer: answerCorrect,
+        game_type: "forage",
       });
+    });
 
     setOmitArr((prev) => {
-      if (omitArr && correctMushroom?.name) {
-        const newOmitArr = [...prev, correctMushroom.name];
-        return newOmitArr;
-      }
-      return prev;
+      return omitArr && correctMushroom?.name
+        ? [...prev, correctMushroom.name]
+        : prev;
     });
 
     setInputAnswer(null);
     setRound(round + 1);
   };
+
+  function handleSelection(forageMushroom: any) {
+    if (!inputAnswer) {
+      setInputAnswer(forageMushroom.name);
+    }
+    forageMushroom.correctMatch ? correctSound?.play() : incorrectSound?.play();
+  }
 
   return (
     <TopLevelWrapper backgroundColor="#091122">
@@ -147,7 +148,7 @@ const Forage = () => {
                 progress={progress}
               />
 
-              {round === 0 && !correctMushroom ? (
+              {round === 0 && !getForageMushrooms.data ? (
                 <Flex direction="column" gap="10">
                   <Text color="white">
                     You will be shown {} images. Identify the target mushroom.
@@ -206,10 +207,10 @@ const Forage = () => {
           ) : (
             <SimpleGrid columns={2} gap={2}>
               {!gameOver &&
-                getForageMushrooms.data?.map((testMushroom, index) => {
+                getForageMushrooms.data?.map((forageMushroom, index) => {
                   return (
                     <Container
-                      key={`${testMushroom.name}${index}`}
+                      key={`${forageMushroom.name}${index}`}
                       p={0}
                       display="flex"
                       justifyContent="center"
@@ -217,23 +218,24 @@ const Forage = () => {
                       alignItems="center"
                     >
                       <Image
-                        onClick={() => {
-                          if (!inputAnswer) {
-                            setInputAnswer(testMushroom.name);
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleSelection(forageMushroom);
                           }
-                          testMushroom.correctMatch
-                            ? correctSound?.play()
-                            : incorrectSound?.play();
                         }}
-                        src={testMushroom.src}
-                        alt="testMushroom"
+                        onClick={() => {
+                          handleSelection(forageMushroom);
+                        }}
+                        src={forageMushroom.src}
+                        alt="forageMushroom"
                         height={250}
                         width={250}
                         style={{
                           cursor: "pointer",
                           borderRadius: "5px",
                           opacity:
-                            inputAnswer && !testMushroom.correctMatch
+                            inputAnswer && !forageMushroom.correctMatch
                               ? "0.6"
                               : 1,
                         }}
@@ -241,11 +243,11 @@ const Forage = () => {
                       <Text
                         fontSize="medium"
                         color={
-                          testMushroom.correctMatch ? "green.300" : "white"
+                          forageMushroom.correctMatch ? "green.300" : "white"
                         }
                         height={10}
                       >
-                        {inputAnswer ? testMushroom.name : ""}
+                        {inputAnswer ? forageMushroom.name : ""}
                       </Text>
                     </Container>
                   );
