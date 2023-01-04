@@ -66,6 +66,7 @@ describe("testbuildForageMushrooms", async () => {
   it("built test mushroom passed number 3 returns an object with 3 values", () => {
     buildForageMushrooms(
       ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
+      "horse",
       3
     ).then((res) => {
       expect(
@@ -79,6 +80,7 @@ describe("testbuildForageMushrooms", async () => {
 
     const hasExpectedKeys = await buildForageMushrooms(
       ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
+      "horse",
       3
     ).then((res) =>
       res.every((testMushroom) =>
@@ -93,6 +95,7 @@ describe("testbuildForageMushrooms", async () => {
   it("test mushrooms contain 3 non null/non-undefined values", async () => {
     const has3values = await buildForageMushrooms(
       ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
+      "horse",
       3
     ).then((res) =>
       res.every(

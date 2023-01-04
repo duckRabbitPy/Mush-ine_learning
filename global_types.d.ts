@@ -20,11 +20,6 @@ type CloudinaryResult = {
   resources: CloudImage[];
 };
 
-type SubfolderResult = {
-  name: string;
-  path: string;
-};
-
 type Thumbnails = Record<string, string>;
 
 type MushroomName = string;

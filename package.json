@@ -9,6 +9,7 @@
     "test:pure": "yarn vitest run ./utils/test/level.test.ts --silent=false",
     "test:server": "yarn vitest run ./utils/test/server.test.ts --silent=false",
     "test:trpc": "yarn vitest run ./server/routers/test/trpc.test.ts --silent=false",
+    "check": "tsc --noEmit",
     "start": "next start",
     "lint": "next lint",
     "initDB": "npx ts-node --skip-project ./server/database/migrations/migration-1.ts",

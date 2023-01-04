@@ -3,6 +3,11 @@ import * as fs from "fs";
 dotenv.config({ path: ".env.local" });
 import { v2 as cloudinary } from "cloudinary";
 
+export type SubfolderResult = {
+  name: string;
+  path: string;
+};
+
 export async function getMushroomNamesFromCloud() {
   const images = (await cloudinary.api.sub_folders("mushroom_images")) as
     | {
