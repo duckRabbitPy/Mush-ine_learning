@@ -26,9 +26,13 @@ export async function getStoredMushroomNames() {
 
 export async function buildForageMushrooms(
   mushroomNames: string[],
+  correctMatch: string,
   max: number
 ): Promise<ForageMushroom[]> {
-  const testMushroomRes = mushroomNames.map((mushroomName, index) => {
+  const options = shuffleArrayCopy(mushroomNames);
+  options.unshift(correctMatch);
+
+  const forageMushrooms = options.map((mushroomName, index) => {
     if (index > max) return null;
     return cloudinary.api
       .resources({
@@ -44,12 +48,12 @@ export async function buildForageMushrooms(
               "upload",
               "upload/q_80"
             ) || "/shroomschool.png",
-          correctMatch: false,
+          correctMatch: mushroomName === correctMatch,
         };
       });
   });
 
-  const testMushroomArr = await Promise.all(testMushroomRes);
+  const testMushroomArr = await Promise.all(forageMushrooms);
 
   return testMushroomArr.flatMap((f) => (f ? [f] : []));
 }
@@ -80,13 +84,14 @@ export async function getForageMushrooms(
 ) {
   const allMushroomNames = await getStoredMushroomNames();
 
-  const chosen = randomArrItem(allMushroomNames);
+  const correctMatch = randomArrItem(allMushroomNames);
+
   const mushroomNamePool = allMushroomNames
     .filter((mushroomName) => !omitArr.includes(mushroomName))
-    .filter((mushroom) => mushroom !== chosen);
+    .filter((mushroom) => mushroom !== correctMatch);
 
   const tailoredMushroomPool = tailoredNamePool(
-    chosen,
+    correctMatch,
     mushroomNamePool,
     snapshot,
     maxIncorrect,
@@ -98,12 +103,13 @@ export async function getForageMushrooms(
   }
 
   const forageMushrooms = await buildForageMushrooms(
-    [...tailoredMushroomPool, chosen],
+    [...tailoredMushroomPool],
+    correctMatch,
     maxIncorrect
   );
 
   const testMushrooms = forageMushrooms.map((mushroom) => {
-    if (mushroom.name === chosen) {
+    if (mushroom.name === correctMatch) {
       return { ...mushroom, correctMatch: true };
     }
     return { ...mushroom, correctMatch: false };

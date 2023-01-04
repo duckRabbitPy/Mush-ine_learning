@@ -22,5 +22,3 @@ export function createTestContext(): { user: Claims | undefined } {
 }
 
 export type Context = inferAsyncReturnType<typeof createContext>;
-
-export type TestContext = inferAsyncReturnType<typeof createTestContext>;
