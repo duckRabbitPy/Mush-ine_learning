@@ -71,7 +71,7 @@ describe("testbuildForageMushrooms", async () => {
     ).then((res) => {
       expect(
         res.every((testMushroom) => Object.values(testMushroom).length === 3)
-      ).toBe(true);
+      ).toEqual(true);
     });
   });
 
@@ -136,6 +136,6 @@ describe("test getMushroomSet", async () => {
         mushroomNamePool.length,
         [omission]
       ).includes(omission)
-    ).toBe(false);
+    ).toEqual(false);
   });
 });

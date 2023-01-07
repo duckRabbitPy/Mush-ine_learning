@@ -172,7 +172,7 @@ export async function getHeatmapData(
 export async function getActivity(user_id: string): Promise<Activity[]> {
   const activity = await db
     .query(
-      `SELECT date_trunc('day', mushine_round_metadata.timestamp) "day", count(*) roundcount
+      `SELECT date_trunc('day', mushine_round_metadata.timestamp) "day", count(*)::int roundcount
       FROM mushine_round_metadata
       WHERE user_id = $1
       GROUP by 1

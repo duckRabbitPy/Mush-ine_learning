@@ -1,4 +1,4 @@
-import { Claims, getSession } from "@auth0/nextjs-auth0";
+import { getSession } from "@auth0/nextjs-auth0";
 import { inferAsyncReturnType } from "@trpc/server";
 import * as trpcNext from "@trpc/server/adapters/next";
 
@@ -10,10 +10,11 @@ export async function createContext(opts: trpcNext.CreateNextContextOptions) {
   };
 }
 
-export function createTestContext(): { user: Claims | undefined } {
+export function createTestContext({ withAuth }: { withAuth: boolean }) {
   const user = {
-    name: process.env.TEST_USERNAME,
-    sub: process.env.TEST_SUB,
+    name: withAuth ? process.env.TEST_USERNAME : undefined,
+    sub: withAuth ? process.env.TEST_SUB : undefined,
+    isTest: true,
   };
 
   return {

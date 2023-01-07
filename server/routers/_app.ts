@@ -109,7 +109,7 @@ export const appRouter = router({
     const metaArr = { forage, multi, tile };
     return metaArr;
   }),
-  retrieveForageMushrooms: protectedProcedure
+  retrieveForageMushrooms: publicProcedure
     .input(
       z.object({
         omitArr: z.array(z.string()),
@@ -117,33 +117,40 @@ export const appRouter = router({
       })
     )
     .query(async ({ input, ctx }) => {
-      let snapshot = null as Record<string, SummedWeights> | undefined | null;
-
-      const currLevel = (await getCurrentLevel(ctx.user_id)) ?? 0;
-      const snapshotData = await getLevelSnapshot(currLevel, ctx.user_id);
-      snapshot = snapshotData?.snapshot;
-
-      const forageMushrooms = await getForageMushrooms(
-        input.omitArr,
-        input.maxIncorrect,
-        snapshot
-      );
-      return forageMushrooms;
+      // personalised set based on authed user data
+      if (ctx.user_id) {
+        const currLevel = (await getCurrentLevel(ctx.user_id)) ?? 0;
+        const snapshotData = await getLevelSnapshot(currLevel, ctx.user_id);
+        const snapshot = snapshotData?.snapshot;
+        const peronalisedForageSet = await getForageMushrooms(
+          input.omitArr,
+          input.maxIncorrect,
+          snapshot
+        );
+        return peronalisedForageSet;
+      } else {
+        // standard set for non-authed users
+        const standardForageSet = await getForageMushrooms(
+          input.omitArr,
+          input.maxIncorrect,
+          null
+        );
+        return standardForageSet;
+      }
     }),
   retrieveMushroomSet: publicProcedure
     .input(
       z.object({
         omitArr: z.array(z.string()),
         numOptions: z.number().optional(),
-        user_id: z.string().nullable(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       let snapshot = null;
 
-      if (input.user_id) {
-        const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
-        const snapshotData = await getLevelSnapshot(currLevel, input.user_id);
+      if (ctx.user_id) {
+        const currLevel = (await getCurrentLevel(ctx.user_id)) ?? 0;
+        const snapshotData = await getLevelSnapshot(currLevel, ctx.user_id);
         snapshot = snapshotData?.snapshot;
       }
 
