@@ -194,6 +194,7 @@ export const appRouter = router({
   }),
   retrieveActivity: protectedProcedure.query(async ({ ctx }) => {
     const activityhistory = await getActivity(ctx.user_id);
+    if (!activityhistory) return null;
 
     let lastThirtyActive: Record<string, number> = {};
 

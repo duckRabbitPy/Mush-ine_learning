@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build && yarn initNames",
     "test": "yarn vitest run --silent=false",
-    "test:pure": "yarn vitest run ./utils/test/level.test.ts --silent=false",
+    "test:pure": "yarn vitest run ./utils/test/pure.test.ts --silent=false",
     "test:server": "yarn vitest run ./utils/test/server.test.ts --silent=false",
     "test:trpc": "yarn vitest run ./server/routers/test/trpc.test.ts --silent=false",
     "check": "tsc --noEmit",

@@ -103,10 +103,18 @@ describe("can retreive heatMaps", async () => {
 
 describe("can retreive daily activity", async () => {
   it("daily activity is record of dates and numbers", async () => {
-    // todo create standardised seed script for test db
     const caller = appRouter.createCaller(userWithAuth);
     const validationSchema = z.record(z.number());
     const result = await caller.retrieveActivity();
+    expect(isValidResult(result, validationSchema)).toEqual(true);
+  });
+});
+
+describe("can retreive user score", async () => {
+  it("daily activity is record of dates and numbers", async () => {
+    const caller = appRouter.createCaller(userWithAuth);
+    const validationSchema = z.number();
+    const result = await caller.retrieveUserScore();
     expect(isValidResult(result, validationSchema)).toEqual(true);
   });
 });
