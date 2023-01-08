@@ -165,6 +165,7 @@ export const appRouter = router({
   saveLevelSnapShot: protectedProcedure.mutation(async ({ ctx }) => {
     const mushrooms = await getStoredMushroomNames();
     const snapshot = await saveLevelSnapshot(mushrooms, ctx.user_id);
+    console.log(snapshot);
     return snapshot;
   }),
   retrieveLevelSnapShot: protectedProcedure

@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardBody,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { useCommonTrpc } from "../../hooks/useCommonTrpc";
 import { useGameState } from "../../hooks/useGameState";
 import { useSound } from "../../hooks/useSound";
@@ -37,6 +38,7 @@ export const SaveBtn = ({
   } = useCommonTrpc();
   const user_id = user?.sub;
   const currXp = xpQuery.data;
+  const [leveledUp, setLeveledUp] = useState(false);
   const { saveSound } = useSound();
 
   const handleSaveBtn = async () => {
@@ -47,9 +49,9 @@ export const SaveBtn = ({
       saveTrainingData.mutate({ trainingData: trainingResult });
       roundMetaData.length > 1 &&
         saveRoundMetaData.mutate({ roundMetadata: roundMetaData });
-
+      saveSnapShot.mutate();
       if (preRoundLevel <= postRoundLevel) {
-        saveSnapShot.mutate();
+        setLeveledUp(true);
       }
     }
   };
@@ -71,6 +73,21 @@ export const SaveBtn = ({
         >
           Save score
         </Button>
+      )}
+
+      {leveledUp && (
+        <Card bg="white">
+          <CardHeader>Leveled up! 🥳</CardHeader>
+          <CardBody>
+            <iframe
+              src="https://giphy.com/embed/Y4rBAwBrTOOggtksBK"
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+          </CardBody>
+        </Card>
       )}
 
       {!user_id && gameOver && (

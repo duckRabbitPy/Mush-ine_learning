@@ -135,7 +135,6 @@ describe("can retreive vaild round metadata", async () => {
       tile: answerSchema,
     });
     const result = await caller.retrieveRoundMetadata();
-    console.log(result);
     expect(isValidResult(result, validationSchema)).toEqual(true);
   });
 });
