@@ -3,6 +3,7 @@ import { promises as fs } from "fs";
 import { randomArrItem, reduceAnswerCount } from "../../utils/pureFunctions";
 import {
   getForageMushrooms,
+  getMushroomImgPaths,
   getMushroomSet,
   getStoredMushroomNames,
 } from "../../utils/serverSideFunctions";
@@ -26,7 +27,7 @@ import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 
 export const appRouter = router({
-  getMushroomNames: publicProcedure.query(async () => {
+  getAllMushroomNames: publicProcedure.query(async () => {
     const jsonDirectory = path.join(process.cwd(), "server/fileSystemData");
     const mushroomNames = await fs.readFile(
       jsonDirectory + "/mushroomNames.json",
@@ -35,6 +36,19 @@ export const appRouter = router({
 
     return JSON.parse(mushroomNames).mushroomNames as string[];
   }),
+  retrieveMushroomImgSrcs: publicProcedure
+    .input(z.array(z.string()))
+    .query(async ({ input }) => {
+      const srcPromises = input.map((mushroomNames) => {
+        return getMushroomImgPaths(mushroomNames, 1).then((srcArr) => {
+          return { [mushroomNames]: srcArr[0] };
+        });
+      });
+
+      const srcArr = await Promise.all(srcPromises);
+      const thumbnails = Object.assign({}, ...srcArr) as Thumbnails;
+      return thumbnails;
+    }),
   retrieveUserScore: protectedProcedure.query(async ({ ctx }) => {
     const userScore = await getScoreByUserId(ctx.user_id);
     return userScore ?? 0;

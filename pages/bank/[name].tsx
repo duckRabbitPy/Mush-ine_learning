@@ -18,7 +18,7 @@ import { appRouter } from "../../server/routers/_app";
 
 export async function getStaticPaths() {
   const caller = appRouter.createCaller({ user: undefined });
-  const mushroomNames = await caller.getMushroomNames();
+  const mushroomNames = await caller.getAllMushroomNames();
 
   if (!mushroomNames) {
     throw new Error("Mushroom names not available at build time");
@@ -136,12 +136,6 @@ const InfoBank = ({
           </Link>
         </Flex>
       </Container>
-      <iframe
-        src="https://species.nbnatlas.org/species/BMSSYS0000042282"
-        width="1000"
-        height="1000"
-        allowFullScreen
-      ></iframe>
     </div>
   );
 };

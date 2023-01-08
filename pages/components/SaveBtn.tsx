@@ -12,6 +12,7 @@ import { useGameState } from "../../hooks/useGameState";
 import { useSound } from "../../hooks/useSound";
 import { returnLvl } from "../../utils/pureFunctions";
 import { RoundMetadata, TrainingData } from "../../utils/serverSideFunctions";
+import PostMortem from "./PostMortem";
 
 type SaveProps = {
   styles?: ButtonProps;
@@ -45,12 +46,13 @@ export const SaveBtn = ({
     if (user_id) {
       const preRoundLevel = returnLvl(currXp);
       const postRoundLevel = returnLvl((currXp ?? 0) + score);
+
       saveScore.mutate({ score });
       saveTrainingData.mutate({ trainingData: trainingResult });
       roundMetaData.length > 1 &&
         saveRoundMetaData.mutate({ roundMetadata: roundMetaData });
       saveSnapShot.mutate();
-      if (preRoundLevel <= postRoundLevel) {
+      if (preRoundLevel < postRoundLevel) {
         setLeveledUp(true);
       }
     }
@@ -73,6 +75,12 @@ export const SaveBtn = ({
         >
           Save score
         </Button>
+      )}
+
+      {gameOver && saveScore.isSuccess && (
+        <Text color="white" marginBottom={50}>
+          Score saved! Return to home{" "}
+        </Text>
       )}
 
       {leveledUp && (
@@ -99,11 +107,10 @@ export const SaveBtn = ({
           </CardBody>
         </Card>
       )}
-      <div>
-        {gameOver && saveScore.isSuccess && (
-          <Text color="white">Score saved! Return to home </Text>
-        )}
-      </div>
+
+      {gameOver && saveScore.isSuccess && (
+        <PostMortem trainingResult={trainingResult} />
+      )}
     </>
   );
 };

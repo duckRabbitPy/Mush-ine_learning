@@ -36,7 +36,6 @@ import { BarChart, chartColors } from "./components/BarChart";
 import { useState } from "react";
 import CustomBtn from "./components/CustomBtn";
 import { GetStaticProps } from "next/types";
-import { getMushroomImgPaths } from "../utils/serverSideFunctions";
 import { brandColors } from "./_app";
 import { appRouter } from "../server/routers/_app";
 import Fuse from "fuse.js";
@@ -52,19 +51,11 @@ Chart.register(
 
 export const getStaticProps: GetStaticProps = async () => {
   const caller = appRouter.createCaller({ user: undefined });
-  const mushroomNames = await caller.getMushroomNames();
-
+  const mushroomNames = await caller.getAllMushroomNames();
   if (!mushroomNames) {
     throw new Error("Mushroom names not available at build time");
   }
-  const srcPromises = mushroomNames.map((mushroom) => {
-    return getMushroomImgPaths(mushroom, 1).then((srcArr) => {
-      return { [mushroom]: srcArr[0] };
-    });
-  });
-
-  const srcArr = await Promise.all(srcPromises);
-  const thumbnails = Object.assign({}, ...srcArr) as Thumbnails;
+  const thumbnails = await caller.retrieveMushroomImgSrcs(mushroomNames);
 
   return {
     props: {
