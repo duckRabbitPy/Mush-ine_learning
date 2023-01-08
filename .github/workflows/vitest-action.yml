@@ -6,6 +6,22 @@ on:
   pull_request:
     branches: ["main"]
 
+env:
+  CLOUD_NAME: ${{secrets.CLOUD_NAME}}
+  CLOUDINARY_URL: ${{secrets.CLOUDINARY_URL}}
+  DATABASE_URL: ${{secrets.DATABASE_URL}}
+  AUTH0_SECRET: ${{secrets.AUTH0_SECRET}}
+  AUTH0_BASE_URL: ${{secrets.AUTH0_BASE_URL}}
+  AUTH0_ISSUER_BASE_URL: ${{secrets.AUTH0_ISSUER_BASE_URL}}
+  AUTH0_CLIENT_ID: ${{secrets.AUTH0_CLIENT_ID}}
+  AUTH0_CLIENT_SECRET: ${{secrets.AUTH0_CLIENT_SECRET}}
+  VITE_cloud_name: ${{secrets.VITE_cloud_name}}
+  VITE_api_key: ${{secrets.VITE_api_key}}
+  VITE_api_secret: ${{secrets.VITE_api_secret}}
+  TEST_USERNAME: ${{secrets.TEST_USERNAME}}
+  TEST_SUB: ${{secrets.TEST_SUB}}
+  VITE_DATABASE_URL: ${{secrets.VITE_DATABASE_URL}}
+
 jobs:
   build:
     runs-on: ubuntu-latest
