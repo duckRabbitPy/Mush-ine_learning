@@ -13,7 +13,9 @@
     "start": "next start",
     "lint": "next lint",
     "initDB": "npx ts-node --skip-project ./server/database/migrations/migration-1.ts",
-    "initNames": "npx ts-node --skip-project ./scripts/init.ts"
+    "initNames": "npx ts-node --skip-project ./scripts/init.ts",
+    "preci": "rm -rf node_modules",
+    "ci": "yarn install --frozen-lockfile"
   },
   "main": "./pages/_app.tsx",
   "dependencies": {
