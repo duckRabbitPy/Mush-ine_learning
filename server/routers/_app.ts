@@ -3,6 +3,7 @@ import { promises as fs } from "fs";
 import { randomArrItem, reduceAnswerCount } from "../../utils/pureFunctions";
 import {
   getForageMushrooms,
+  getMushroomImgPaths,
   getMushroomSet,
   getStoredMushroomNames,
 } from "../../utils/serverSideFunctions";
@@ -26,7 +27,7 @@ import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 
 export const appRouter = router({
-  getMushroomNames: publicProcedure.query(async () => {
+  getAllMushroomNames: publicProcedure.query(async () => {
     const jsonDirectory = path.join(process.cwd(), "server/fileSystemData");
     const mushroomNames = await fs.readFile(
       jsonDirectory + "/mushroomNames.json",
@@ -35,6 +36,19 @@ export const appRouter = router({
 
     return JSON.parse(mushroomNames).mushroomNames as string[];
   }),
+  retrieveMushroomImgSrcs: publicProcedure
+    .input(z.array(z.string()))
+    .query(async ({ input }) => {
+      const srcPromises = input.map((mushroomNames) => {
+        return getMushroomImgPaths(mushroomNames, 1).then((srcArr) => {
+          return { [mushroomNames]: srcArr[0] };
+        });
+      });
+
+      const srcArr = await Promise.all(srcPromises);
+      const thumbnails = Object.assign({}, ...srcArr) as Thumbnails;
+      return thumbnails;
+    }),
   retrieveUserScore: protectedProcedure.query(async ({ ctx }) => {
     const userScore = await getScoreByUserId(ctx.user_id);
     return userScore ?? 0;
@@ -109,7 +123,7 @@ export const appRouter = router({
     const metaArr = { forage, multi, tile };
     return metaArr;
   }),
-  retrieveForageMushrooms: protectedProcedure
+  retrieveForageMushrooms: publicProcedure
     .input(
       z.object({
         omitArr: z.array(z.string()),
@@ -117,33 +131,40 @@ export const appRouter = router({
       })
     )
     .query(async ({ input, ctx }) => {
-      let snapshot = null as Record<string, SummedWeights> | undefined | null;
-
-      const currLevel = (await getCurrentLevel(ctx.user_id)) ?? 0;
-      const snapshotData = await getLevelSnapshot(currLevel, ctx.user_id);
-      snapshot = snapshotData?.snapshot;
-
-      const forageMushrooms = await getForageMushrooms(
-        input.omitArr,
-        input.maxIncorrect,
-        snapshot
-      );
-      return forageMushrooms;
+      // personalised set based on authed user data
+      if (ctx.user_id) {
+        const currLevel = (await getCurrentLevel(ctx.user_id)) ?? 0;
+        const snapshotData = await getLevelSnapshot(currLevel, ctx.user_id);
+        const snapshot = snapshotData?.snapshot;
+        const peronalisedForageSet = await getForageMushrooms(
+          input.omitArr,
+          input.maxIncorrect,
+          snapshot
+        );
+        return peronalisedForageSet;
+      } else {
+        // standard set for non-authed users
+        const standardForageSet = await getForageMushrooms(
+          input.omitArr,
+          input.maxIncorrect,
+          null
+        );
+        return standardForageSet;
+      }
     }),
   retrieveMushroomSet: publicProcedure
     .input(
       z.object({
         omitArr: z.array(z.string()),
         numOptions: z.number().optional(),
-        user_id: z.string().nullable(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       let snapshot = null;
 
-      if (input.user_id) {
-        const currLevel = (await getCurrentLevel(input.user_id)) ?? 0;
-        const snapshotData = await getLevelSnapshot(currLevel, input.user_id);
+      if (ctx.user_id) {
+        const currLevel = (await getCurrentLevel(ctx.user_id)) ?? 0;
+        const snapshotData = await getLevelSnapshot(currLevel, ctx.user_id);
         snapshot = snapshotData?.snapshot;
       }
 
@@ -158,6 +179,7 @@ export const appRouter = router({
   saveLevelSnapShot: protectedProcedure.mutation(async ({ ctx }) => {
     const mushrooms = await getStoredMushroomNames();
     const snapshot = await saveLevelSnapshot(mushrooms, ctx.user_id);
+    console.log(snapshot);
     return snapshot;
   }),
   retrieveLevelSnapShot: protectedProcedure
@@ -187,6 +209,7 @@ export const appRouter = router({
   }),
   retrieveActivity: protectedProcedure.query(async ({ ctx }) => {
     const activityhistory = await getActivity(ctx.user_id);
+    if (!activityhistory) return null;
 
     let lastThirtyActive: Record<string, number> = {};
 

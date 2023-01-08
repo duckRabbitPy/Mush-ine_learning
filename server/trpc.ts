@@ -16,6 +16,15 @@ const authChecker = t.middleware(({ ctx, next }) => {
   });
 });
 
+const noCheck = t.middleware(({ ctx, next }) => {
+  const user_id = ctx.user?.sub as string | undefined;
+  return next({
+    ctx: {
+      user_id,
+    },
+  });
+});
+
 export const router = t.router;
-export const publicProcedure = t.procedure;
+export const publicProcedure = t.procedure.use(noCheck);
 export const protectedProcedure = t.procedure.use(authChecker);

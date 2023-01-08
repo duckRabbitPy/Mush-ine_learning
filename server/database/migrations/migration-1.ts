@@ -27,7 +27,7 @@ export async function initTables() {
 
 export async function initTrainingMushroomSet() {
   const caller = appRouter.createCaller({ user: undefined });
-  const trainingMushrooms = await caller.getMushroomNames();
+  const trainingMushrooms = await caller.getAllMushroomNames();
 
   for (const mushroomName of trainingMushrooms) {
     const uuid = randomUUID();

@@ -6,11 +6,13 @@ import {
   CardHeader,
   CardBody,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { useCommonTrpc } from "../../hooks/useCommonTrpc";
 import { useGameState } from "../../hooks/useGameState";
 import { useSound } from "../../hooks/useSound";
 import { returnLvl } from "../../utils/pureFunctions";
 import { RoundMetadata, TrainingData } from "../../utils/serverSideFunctions";
+import PostMortem from "./PostMortem";
 
 type SaveProps = {
   styles?: ButtonProps;
@@ -18,33 +20,6 @@ type SaveProps = {
   trainingResult: [] | TrainingData[];
   gameOver: boolean;
   roundMetaData: [] | RoundMetadata[];
-};
-
-const handleSaveBtn = async (
-  user_id: string | null,
-  currXp: number | null,
-  score: number,
-  saveTrainingData: any,
-  saveRoundMetaData: any,
-  saveSnapShot: any,
-  saveScore: any,
-  trainingResult: TrainingData[],
-  roundMetaData: any
-) => {
-  if (user_id) {
-    const preRoundLevel = returnLvl(currXp);
-    const postRoundLevel = returnLvl((currXp ?? 0) + score);
-    saveScore.mutate({ user_id, score });
-    saveTrainingData.mutate({ trainingData: trainingResult, user_id });
-    roundMetaData.length > 1 &&
-      saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
-
-    if (preRoundLevel <= postRoundLevel) {
-      saveSnapShot.mutate({ user_id: user_id ?? null });
-    }
-  } else {
-    throw new Error("user object lacking sub property");
-  }
 };
 
 export const SaveBtn = ({
@@ -64,24 +39,32 @@ export const SaveBtn = ({
   } = useCommonTrpc();
   const user_id = user?.sub;
   const currXp = xpQuery.data;
+  const [leveledUp, setLeveledUp] = useState(false);
   const { saveSound } = useSound();
+
+  const handleSaveBtn = async () => {
+    if (user_id) {
+      const preRoundLevel = returnLvl(currXp);
+      const postRoundLevel = returnLvl((currXp ?? 0) + score);
+
+      saveScore.mutate({ score });
+      saveTrainingData.mutate({ trainingData: trainingResult });
+      roundMetaData.length > 1 &&
+        saveRoundMetaData.mutate({ roundMetadata: roundMetaData });
+      saveSnapShot.mutate();
+      if (preRoundLevel < postRoundLevel) {
+        setLeveledUp(true);
+      }
+    }
+  };
+
   return (
     <>
       {user_id && (
         <Button
           onClick={() => {
             saveSound?.play();
-            handleSaveBtn(
-              user_id || null,
-              currXp || null,
-              score,
-              saveTrainingData,
-              saveRoundMetaData,
-              saveSnapShot,
-              saveScore,
-              trainingResult,
-              roundMetaData
-            );
+            handleSaveBtn();
           }}
           w="-moz-fit-content"
           alignSelf="center"
@@ -94,6 +77,27 @@ export const SaveBtn = ({
         </Button>
       )}
 
+      {gameOver && saveScore.isSuccess && (
+        <Text color="white" marginBottom={50}>
+          Score saved! Return to home{" "}
+        </Text>
+      )}
+
+      {leveledUp && (
+        <Card bg="white">
+          <CardHeader>Leveled up! 🥳</CardHeader>
+          <CardBody>
+            <iframe
+              src="https://giphy.com/embed/Y4rBAwBrTOOggtksBK"
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+          </CardBody>
+        </Card>
+      )}
+
       {!user_id && gameOver && (
         <Card bg="white">
           <CardHeader>Enjoying the games? 🥳 🍄</CardHeader>
@@ -103,11 +107,10 @@ export const SaveBtn = ({
           </CardBody>
         </Card>
       )}
-      <div>
-        {gameOver && saveScore.isSuccess && (
-          <Text color="white">Score saved! Return to home </Text>
-        )}
-      </div>
+
+      {gameOver && saveScore.isSuccess && (
+        <PostMortem trainingResult={trainingResult} />
+      )}
     </>
   );
 };

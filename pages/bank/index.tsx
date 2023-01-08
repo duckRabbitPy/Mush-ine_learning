@@ -2,23 +2,14 @@ import { Button, Container, Flex, Heading } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
 import Link from "next/link";
 import { appRouter } from "../../server/routers/_app";
-import { getMushroomImgPaths } from "../../utils/serverSideFunctions";
 import HomeBtn from "../components/HomeBtn";
 import Image from "next/image";
 import TopLevelWrapper from "../components/TopLvlWrapper";
 
 export const getStaticProps: GetStaticProps = async () => {
   const caller = appRouter.createCaller({ user: undefined });
-  const mushroomNames = await caller.getMushroomNames();
-
-  const srcPromises = mushroomNames.map((mushroom) => {
-    return getMushroomImgPaths(mushroom, 1).then((srcArr) => {
-      return { [mushroom]: srcArr[0] };
-    });
-  });
-
-  const srcArr = await Promise.all(srcPromises);
-  const thumbnails = Object.assign({}, ...srcArr) as Thumbnails;
+  const mushroomNames = await caller.getAllMushroomNames();
+  const thumbnails = await caller.retrieveMushroomImgSrcs(mushroomNames);
   return {
     props: {
       mushroomNames,

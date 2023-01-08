@@ -3,7 +3,7 @@ import { baseDifficulty, tileDifficulty } from "../../hooks/useGameState";
 
 type DifficultyProps = {
   difficultyType: typeof baseDifficulty | typeof tileDifficulty;
-  setMaxIncorrect: React.Dispatch<React.SetStateAction<any>>;
+  setMaxIncorrect: React.Dispatch<React.SetStateAction<number>>;
   difficultyNum: number;
 };
 
