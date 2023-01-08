@@ -12,6 +12,7 @@ import { useGameState } from "../../hooks/useGameState";
 import { useSound } from "../../hooks/useSound";
 import { returnLvl } from "../../utils/pureFunctions";
 import { RoundMetadata, TrainingData } from "../../utils/serverSideFunctions";
+import { brandColors } from "../_app";
 import PostMortem from "./PostMortem";
 
 type SaveProps = {
@@ -68,7 +69,7 @@ export const SaveBtn = ({
           }}
           w="-moz-fit-content"
           alignSelf="center"
-          backgroundColor="#B8E6F3"
+          backgroundColor={brandColors.skyBlue}
           disabled={saveScore.isLoading}
           visibility={gameOver && !saveScore.isSuccess ? "visible" : "hidden"}
           {...styles}

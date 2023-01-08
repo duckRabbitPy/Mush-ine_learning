@@ -10,6 +10,7 @@ import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
 import { SaveBtn } from "./components/SaveBtn";
 import { DifficultySetting } from "./components/DifficultySetting";
+import { brandColors } from "./_app";
 
 const Multi = () => {
   const {
@@ -85,7 +86,7 @@ const Multi = () => {
   };
 
   return (
-    <TopLevelWrapper backgroundColor="#091122">
+    <TopLevelWrapper backgroundColor={brandColors.blackBlue}>
       <Flex
         gap={5}
         direction="column"
@@ -131,7 +132,7 @@ const Multi = () => {
                   startSound?.play();
                   setRound(round + 1);
                 }}
-                backgroundColor="#B8E6F3"
+                backgroundColor={brandColors.skyBlue}
               >
                 Start
               </Button>
@@ -175,7 +176,7 @@ const Multi = () => {
                     <Button
                       key={name}
                       onClick={() => handleSelection(name)}
-                      backgroundColor="#B8E6F3"
+                      backgroundColor={brandColors.skyBlue}
                     >
                       {name}
                     </Button>

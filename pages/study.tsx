@@ -13,6 +13,7 @@ import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import TopLevelWrapper from "./components/TopLvlWrapper";
+import { brandColors } from "./_app";
 
 Chart.register(
   BarElement,
@@ -29,7 +30,7 @@ const Study = () => {
   const name = data?.chosenMushroomName;
 
   return (
-    <TopLevelWrapper backgroundColor={"#EDF2F7"}>
+    <TopLevelWrapper backgroundColor={brandColors.lightGrey}>
       <Flex direction="column" alignItems="center" gap="1rem">
         <HomeBtn mt={5} />
         <Heading fontFamily={"honeyMushroom"}>Homework</Heading>

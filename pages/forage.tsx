@@ -19,6 +19,7 @@ import { useSound } from "../hooks/useSound";
 import { SaveBtn } from "./components/SaveBtn";
 import { DifficultySetting } from "./components/DifficultySetting";
 import { updateForageTrainingData } from "../utils/pureFunctions";
+import { brandColors } from "./_app";
 
 export const reactQueryConfig = {
   refetchOnMount: false,
@@ -105,13 +106,8 @@ const Forage = () => {
   }
 
   return (
-    <TopLevelWrapper backgroundColor="#091122">
-      <Flex
-        gap={2}
-        direction="column"
-        alignItems="center"
-        paddingBottom="200px"
-      >
+    <TopLevelWrapper backgroundColor={brandColors.blackBlue}>
+      <Flex gap={2} direction="column" alignItems="center">
         <HomeBtn w="-moz-fit-content" mt={3} />
         <Flex direction="column" gap={2} alignItems="center">
           {!gameOver && !getForageMushrooms.isRefetching && (
@@ -136,7 +132,7 @@ const Forage = () => {
                   fontFamily="rounded"
                 >
                   Find 🔎 and click on 👉🏼 the{" "}
-                  <span style={{ color: "greenyellow" }}>
+                  <span style={{ color: brandColors.lightGreen }}>
                     {correctMushroom?.name}
                   </span>{" "}
                   mushroom
@@ -206,18 +202,11 @@ const Forage = () => {
           {round !== 0 && !gameOver && getForageMushrooms.isLoading ? (
             <Spinner color="white" />
           ) : (
-            <SimpleGrid columns={2} gap={2}>
+            <SimpleGrid columns={maxIncorrect > 3 ? 3 : 2} gap={2}>
               {!gameOver &&
                 getForageMushrooms.data?.map((forageMushroom, index) => {
                   return (
-                    <Container
-                      key={`${forageMushroom.name}${index}`}
-                      p={0}
-                      display="flex"
-                      justifyContent="center"
-                      flexDirection="column"
-                      alignItems="center"
-                    >
+                    <Container key={`${forageMushroom.name}${index}`} p={0}>
                       <Image
                         tabIndex={0}
                         onKeyDown={(e) => {
@@ -239,12 +228,19 @@ const Forage = () => {
                             inputAnswer && !forageMushroom.correctMatch
                               ? "0.6"
                               : 1,
+                          border:
+                            inputAnswer && forageMushroom.correctMatch
+                              ? `2px solid ${brandColors.lightGreen}`
+                              : undefined,
                         }}
                       />
+
                       <Text
                         fontSize="medium"
                         color={
-                          forageMushroom.correctMatch ? "green.300" : "white"
+                          forageMushroom.correctMatch
+                            ? brandColors.green
+                            : brandColors.red
                         }
                         height={10}
                       >

@@ -96,7 +96,7 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
   const sortedInsightData = sortInsightData(filteredInsights, heatmaps, order);
 
   return (
-    <TopLevelWrapper backgroundColor={"#EDF2F7"}>
+    <TopLevelWrapper backgroundColor={brandColors.lightGrey}>
       <Flex direction="column" alignItems={"center"}>
         <Heading mb={10} mt={5} fontFamily="honeyMushroom">
           Mushine Insights
@@ -128,7 +128,7 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
           </Stack>
         </RadioGroup>
 
-        {snapshot.isLoading && <Spinner color={brandColors[200]} />}
+        {snapshot.isLoading && <Spinner color={brandColors.earthBrown} />}
 
         {!snapshot.isLoading &&
           !snapshot?.data?.snapshot &&
@@ -174,14 +174,16 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                       ></Image>
                       <Text
                         fontSize="lg"
-                        color={accuracy > 50 ? "green.500" : "red.400"}
+                        color={
+                          accuracy > 50 ? brandColors.green : brandColors.red
+                        }
                       >
                         {Number.isNaN(accuracy)
                           ? ``
                           : `🎯 ${accuracy}% accuracy`}
                       </Text>
                       <CustomBtn
-                        brandColor={300}
+                        brandColor={brandColors.blueGrey}
                         href={`/bank/${mushroomName}`}
                         styles={{ size: "xs", margin: 0 }}
                       >
@@ -193,7 +195,7 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                           size="sm"
                           fontWeight="thin"
                           fontFamily={"honeyMushroom"}
-                          color={"green.600"}
+                          color={brandColors.darkGreen}
                           visibility={heatmap.length ? "visible" : "hidden"}
                         >
                           Success heatmap
@@ -208,7 +210,9 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                                 { dateStyle: "medium", timeStyle: "short" }
                               )}
                               backgroundColor={
-                                result.correct_answer ? "green.500" : "red.500"
+                                result.correct_answer
+                                  ? brandColors.green
+                                  : brandColors.red
                               }
                             >
                               <Square
@@ -216,10 +220,12 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                                 key={i}
                                 bg={
                                   result.correct_answer
-                                    ? "green.200"
-                                    : "red.200"
+                                    ? brandColors.green
+                                    : brandColors.red
                                 }
-                              />
+                              >
+                                <span style={{ opacity: 0.3 }}>{i + 1}</span>
+                              </Square>
                             </Tooltip>
                           ))}
                         </Grid>
@@ -277,8 +283,7 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                         </div>
                       ) : (
                         <Text color="blue.600" padding="2rem">
-                          No misidentification data! <br></br>
-                          <br></br> *updated next level
+                          No misidentification data!
                         </Text>
                       )}
                     </Flex>

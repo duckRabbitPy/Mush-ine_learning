@@ -11,6 +11,7 @@ import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
 import { SaveBtn } from "./components/SaveBtn";
 import { DifficultySetting } from "./components/DifficultySetting";
+import { brandColors } from "./_app";
 
 const Tile = () => {
   const {
@@ -107,7 +108,7 @@ const Tile = () => {
   };
 
   return (
-    <TopLevelWrapper backgroundColor="#091122">
+    <TopLevelWrapper backgroundColor={brandColors.blackBlue}>
       <Flex
         gap={5}
         direction="column"

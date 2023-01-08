@@ -12,7 +12,7 @@ export const chartColors = [
   "#d45087",
   "#f95d6a",
   "#ffa600",
-];
+] as const;
 
 export function BarChart({ kvp, max, yAxisTitle }: BarchartProps) {
   const labels = Object.keys(kvp).slice(0, max ?? undefined);

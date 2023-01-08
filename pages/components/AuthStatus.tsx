@@ -1,13 +1,14 @@
 import { useUser } from "@auth0/nextjs-auth0";
 import { Flex, Text, Button } from "@chakra-ui/react";
 import Link from "next/link";
+import { brandColors } from "../_app";
 
 const AuthStatus = () => {
   const { user } = useUser();
   const message = user
     ? `Signed in as ${user.name || "registered guest"}`
     : "Not signed in";
-  const textColor = user ? "green.500" : "red.500";
+  const textColor = user ? brandColors.darkGreen : brandColors.red;
   return (
     <Flex align="center">
       <Text color={textColor} p={1}>
@@ -17,9 +18,12 @@ const AuthStatus = () => {
         <Button
           m={2}
           size={"sm"}
-          backgroundColor="#A63922"
+          backgroundColor={brandColors.rust}
           color={"white"}
-          _hover={{ color: "black", backgroundColor: "gray.100" }}
+          _hover={{
+            color: brandColors.blackBlue,
+            backgroundColor: brandColors.lightGrey,
+          }}
         >
           {user ? "Log Out" : "Log in"}
         </Button>
