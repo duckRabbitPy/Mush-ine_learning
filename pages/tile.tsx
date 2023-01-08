@@ -26,17 +26,17 @@ const Tile = () => {
     setProgress,
     score,
     setScore,
-    user,
   } = useGameState();
 
-  const [maxIncorrect, setMaxIncorrect] = useState(tileDifficulty.medium);
+  const [maxIncorrect, setMaxIncorrect] = useState<number>(
+    tileDifficulty.medium
+  );
   const [roundOver, setRoundOver] = useState(false);
   const gameOver = round > 5;
   const getMushroomSet = trpc.retrieveMushroomSet.useQuery(
     {
       omitArr,
       numOptions: maxIncorrect,
-      user_id: user?.sub ?? null,
     },
     {
       enabled: round !== 0 && !gameOver,

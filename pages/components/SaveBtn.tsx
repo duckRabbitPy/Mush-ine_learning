@@ -20,33 +20,6 @@ type SaveProps = {
   roundMetaData: [] | RoundMetadata[];
 };
 
-const handleSaveBtn = async (
-  user_id: string | null,
-  currXp: number | null,
-  score: number,
-  saveTrainingData: any,
-  saveRoundMetaData: any,
-  saveSnapShot: any,
-  saveScore: any,
-  trainingResult: TrainingData[],
-  roundMetaData: any
-) => {
-  if (user_id) {
-    const preRoundLevel = returnLvl(currXp);
-    const postRoundLevel = returnLvl((currXp ?? 0) + score);
-    saveScore.mutate({ user_id, score });
-    saveTrainingData.mutate({ trainingData: trainingResult, user_id });
-    roundMetaData.length > 1 &&
-      saveRoundMetaData.mutate({ roundMetadata: roundMetaData, user_id });
-
-    if (preRoundLevel <= postRoundLevel) {
-      saveSnapShot.mutate({ user_id: user_id ?? null });
-    }
-  } else {
-    throw new Error("user object lacking sub property");
-  }
-};
-
 export const SaveBtn = ({
   styles,
   gameOver,
@@ -65,23 +38,29 @@ export const SaveBtn = ({
   const user_id = user?.sub;
   const currXp = xpQuery.data;
   const { saveSound } = useSound();
+
+  const handleSaveBtn = async () => {
+    if (user_id) {
+      const preRoundLevel = returnLvl(currXp);
+      const postRoundLevel = returnLvl((currXp ?? 0) + score);
+      saveScore.mutate({ score });
+      saveTrainingData.mutate({ trainingData: trainingResult });
+      roundMetaData.length > 1 &&
+        saveRoundMetaData.mutate({ roundMetadata: roundMetaData });
+
+      if (preRoundLevel <= postRoundLevel) {
+        saveSnapShot.mutate();
+      }
+    }
+  };
+
   return (
     <>
       {user_id && (
         <Button
           onClick={() => {
             saveSound?.play();
-            handleSaveBtn(
-              user_id || null,
-              currXp || null,
-              score,
-              saveTrainingData,
-              saveRoundMetaData,
-              saveSnapShot,
-              saveScore,
-              trainingResult,
-              roundMetaData
-            );
+            handleSaveBtn();
           }}
           w="-moz-fit-content"
           alignSelf="center"

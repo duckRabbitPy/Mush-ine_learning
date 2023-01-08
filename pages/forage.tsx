@@ -11,13 +11,14 @@ import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import { RoundMetadata } from "../utils/serverSideFunctions";
-import { updateForageTrainingData } from "../utils/pureFunctions";
+
 import { ProgressIndicator } from "./components/Progress";
 import { baseDifficulty, useGameState } from "../hooks/useGameState";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
 import { SaveBtn } from "./components/SaveBtn";
 import { DifficultySetting } from "./components/DifficultySetting";
+import { updateForageTrainingData } from "../utils/pureFunctions";
 
 export const reactQueryConfig = {
   refetchOnMount: false,

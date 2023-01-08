@@ -25,7 +25,6 @@ const Multi = () => {
     setProgress,
     score,
     setScore,
-    user,
     maxIncorrect,
     setMaxIncorrect,
   } = useGameState();

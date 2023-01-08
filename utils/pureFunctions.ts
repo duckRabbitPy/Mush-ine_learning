@@ -59,24 +59,27 @@ export function reduceAnswerCount(
       >[]
     | undefined
 ) {
-  return data?.reduce((acc, curr) => {
-    if (curr["correct_answer"] && !acc["correct"]) {
-      acc["correct"] = 1;
-    } else if (curr["correct_answer"]) {
-      acc["correct"] += 1;
-    }
+  return data?.reduce(
+    (acc, curr) => {
+      if (curr["correct_answer"] && !acc["correct"]) {
+        acc["correct"] = 1;
+      } else if (curr["correct_answer"]) {
+        acc["correct"] += 1;
+      }
 
-    if (!curr["correct_answer"] === false && !acc["incorrect"]) {
-      acc["incorrect"] = 1;
-    } else if (curr["correct_answer"] === false) {
-      acc["incorrect"] += 1;
-    }
+      if (!curr["correct_answer"] === false && !acc["incorrect"]) {
+        acc["incorrect"] = 1;
+      } else if (curr["correct_answer"] === false) {
+        acc["incorrect"] += 1;
+      }
 
-    acc["percentageCorrect"] =
-      (acc["correct"] / (acc["incorrect"] + acc["correct"])) * 100;
+      acc["percentageCorrect"] =
+        (acc["correct"] / (acc["incorrect"] + acc["correct"])) * 100;
 
-    return acc;
-  }, {} as reducedAnswers);
+      return acc;
+    },
+    { correct: 0, incorrect: 0, percentageCorrect: 0 } as reducedAnswers
+  );
 }
 
 export function currLevelInfo(
