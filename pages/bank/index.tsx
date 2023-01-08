@@ -5,6 +5,7 @@ import { appRouter } from "../../server/routers/_app";
 import HomeBtn from "../components/HomeBtn";
 import Image from "next/image";
 import TopLevelWrapper from "../components/TopLvlWrapper";
+import { brandColors } from "../_app";
 
 export const getStaticProps: GetStaticProps = async () => {
   const caller = appRouter.createCaller({ user: undefined });
@@ -26,13 +27,13 @@ const BankMenu = ({
   thumbnails: Thumbnails;
 }) => {
   return (
-    <TopLevelWrapper backgroundColor={"#091122"}>
+    <TopLevelWrapper backgroundColor={brandColors.blackBlue}>
       <Flex direction="column" alignItems={"center"} height={"fit-content"}>
         <HomeBtn mt={5} />
         <Heading mb={10} mt={5} color="white" fontFamily={"honeyMushroom"}>
           Mushroom Info Bank
         </Heading>
-        <Container mb="10" width={{ base: "70vw", md: "50vw", lg: "30vw" }}>
+        <Container mb="10" width={{ base: "70vw", md: "50vw", lg: "40vw" }}>
           {mushroomNames?.map((name) => (
             <Link key={name} href={`/bank/${name}`}>
               <Flex m={5} alignItems="top">

@@ -23,6 +23,7 @@ import { trpc } from "../utils/trpc";
 import BarChart from "./components/BarChart";
 import HomeBtn from "./components/HomeBtn";
 import TopLevelWrapper from "./components/TopLvlWrapper";
+import { brandColors } from "./_app";
 
 Chart.register(
   BarElement,
@@ -50,7 +51,7 @@ const Profile = () => {
   const percentageProgress = (xpEarnedThisLevel / xpToNextLevel) * 100;
 
   return (
-    <TopLevelWrapper backgroundColor={"#EDF2F7"}>
+    <TopLevelWrapper backgroundColor={brandColors.lightGrey}>
       <Flex direction="column" alignItems={"center"}>
         <Heading mb={10} mt={5} fontFamily={"honeyMushroom"}>
           Profile {user?.name && `- ${user?.name}`}
@@ -69,7 +70,12 @@ const Profile = () => {
             >
               Level {snapshot.data?.level}
             </Text>
-            <Text color="green.400" mt={5} fontSize="2xl" fontFamily="rounded">
+            <Text
+              color={brandColors.green}
+              mt={5}
+              fontSize="2xl"
+              fontFamily="rounded"
+            >
               XP: {xpQuery.data ?? 0}
             </Text>
 
@@ -105,13 +111,13 @@ const Profile = () => {
                     </Text>
                     <Text>
                       {" "}
-                      <span style={{ color: "green" }}>
+                      <span style={{ color: brandColors.green }}>
                         {data?.correct ?? 0}
                       </span>{" "}
                       correct ids
                     </Text>
                     <Text>
-                      <span style={{ color: "red" }}>
+                      <span style={{ color: brandColors.red }}>
                         {data?.incorrect ?? 0}
                       </span>{" "}
                       incorrect ids

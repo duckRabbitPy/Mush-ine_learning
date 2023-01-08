@@ -4,6 +4,7 @@ import { TrainingData } from "../../utils/serverSideFunctions";
 import Image from "next/image";
 import CustomBtn from "./CustomBtn";
 import { trpc } from "../../utils/trpc";
+import { brandColors } from "../_app";
 
 export type PostMortemProps = {
   trainingResult: TrainingData[];
@@ -19,12 +20,12 @@ export const PostMortem = ({ trainingResult }: PostMortemProps) => {
 
   return (
     <Container display="flex" alignItems={"center"} flexDirection="column">
-      <Heading size="medium" color="red" mb={10}>
+      <Heading size="medium" color={brandColors.red} mb={10}>
         Mushrooms misidentified
       </Heading>
       <SimpleGrid columns={2} gap={2}>
         {uniqueMisidentified.map((misidentifiedMushroom) => (
-          <Container key={misidentifiedMushroom} color="red">
+          <Container key={misidentifiedMushroom} color={brandColors.red}>
             {misidentifiedMushroom}
             <div>
               {thumbnails && thumbnails[misidentifiedMushroom] && (
@@ -36,7 +37,7 @@ export const PostMortem = ({ trainingResult }: PostMortemProps) => {
                 ></Image>
               )}
               <CustomBtn
-                brandColor={300}
+                brandColor={brandColors.blueGrey}
                 href={`/bank/${misidentifiedMushroom}`}
                 styles={{ size: "xs" }}
               >

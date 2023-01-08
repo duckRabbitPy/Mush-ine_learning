@@ -2,11 +2,11 @@ import { Button, ButtonProps, Icon, Tooltip } from "@chakra-ui/react";
 import Link from "next/link";
 import React from "react";
 import { IconType } from "react-icons";
-import { brandColors } from "../_app";
+import { brandColors, HexBrandColors } from "../_app";
 
 type CustomBtnProps = {
   children: React.ReactNode;
-  brandColor: brandColors;
+  brandColor: HexBrandColors;
   href?: string;
   icon?: IconType;
   styles?: ButtonProps;
@@ -31,9 +31,12 @@ export const CustomBtn = ({
         color={"white"}
         fontFamily="rounded"
         letterSpacing={"0.1rem"}
-        backgroundColor={`brand.${brandColor}`}
+        backgroundColor={brandColor}
         onClick={() => clickSound?.play()}
-        _hover={{ color: "black", backgroundColor: "gray.100" }}
+        _hover={{
+          color: brandColors.blackBlue,
+          backgroundColor: brandColors.lightGrey,
+        }}
         {...styles}
       >
         {children}

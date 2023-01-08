@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
-type Hex = `#${string}`;
+import { HexBrandColors } from "../_app";
 
 type Props = {
   children: ReactNode;
-  backgroundColor: Hex;
+  backgroundColor: HexBrandColors;
 };
 
 export const TopLevelWrapper = ({ children, backgroundColor }: Props) => (
