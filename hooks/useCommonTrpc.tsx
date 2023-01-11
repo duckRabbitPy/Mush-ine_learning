@@ -7,17 +7,13 @@ export const reactQueryConfig = {
 };
 
 export function useCommonTrpc() {
-  const xpQuery = trpc.retrieveUserScore.useQuery();
+  const xpQuery = trpc.retrieveUserXP.useQuery();
   const saveSnapShot = trpc.saveLevelSnapShot.useMutation();
-  const saveScore = trpc.storeUserScore.useMutation();
-  const saveTrainingData = trpc.storeTrainingData.useMutation();
-  const saveRoundMetaData = trpc.storeRoundMetadata.useMutation();
+  const saveGameData = trpc.saveGameData.useMutation();
 
   return {
     xpQuery,
     saveSnapShot,
-    saveScore,
-    saveTrainingData,
-    saveRoundMetaData,
+    saveGameData,
   };
 }

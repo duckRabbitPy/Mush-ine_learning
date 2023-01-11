@@ -1,6 +1,6 @@
 import { useUser } from "@auth0/nextjs-auth0";
 import { useState } from "react";
-import { RoundMetadata, TrainingData } from "../utils/serverSideFunctions";
+import { RoundMetadata, TrainingData } from "../utils/serverSideUtils";
 
 export const baseDifficulty = {
   easy: 2,
@@ -19,7 +19,7 @@ export const tileDifficulty = {
 export function useGameState() {
   const { user } = useUser();
 
-  const [trainingResult, setTrainingResult] = useState<TrainingData[] | []>([]);
+  const [trainingData, setTrainingData] = useState<TrainingData[] | []>([]);
   const [roundMetaData, setRoundMetaData] = useState<RoundMetadata[] | []>([]);
   const [round, setRound] = useState(0);
   const [omitArr, setOmitArr] = useState<string[]>([]);
@@ -32,8 +32,8 @@ export function useGameState() {
 
   return {
     user,
-    trainingResult,
-    setTrainingResult,
+    trainingData,
+    setTrainingData,
     roundMetaData,
     round,
     setRound,

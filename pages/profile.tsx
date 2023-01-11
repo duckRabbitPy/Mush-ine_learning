@@ -35,7 +35,7 @@ Chart.register(
 
 const Profile = () => {
   const { user } = useUser();
-  const xpQuery = trpc.retrieveUserScore.useQuery();
+  const xpQuery = trpc.retrieveUserXP.useQuery();
 
   const snapshot = trpc.retrieveLevelSnapShot.useQuery();
 

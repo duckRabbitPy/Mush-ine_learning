@@ -1,17 +1,17 @@
 import { Container, Heading, SimpleGrid } from "@chakra-ui/react";
 
-import { TrainingData } from "../../utils/serverSideFunctions";
+import { TrainingData } from "../../utils/serverSideUtils";
 import Image from "next/image";
 import CustomBtn from "./CustomBtn";
 import { trpc } from "../../utils/trpc";
 import { brandColors } from "../_app";
 
 export type PostMortemProps = {
-  trainingResult: TrainingData[];
+  trainingData: TrainingData[];
 };
 
-export const PostMortem = ({ trainingResult }: PostMortemProps) => {
-  const uniqueMisidentified = [...new Set(trainingResult)].flatMap((f) =>
+export const PostMortem = ({ trainingData }: PostMortemProps) => {
+  const uniqueMisidentified = [...new Set(trainingData)].flatMap((f) =>
     f.misidentifiedMushroom ? [f.misidentifiedMushroom] : []
   );
 

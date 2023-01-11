@@ -1,7 +1,7 @@
 import db from "./connection";
 import { QueryResult } from "pg";
 import { returnLvl } from "../../utils/pureFunctions";
-import { TrainingData } from "../../utils/serverSideFunctions";
+import { TrainingData } from "../../utils/serverSideUtils";
 
 type Mushine_learning_user = {
   id: number;
@@ -13,7 +13,7 @@ type Mushine_level_snapshot = {
   id: number;
   level: number;
   user_id: string;
-  snapshot: LevelSnapshot;
+  snapshot: Record<MushroomName, SummedWeights>;
 };
 
 type Mushine_training_weightings = {
@@ -24,18 +24,13 @@ type Mushine_training_weightings = {
   weight: number;
 };
 
-type LevelSnapshot = {
-  user_id: string;
-  level: number;
-  snapshot: Record<MushroomName, SummedWeights>;
-};
-
 type Activity = {
   day: string;
   roundcount: number;
 };
 
 export async function createUser(user_id: string) {
+  // TODO should also check for exisitng user in db here
   const queryResult = db.query(
     "INSERT INTO mushine_learning_user (user_id, xp) VALUES ($1, 0) RETURNING *",
     [user_id]
@@ -53,18 +48,18 @@ export async function updateScore(Score: number, user_id: string) {
   ) as Promise<QueryResult<Pick<Mushine_learning_user, "xp">>>;
 
   return queryResult
-    .then((result) => result.rows[0].xp)
+    .then((result) => result.rows[0]?.xp)
     .catch((error: Error) => console.log(error));
 }
 
-export async function getScoreByUserId(user_id: string) {
+export async function getXPByUserId(user_id: string) {
   const queryResult = db.query(
     "SELECT xp FROM mushine_learning_user WHERE user_id = $1",
     [user_id]
   ) as Promise<QueryResult<Pick<Mushine_learning_user, "xp">>>;
 
   return queryResult
-    .then((result) => result.rows[0].xp)
+    .then((result) => result.rows[0]?.xp)
     .catch((error: Error) => console.log(error));
 }
 
@@ -85,7 +80,7 @@ export async function updateTrainingData(
           [user_id, correct_mushroom, misidentified_as, weight]
         ) as Promise<QueryResult<Mushine_training_weightings>>;
 
-        queryResult.catch((error: Error) => console.log(error));
+        await queryResult.catch((error: Error) => console.log(error));
       }
     }
   }
@@ -231,7 +226,7 @@ export async function getCurrentLevel(user_id: string) {
   ) as Promise<QueryResult<Pick<Mushine_learning_user, "xp">>>;
 
   const currXp = await queryResult
-    .then((result) => result.rows[0].xp)
+    .then((result) => result.rows[0]?.xp)
     .catch((error: Error) => console.log(error));
 
   return returnLvl(currXp);
@@ -241,7 +236,7 @@ export async function getLevelSnapshot(level: number, user_id: string) {
   const queryResult = db.query(
     `SELECT snapshot, level FROM mushine_level_snapshots WHERE level = $1 AND user_id = $2`,
     [level, user_id]
-  ) as Promise<QueryResult<Pick<LevelSnapshot, "snapshot" | "level">>>;
+  ) as Promise<QueryResult<Pick<Mushine_level_snapshot, "snapshot" | "level">>>;
 
   return queryResult
     .then((result) => result.rows[0])

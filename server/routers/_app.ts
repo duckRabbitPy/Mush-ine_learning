@@ -1,15 +1,19 @@
 import { number, z } from "zod";
 import { promises as fs } from "fs";
-import { randomArrItem, reduceAnswerCount } from "../../utils/pureFunctions";
+import {
+  randomArrItem,
+  reduceAnswerCount,
+  returnLvl,
+} from "../../utils/pureFunctions";
 import {
   getForageMushrooms,
   getMushroomImgPaths,
   getMushroomSet,
   getStoredMushroomNames,
-} from "../../utils/serverSideFunctions";
+} from "../../utils/serverSideUtils";
 import {
   updateScore,
-  getScoreByUserId,
+  getXPByUserId,
   createUser,
   updateTrainingData,
   getLevelSnapshot,
@@ -49,53 +53,21 @@ export const appRouter = router({
       const thumbnails = Object.assign({}, ...srcArr) as Thumbnails;
       return thumbnails;
     }),
-  retrieveUserScore: protectedProcedure.query(async ({ ctx }) => {
-    const userScore = await getScoreByUserId(ctx.user_id);
+  retrieveUserXP: protectedProcedure.query(async ({ ctx }) => {
+    const userScore = await getXPByUserId(ctx.user_id);
     return userScore ?? 0;
   }),
-  storeUserScore: protectedProcedure
+  saveGameData: protectedProcedure
     .input(
       z.object({
         score: z.number(),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      let xp = await getScoreByUserId(ctx.user_id);
-      if (!xp) {
-        await createUser(ctx.user_id);
-        xp = 0;
-      }
-      const newXp = xp + input.score;
-      const newScore = await updateScore(newXp, ctx.user_id);
-      return {
-        user: {
-          user_id: ctx.user_id,
-          score: newScore,
-        },
-      };
-    }),
-  storeTrainingData: protectedProcedure
-    .input(
-      z.object({
         trainingData: z.array(
           z.object({
             misidentifiedMushroom: z.string().nullable(),
             weightingData: z.record(z.string(), z.number()).nullable(),
           })
         ),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      const lastSession = await updateTrainingData(
-        input.trainingData,
-        ctx.user_id
-      );
-      return lastSession;
-    }),
-  storeRoundMetadata: protectedProcedure
-    .input(
-      z.object({
-        roundMetadata: z.array(
+        roundMetaData: z.array(
           z.object({
             game_type: z.enum(["forage", "tile", "multi"]),
             correct_answer: z.boolean(),
@@ -105,13 +77,28 @@ export const appRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const current_level = await getCurrentLevel(ctx.user_id);
-      const roundMetadata = input.roundMetadata;
+      let xp = await getXPByUserId(ctx.user_id);
+      if (!xp) {
+        await createUser(ctx.user_id);
+        xp = 0;
+      }
+      const newXp = xp + input.score;
+      await updateScore(newXp, ctx.user_id);
+
+      const current_level = await returnLvl(newXp);
+      const roundMetadata = input.roundMetaData;
       await updateRoundMetaData(ctx.user_id, current_level ?? 0, roundMetadata);
+
+      const lastGameResult = await updateTrainingData(
+        input.trainingData,
+        ctx.user_id
+      );
+      return lastGameResult;
     }),
   retrieveRoundMetadata: protectedProcedure.query(async ({ ctx }) => {
     const currLevel = await getCurrentLevel(ctx.user_id);
     const stats = await getRoundMetadata(ctx.user_id, currLevel ?? 0);
+
     const forage = reduceAnswerCount(
       stats?.filter((r) => r.game_type === "forage")
     );
@@ -179,7 +166,6 @@ export const appRouter = router({
   saveLevelSnapShot: protectedProcedure.mutation(async ({ ctx }) => {
     const mushrooms = await getStoredMushroomNames();
     const snapshot = await saveLevelSnapshot(mushrooms, ctx.user_id);
-    console.log(snapshot);
     return snapshot;
   }),
   retrieveLevelSnapShot: protectedProcedure

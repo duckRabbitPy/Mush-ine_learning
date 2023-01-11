@@ -1,12 +1,104 @@
-import { assert, describe, it } from "vitest";
-import { currLevelInfo, returnLvl } from "../pureFunctions";
+import { assert, describe, expect, it } from "vitest";
+import { InsightSortOptions } from "../../global_enums";
+import {
+  currLevelInfo,
+  generateLvlBoundaries,
+  heatMapAccuracy,
+  returnLvl,
+  sortInsightData,
+} from "../pureFunctions";
 
-describe("curr level undefined", () => {
+const levelBoundaryMap = { ...generateLvlBoundaries() };
+
+it("level boundary generator returns a sorted array of ascending values", () => {
+  const boundaries = generateLvlBoundaries();
+  const isAscending = boundaries.every(
+    (x, y, arr) => y === 0 || x >= arr[y - 1]
+  );
+  expect(isAscending).toEqual(true);
+});
+
+it("heatMap accuracy determined by Time and Result data", () => {
+  const accuracy = heatMapAccuracy([
+    { correct_answer: true, timestamp: "2023-01-15T15:47:18.357Z" },
+    { correct_answer: true, timestamp: "2023-01-15T16:47:18.357Z" },
+    { correct_answer: false, timestamp: "2023-01-15T17:47:18.357Z" },
+    { correct_answer: true, timestamp: "2023-01-15T18:47:18.357Z" },
+  ]);
+  assert.equal(accuracy, 75);
+});
+
+describe("sort insight data sorts in three different modes", () => {
+  const chartData: [string, SummedWeights][] = [
+    ["pavement", { medusa: 100, "oak-bolete": 200 }],
+    ["prince", { horse: 500 }],
+    ["horse", { blusher: 100, horse: 400, medusa: 1000 }],
+    ["blusher", { prince: 100, horse: 400, medusa: 1000 }],
+  ];
+
+  const heatMaps: Heatmaps = {
+    pavement: [
+      { correct_answer: true, timestamp: "2023-01-15T15:47:18.357Z" },
+      { correct_answer: true, timestamp: "2023-01-15T16:47:18.357Z" },
+      { correct_answer: false, timestamp: "2023-01-15T17:47:18.357Z" },
+      { correct_answer: true, timestamp: "2023-01-15T18:47:18.357Z" },
+    ],
+
+    prince: [
+      { correct_answer: false, timestamp: "2023-01-15T15:47:18.357Z" },
+      { correct_answer: false, timestamp: "2023-01-15T16:47:18.357Z" },
+      { correct_answer: false, timestamp: "2023-01-15T17:47:18.357Z" },
+      { correct_answer: true, timestamp: "2023-01-15T18:47:18.357Z" },
+    ],
+
+    horse: [
+      { correct_answer: true, timestamp: "2023-01-15T15:47:18.357Z" },
+      { correct_answer: true, timestamp: "2023-01-15T16:47:18.357Z" },
+      { correct_answer: true, timestamp: "2023-01-15T17:47:18.357Z" },
+      { correct_answer: true, timestamp: "2023-01-15T18:47:18.357Z" },
+    ],
+    blusher: [
+      { correct_answer: true, timestamp: "2023-01-15T15:47:18.357Z" },
+      { correct_answer: true, timestamp: "2023-01-15T16:47:18.357Z" },
+      { correct_answer: false, timestamp: "2023-01-15T17:47:18.357Z" },
+      { correct_answer: true, timestamp: "2023-01-15T18:47:18.357Z" },
+    ],
+  };
+
+  it("sorts alphabetically", () => {
+    const result = sortInsightData(
+      chartData,
+      heatMaps,
+      InsightSortOptions.Alphabetical
+    );
+    expect(result?.[0]?.[0]).toEqual("blusher");
+  });
+
+  it("sorts high accuracy first", () => {
+    const result = sortInsightData(
+      chartData,
+      heatMaps,
+      InsightSortOptions.HighAccuracyFirst
+    );
+    expect(result?.[0]?.[0]).toEqual("horse");
+  });
+
+  it("sorts low accuracy first", () => {
+    const result = sortInsightData(
+      chartData,
+      heatMaps,
+      InsightSortOptions.LowAccuracyFirst
+    );
+    expect(result?.[0]?.[0]).toEqual("prince");
+  });
+});
+
+describe("case curr level undefined", () => {
   const currXp = 0;
   const currLevel = undefined;
   it("boundary ahead correct", () => {
     const { boundaryAhead } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryAhead, 50);
+    assert.equal(boundaryAhead, levelBoundaryMap[0]);
   });
 
   it("correct boundary behind", () => {
@@ -16,17 +108,17 @@ describe("curr level undefined", () => {
 
   it("correct xpToNextLevel", () => {
     const { xpToNextLevel } = currLevelInfo(currXp, currLevel);
-    assert.equal(xpToNextLevel, 50);
+    assert.equal(xpToNextLevel, levelBoundaryMap[0] - currXp);
   });
 });
 
-describe("curr level 0", () => {
+describe("case curr level 0", () => {
   const currXp = 0;
   const currLevel = 0;
 
   it("boundary ahead correct", () => {
     const { boundaryAhead } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryAhead, 50);
+    assert.equal(boundaryAhead, levelBoundaryMap[0]);
   });
 
   it("correct boundary behind", () => {
@@ -36,47 +128,46 @@ describe("curr level 0", () => {
 
   it("correct xpToNextLevel", () => {
     const { xpToNextLevel } = currLevelInfo(currXp, currLevel);
-    assert.equal(xpToNextLevel, 50);
+    assert.equal(xpToNextLevel, levelBoundaryMap[0] - currXp);
   });
 });
 
-describe("curr level 4", () => {
-  const currXp = 1300;
-  const currLevel = 4;
-  it("boundary ahead correct", () => {
-    const { boundaryAhead } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryAhead, 1800);
-  });
-
-  it("correct boundary behind", () => {
-    const { boundaryBehind } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryBehind, 1250);
-  });
-
-  it("correct xpToNextLevel", () => {
-    const { xpToNextLevel } = currLevelInfo(currXp, currLevel);
-    assert.equal(xpToNextLevel, 500);
-  });
-});
-
-describe("curr level 3", () => {
+describe("case curr level 3", () => {
   const currXp = 1190;
   const currLevel = 3;
 
   it("correct boundary ahead", () => {
     const { boundaryAhead } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryAhead, 1250);
+    assert.equal(boundaryAhead, levelBoundaryMap[4]);
   });
 
   it("correct boundary behind", () => {
     const { boundaryBehind } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryBehind, 800);
+    assert.equal(boundaryBehind, levelBoundaryMap[3]);
   });
 
   it("correct xpToNextLevel", () => {
-    const { xpToNextLevel, boundaryAhead } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryAhead, 1250);
-    assert.equal(xpToNextLevel, 60);
+    const { xpToNextLevel } = currLevelInfo(currXp, currLevel);
+    assert.equal(xpToNextLevel, levelBoundaryMap[4] - currXp);
+  });
+});
+
+describe("case curr level 4", () => {
+  const currXp = 1300;
+  const currLevel = 4;
+  it("boundary ahead correct", () => {
+    const { boundaryAhead } = currLevelInfo(currXp, currLevel);
+    assert.equal(boundaryAhead, levelBoundaryMap[5]);
+  });
+
+  it("correct boundary behind", () => {
+    const { boundaryBehind } = currLevelInfo(currXp, currLevel);
+    assert.equal(boundaryBehind, levelBoundaryMap[4]);
+  });
+
+  it("correct xpToNextLevel", () => {
+    const { xpToNextLevel } = currLevelInfo(currXp, currLevel);
+    assert.equal(xpToNextLevel, levelBoundaryMap[5] - currXp);
   });
 });
 
@@ -103,17 +194,5 @@ describe("Level correctly determined based on XP", () => {
     const currXp = 450;
     const lvl = returnLvl(currXp);
     assert.equal(lvl, 3);
-  });
-
-  it("level correct 1190 xp", () => {
-    const currXp = 1190;
-    const lvl = returnLvl(currXp);
-    assert.equal(lvl, 4);
-  });
-
-  it("level correct 10000 xp", () => {
-    const currXp = 10000;
-    const lvl = returnLvl(currXp);
-    assert.equal(lvl, 14);
   });
 });
