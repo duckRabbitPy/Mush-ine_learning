@@ -52,8 +52,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - run: yarn ci
         env:
           LOCAL_DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+      - run: yarn ci
       - run: yarn run build
       - run: yarn test
