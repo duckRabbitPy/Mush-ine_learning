@@ -2,7 +2,7 @@ import { Button, Flex, Heading, SimpleGrid, Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { RoundMetadata, TrainingData } from "../utils/serverSideFunctions";
+import { RoundMetadata, TrainingData } from "../utils/serverSideUtils";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
 import { tileDifficulty, useGameState } from "../hooks/useGameState";
@@ -15,8 +15,8 @@ import { brandColors } from "./_app";
 
 const Tile = () => {
   const {
-    trainingResult,
-    setTrainingResult,
+    trainingData,
+    setTrainingData,
     roundMetaData,
     setRoundMetaData,
     round,
@@ -59,9 +59,9 @@ const Tile = () => {
         weightingData: { [name]: 5 },
       };
 
-      const trainingDataCopy = trainingResult?.slice() ?? [];
+      const trainingDataCopy = trainingData?.slice() ?? [];
       trainingDataCopy.push(newResult);
-      setTrainingResult(trainingDataCopy);
+      setTrainingData(trainingDataCopy);
 
       setRoundMetaData((prev: RoundMetadata[]) => {
         if (!correctMushroom) return prev;
@@ -200,7 +200,7 @@ const Tile = () => {
                 <SaveBtn
                   gameOver={gameOver}
                   score={score}
-                  trainingResult={trainingResult}
+                  trainingData={trainingData}
                   roundMetaData={roundMetaData}
                 />
                 <SimpleGrid

@@ -14,7 +14,6 @@ export function createTestContext({ withAuth }: { withAuth: boolean }) {
   const user = {
     name: withAuth ? process.env.TEST_USERNAME : undefined,
     sub: withAuth ? process.env.TEST_SUB : undefined,
-    isTest: true,
   };
 
   return {

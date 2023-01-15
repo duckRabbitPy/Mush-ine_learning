@@ -24,11 +24,11 @@ type Thumbnails = Record<string, string>;
 
 type MushroomName = string;
 
-type Game_types = "forage" | "multi" | "tile";
+type Game_type = "forage" | "multi" | "tile";
 
 type Mushine_round_metadata = {
   id: number;
-  game_type: Game_types;
+  game_type: Game_type;
   current_level: number;
   correct_mushroom: MushroomName;
   correct_answer: boolean;
@@ -39,6 +39,12 @@ type TimeAndResult = Pick<
   Mushine_round_metadata,
   "timestamp" | "correct_answer"
 >;
+
+type GameData = {
+  trainingData: TrainingData[];
+  score: number;
+  roundMetaData: RoundMetadata[];
+};
 
 type Heatmaps = Record<MushroomName, TimeAndResult[]>;
 

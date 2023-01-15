@@ -11,9 +11,11 @@ import {
   buildForageMushrooms,
   getMushroomImgPaths,
   tailoredNamePool,
-} from "../serverSideFunctions";
+} from "../serverSideUtils";
 
 import { getMushroomNamesFromCloud } from "../../scripts/init";
+import { z } from "zod";
+import { isValidResult } from "../../server/routers/test/helpers";
 
 const SNAPSHOT = {
   field: {},
@@ -62,51 +64,21 @@ describe("getMushroomNamesFromCloud returns an array of mushroom names", () => {
   });
 });
 
-describe("testbuildForageMushrooms", async () => {
-  it("built test mushroom passed number 3 returns an object with 3 values", () => {
-    buildForageMushrooms(
-      ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
-      "horse",
-      3
-    ).then((res) => {
-      expect(
-        res.every((testMushroom) => Object.values(testMushroom).length === 3)
-      ).toEqual(true);
-    });
-  });
+it("buildForageMushrooms returns test mushrooms with expected properties", async () => {
+  const validationSchema = z.array(
+    z.object({
+      name: z.string().min(1),
+      correctMatch: z.boolean(),
+      src: z.string().url(),
+    })
+  );
 
-  it("test mushrooms returned contain expected keys", async () => {
-    const expectedKeys = ["name", "correctMatch", "src"];
-
-    const hasExpectedKeys = await buildForageMushrooms(
-      ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
-      "horse",
-      3
-    ).then((res) =>
-      res.every((testMushroom) =>
-        expectedKeys.every((expectedKey) =>
-          Object.keys(testMushroom).includes(expectedKey)
-        )
-      )
-    );
-    expect(hasExpectedKeys).toBe(true);
-  });
-
-  it("test mushrooms contain 3 non null/non-undefined values", async () => {
-    const has3values = await buildForageMushrooms(
-      ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
-      "horse",
-      3
-    ).then((res) =>
-      res.every(
-        (testMushroom) =>
-          Object.values(testMushroom).filter(
-            (value) => value !== undefined || null
-          ).length === 3
-      )
-    );
-    expect(has3values).toBe(true);
-  });
+  const result = await buildForageMushrooms(
+    ["tawny-grisette", "grey-spotted-amanita", "blushing-wood-mushroom"],
+    "horse",
+    3
+  );
+  expect(isValidResult(result, validationSchema)).toBe(true);
 });
 
 describe("test getForageMushrooms", async () => {

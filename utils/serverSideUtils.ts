@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import storedMushrooms from "../server/fileSystemData/mushroomNames.json";
 
-import { randomArrItem } from "./pureFunctions";
+import { randomArrItem, shuffleArrayCopy } from "./pureFunctions";
 
 export type ForageMushroom = {
   name: string;
@@ -15,7 +15,7 @@ export type TrainingData = {
 };
 
 export type RoundMetadata = {
-  game_type: Game_types;
+  game_type: Game_type;
   correct_answer: boolean;
   correct_mushroom: MushroomName;
 };
@@ -103,17 +103,17 @@ export async function getForageMushrooms(
   }
 
   const forageMushrooms = await buildForageMushrooms(
-    [...tailoredMushroomPool],
+    tailoredMushroomPool,
     correctMatch,
     maxIncorrect
   );
 
   const testMushrooms = forageMushrooms.map((mushroom) => {
-    if (mushroom.name === correctMatch) {
-      return { ...mushroom, correctMatch: true };
-    }
-    return { ...mushroom, correctMatch: false };
+    return mushroom.name === correctMatch
+      ? { ...mushroom, correctMatch: true }
+      : { ...mushroom, correctMatch: false };
   });
+
   return shuffleArrayCopy(testMushrooms);
 }
 
@@ -167,18 +167,6 @@ export async function getMushroomSet(
     mushroomImgSrcs: shuffleArrayCopy(mushroomImgSrcs),
     options,
   };
-}
-
-export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
-  const arr = unshuffledArr.slice();
-  let currIndex = 0;
-  for (const _item in arr) {
-    let randomIndex = Math.floor(Math.random() * (currIndex + 1));
-    [arr[currIndex], arr[randomIndex]] = [arr[randomIndex], arr[currIndex]];
-    currIndex++;
-  }
-
-  return arr;
 }
 
 export function tailoredNamePool(

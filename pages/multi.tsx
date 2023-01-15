@@ -2,7 +2,7 @@ import { Button, Flex, SimpleGrid, Spinner, Heading } from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { RoundMetadata, TrainingData } from "../utils/serverSideFunctions";
+import { RoundMetadata, TrainingData } from "../utils/serverSideUtils";
 import { ProgressIndicator } from "./components/Progress";
 import { reactQueryConfig } from "./forage";
 import { baseDifficulty, useGameState } from "../hooks/useGameState";
@@ -14,10 +14,10 @@ import { brandColors } from "./_app";
 
 const Multi = () => {
   const {
-    trainingResult,
-    setTrainingResult,
     roundMetaData,
     setRoundMetaData,
+    trainingData,
+    setTrainingData,
     round,
     setRound,
     omitArr,
@@ -61,9 +61,9 @@ const Multi = () => {
         weightingData: { [name]: 20 },
       };
 
-      const trainingDataCopy = trainingResult?.slice() ?? [];
+      const trainingDataCopy = trainingData?.slice() ?? [];
       trainingDataCopy.push(newResult);
-      setTrainingResult(trainingDataCopy);
+      setTrainingData(trainingDataCopy);
       setProgress((prev) => {
         return prev.concat(false);
       });
@@ -168,7 +168,7 @@ const Multi = () => {
                 <SaveBtn
                   gameOver={gameOver}
                   score={score}
-                  trainingResult={trainingResult}
+                  trainingData={trainingData}
                   roundMetaData={roundMetaData}
                 />
                 {round > 0 &&

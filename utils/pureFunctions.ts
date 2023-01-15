@@ -1,5 +1,5 @@
 import { InsightSortOptions } from "../global_enums";
-import { ForageMushroom, TrainingData } from "./serverSideFunctions";
+import { ForageMushroom, TrainingData } from "./serverSideUtils";
 
 export function updateForageTrainingData(
   testMushrooms: ForageMushroom[],
@@ -30,10 +30,7 @@ export function updateForageTrainingData(
   return trainingDataCopy;
 }
 
-export function shuffleArrayCopy<Type>(unshuffledArr: Type[] | undefined) {
-  if (!unshuffledArr) {
-    return null;
-  }
+export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
   const arr = unshuffledArr.slice();
   let currIndex = 0;
   for (const _item in arr) {
@@ -67,7 +64,7 @@ export function reduceAnswerCount(
         acc["correct"] += 1;
       }
 
-      if (!curr["correct_answer"] === false && !acc["incorrect"]) {
+      if (curr["correct_answer"] === false && !acc["incorrect"]) {
         acc["incorrect"] = 1;
       } else if (curr["correct_answer"] === false) {
         acc["incorrect"] += 1;

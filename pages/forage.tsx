@@ -10,7 +10,7 @@ import {
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { RoundMetadata } from "../utils/serverSideFunctions";
+import { RoundMetadata } from "../utils/serverSideUtils";
 
 import { ProgressIndicator } from "./components/Progress";
 import { baseDifficulty, useGameState } from "../hooks/useGameState";
@@ -29,8 +29,8 @@ export const reactQueryConfig = {
 
 const Forage = () => {
   const {
-    trainingResult,
-    setTrainingResult,
+    trainingData,
+    setTrainingData,
     roundMetaData,
     setRoundMetaData,
     round,
@@ -71,11 +71,11 @@ const Forage = () => {
       setScore(score + maxIncorrect * 2);
       setProgress((prev) => prev.concat(true));
     } else {
-      const trainingData = forageMushrooms
-        ? updateForageTrainingData(forageMushrooms, trainingResult)
+      const trainingResult = forageMushrooms
+        ? updateForageTrainingData(forageMushrooms, trainingData)
         : [];
 
-      setTrainingResult(trainingData);
+      setTrainingData(trainingResult);
       setProgress((prev) => prev.concat(false));
     }
 
@@ -255,7 +255,7 @@ const Forage = () => {
         <SaveBtn
           gameOver={gameOver}
           score={score}
-          trainingResult={trainingResult}
+          trainingData={trainingData}
           roundMetaData={roundMetaData}
         />
       </Flex>

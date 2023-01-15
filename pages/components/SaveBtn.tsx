@@ -11,14 +11,14 @@ import { useCommonTrpc } from "../../hooks/useCommonTrpc";
 import { useGameState } from "../../hooks/useGameState";
 import { useSound } from "../../hooks/useSound";
 import { returnLvl } from "../../utils/pureFunctions";
-import { RoundMetadata, TrainingData } from "../../utils/serverSideFunctions";
+import { RoundMetadata, TrainingData } from "../../utils/serverSideUtils";
 import { brandColors } from "../_app";
 import PostMortem from "./PostMortem";
 
 type SaveProps = {
   styles?: ButtonProps;
   score: number;
-  trainingResult: [] | TrainingData[];
+  trainingData: [] | TrainingData[];
   gameOver: boolean;
   roundMetaData: [] | RoundMetadata[];
 };
@@ -27,17 +27,11 @@ export const SaveBtn = ({
   styles,
   gameOver,
   score,
-  trainingResult,
+  trainingData,
   roundMetaData,
 }: SaveProps) => {
   const { user } = useGameState();
-  const {
-    xpQuery,
-    saveRoundMetaData,
-    saveScore,
-    saveSnapShot,
-    saveTrainingData,
-  } = useCommonTrpc();
+  const { xpQuery, saveSnapShot, saveGameData } = useCommonTrpc();
   const user_id = user?.sub;
   const currXp = xpQuery.data;
   const [leveledUp, setLeveledUp] = useState(false);
@@ -48,10 +42,7 @@ export const SaveBtn = ({
       const preRoundLevel = returnLvl(currXp);
       const postRoundLevel = returnLvl((currXp ?? 0) + score);
 
-      saveScore.mutate({ score });
-      saveTrainingData.mutate({ trainingData: trainingResult });
-      roundMetaData.length > 1 &&
-        saveRoundMetaData.mutate({ roundMetadata: roundMetaData });
+      saveGameData.mutate({ score, trainingData, roundMetaData });
       saveSnapShot.mutate();
       if (preRoundLevel < postRoundLevel) {
         setLeveledUp(true);
@@ -70,15 +61,17 @@ export const SaveBtn = ({
           w="-moz-fit-content"
           alignSelf="center"
           backgroundColor={brandColors.skyBlue}
-          disabled={saveScore.isLoading}
-          visibility={gameOver && !saveScore.isSuccess ? "visible" : "hidden"}
+          disabled={saveGameData.isLoading}
+          visibility={
+            gameOver && !saveGameData.isSuccess ? "visible" : "hidden"
+          }
           {...styles}
         >
           Save score
         </Button>
       )}
 
-      {gameOver && saveScore.isSuccess && (
+      {gameOver && saveGameData.isSuccess && (
         <Text color="white" marginBottom={50}>
           Score saved! Return to home{" "}
         </Text>
@@ -109,8 +102,8 @@ export const SaveBtn = ({
         </Card>
       )}
 
-      {gameOver && saveScore.isSuccess && (
-        <PostMortem trainingResult={trainingResult} />
+      {gameOver && saveGameData.isSuccess && (
+        <PostMortem trainingData={trainingData} />
       )}
     </>
   );
