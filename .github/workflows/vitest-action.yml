@@ -19,6 +19,7 @@ env:
   VITE_api_secret: ${{secrets.VITE_api_secret}}
   TEST_USERNAME: ${{secrets.TEST_USERNAME}}
   TEST_SUB: ${{secrets.TEST_SUB}}
+  LOCAL_DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
 jobs:
   build:
@@ -52,8 +53,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-        env:
-          LOCAL_DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
       - run: yarn ci
       - run: yarn run build
       - run: yarn test
