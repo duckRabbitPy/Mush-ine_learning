@@ -11,9 +11,11 @@ export type PostMortemProps = {
 };
 
 export const PostMortem = ({ trainingData }: PostMortemProps) => {
-  const uniqueMisidentified = [...new Set(trainingData)].flatMap((f) =>
-    f.misidentifiedMushroom ? [f.misidentifiedMushroom] : []
-  );
+  const uniqueMisidentified = trainingData.reduce<string[]>((acc, curr) => {
+    const name = curr.misidentifiedMushroom;
+    if (!name || acc.includes(name)) return acc;
+    return acc.concat(name);
+  }, []);
 
   const thumbnails =
     trpc.retrieveMushroomImgSrcs.useQuery(uniqueMisidentified).data;

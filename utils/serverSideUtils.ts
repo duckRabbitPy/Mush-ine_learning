@@ -62,11 +62,11 @@ export async function getMushroomImgPaths(
   mushroomName: string,
   max?: number
 ): Promise<string[]> {
-  const images = (await cloudinary.api.resources({
+  const images: { resources: CloudImage[] } = await cloudinary.api.resources({
     type: "upload",
     prefix: `mushroom_images/${mushroomName}`,
     max_results: max || 9,
-  })) as { resources: CloudImage[] };
+  });
 
   const srcArr = images.resources
     .map((img: CloudImage) => {

@@ -2,6 +2,7 @@ import { Button, ButtonProps, Icon, Tooltip } from "@chakra-ui/react";
 import Link from "next/link";
 import React from "react";
 import { IconType } from "react-icons";
+import useSound from "../../hooks/useSound";
 import { brandColors, HexBrandColors } from "../_app";
 
 type CustomBtnProps = {
@@ -21,8 +22,7 @@ export const CustomBtn = ({
   tooltipContent,
   styles,
 }: CustomBtnProps) => {
-  const clickSound =
-    typeof Audio !== "undefined" ? new Audio("/clickSound.mp3") : undefined;
+  const { clickSound } = useSound();
 
   const btnContent = href ? (
     <Link href={href}>
