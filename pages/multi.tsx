@@ -99,9 +99,16 @@ const Multi = () => {
           fontSize="3xl"
           fontFamily={"honeyMushroom"}
           letterSpacing="widest"
+          mt={3}
         >
           Multi Quiz
         </Heading>
+
+        <ProgressIndicator
+          round={gameOver ? undefined : round}
+          score={score}
+          progress={progress}
+        />
         {!gameOver && round !== 0 && !getMushroomSet.isLoading && (
           <Heading color="white" fontSize={"sm"} fontFamily="rounded">
             What mushroom is this?
@@ -138,6 +145,7 @@ const Multi = () => {
               </Button>
             </Flex>
           )}
+
           {round > 0 && !getMushroomSet.isRefetching && (
             <Flex gap={2} direction={{ base: "column", md: "row" }}>
               {getMushroomSet.isLoading && !gameOver && (
@@ -159,12 +167,6 @@ const Multi = () => {
               </SimpleGrid>
 
               <Flex direction={"column"} gap={1}>
-                <ProgressIndicator
-                  round={gameOver ? undefined : round}
-                  score={score}
-                  progress={progress}
-                />
-
                 <SaveBtn
                   gameOver={gameOver}
                   score={score}

@@ -98,8 +98,6 @@ const InfoBank = ({
                   height={1000}
                   onClick={() => setExpandIndex(index)}
                   style={{ cursor: "pointer" }}
-                  placeholder="blur"
-                  blurDataURL="/loading.gif"
                   priority
                 />
               ))}
@@ -118,8 +116,6 @@ const InfoBank = ({
                   alt="mushroom image"
                   width={2000}
                   height={2000}
-                  placeholder="blur"
-                  blurDataURL="/loading.gif"
                   priority
                 />
               ))}

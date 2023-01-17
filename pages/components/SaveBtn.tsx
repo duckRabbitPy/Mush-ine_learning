@@ -72,8 +72,8 @@ export const SaveBtn = ({
       )}
 
       {gameOver && saveGameData.isSuccess && (
-        <Text color="white" marginBottom={50}>
-          Score saved! Return to home{" "}
+        <Text color="white" marginBottom={50} textAlign="center">
+          Score saved! Return to home
         </Text>
       )}
 

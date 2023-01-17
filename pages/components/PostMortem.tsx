@@ -22,9 +22,11 @@ export const PostMortem = ({ trainingData }: PostMortemProps) => {
 
   return (
     <Container display="flex" alignItems={"center"} flexDirection="column">
-      <Heading size="medium" color={brandColors.red} mb={10}>
-        Mushrooms misidentified
-      </Heading>
+      {uniqueMisidentified.length && (
+        <Heading size="medium" color={brandColors.red} mb={5} mt={5}>
+          Mushrooms misidentified
+        </Heading>
+      )}
       <SimpleGrid columns={2} gap={2}>
         {uniqueMisidentified.map((misidentifiedMushroom) => (
           <Container key={misidentifiedMushroom} color={brandColors.red}>
@@ -36,6 +38,7 @@ export const PostMortem = ({ trainingData }: PostMortemProps) => {
                   alt={misidentifiedMushroom}
                   height={100}
                   width={200}
+                  priority
                 ></Image>
               )}
               <CustomBtn
