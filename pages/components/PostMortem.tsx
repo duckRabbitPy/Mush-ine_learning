@@ -22,7 +22,7 @@ export const PostMortem = ({ trainingData }: PostMortemProps) => {
 
   return (
     <Container display="flex" alignItems={"center"} flexDirection="column">
-      {uniqueMisidentified.length && (
+      {uniqueMisidentified.length > 0 && (
         <Heading size="medium" color={brandColors.red} mb={5} mt={5}>
           Mushrooms misidentified
         </Heading>

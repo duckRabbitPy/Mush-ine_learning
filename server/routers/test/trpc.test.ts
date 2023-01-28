@@ -145,6 +145,35 @@ describe("TRPC calls associated with in GameData", async () => {
     expect(isValidResult(result, validationSchema)).toEqual(true);
   });
 
+  it("snapshot upserted on level conflict", async () => {
+    const caller = appRouter.createCaller(userWithAuth);
+    await caller.saveGameData({ ...TRAINING_DATA, score: 0 });
+    await caller.saveGameData({ ...TRAINING_DATA, score: 0 });
+
+    const alteredTrainingData = {
+      ...TRAINING_DATA,
+      trainingData: [
+        {
+          misidentifiedMushroom: "field",
+          weightingData: {
+            prince: 10,
+            blusher: 10,
+          },
+        },
+      ],
+    };
+    await caller.saveGameData({ ...alteredTrainingData, score: 10 });
+
+    const validationSchema = z.object({
+      prince: z.literal(10),
+      blusher: z.literal(10),
+    });
+
+    const saveResult = await caller.saveLevelSnapShot();
+    const result = saveResult?.snapshot["field"];
+    expect(isValidResult(result, validationSchema)).toEqual(true);
+  });
+
   it("XP stored and retrieved", async () => {
     const caller = appRouter.createCaller(userWithAuth);
     await caller.saveGameData(TRAINING_DATA);
