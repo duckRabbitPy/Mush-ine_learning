@@ -110,7 +110,7 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
             const target = e.target as HTMLInputElement;
             setSearchInput(target.value);
           }}
-        ></Input>
+        />
 
         <RadioGroup onChange={(e) => setOrder(Number(e))} value={String(order)}>
           <Stack direction="row" mb={5}>

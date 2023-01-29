@@ -109,22 +109,24 @@ export function sortInsightData(
 ) {
   if (!heatmaps || !chartData) return chartData;
 
-  return chartData.sort((a, b) => {
-    if (filter === InsightSortOptions.Alphabetical) {
-      return a[0].localeCompare(b[0]);
-    }
-    const heatmapA = heatmaps[a[0]];
-    const accuracyA = heatMapAccuracy(heatmapA);
+  return chartData
+    .filter(([mushroomName]) => heatmaps[mushroomName]?.length > 0)
+    .sort(([nameA], [nameB]) => {
+      if (filter === InsightSortOptions.Alphabetical) {
+        return nameA.localeCompare(nameB);
+      }
+      const heatmapA = heatmaps[nameA];
+      const accuracyA = heatMapAccuracy(heatmapA ?? []);
 
-    const heatmapB = heatmaps[b[0]];
-    const accuracyB = heatMapAccuracy(heatmapB);
+      const heatmapB = heatmaps[nameB];
+      const accuracyB = heatMapAccuracy(heatmapB ?? []);
 
-    if (accuracyA < accuracyB)
-      return filter === InsightSortOptions.HighAccuracyFirst ? 1 : -1;
-    if (accuracyA > accuracyB)
-      return filter === InsightSortOptions.HighAccuracyFirst ? -1 : 1;
-    return 0;
-  });
+      if (accuracyA < accuracyB)
+        return filter === InsightSortOptions.HighAccuracyFirst ? 1 : -1;
+      if (accuracyA > accuracyB)
+        return filter === InsightSortOptions.HighAccuracyFirst ? -1 : 1;
+      return 0;
+    });
 }
 
 export function randomArrItem<Type>(arr: Type[]) {
