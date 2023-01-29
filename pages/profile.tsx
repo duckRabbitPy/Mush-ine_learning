@@ -68,7 +68,7 @@ const Profile = () => {
               fontWeight={"extrabold"}
               fontFamily={"rounded"}
             >
-              Level {snapshot.data?.level}
+              Level {snapshot.data?.level ?? 0}
             </Text>
             <Text
               color={brandColors.green}

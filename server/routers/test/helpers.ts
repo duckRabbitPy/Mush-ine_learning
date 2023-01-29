@@ -23,14 +23,13 @@ export async function freshDatabase() {
   await db.query(
     "CREATE TABLE mushine_learning_user (id SERIAL PRIMARY KEY, user_id VARCHAR(50),xp INTEGER);"
   );
-  await db.query(
-    "CREATE TABLE mushine_training_mushrooms (id SERIAL PRIMARY KEY, name VARCHAR (50), mushroom_id UUID);"
-  );
+
   await db.query(
     "CREATE TABLE mushine_training_weightings (id SERIAL PRIMARY KEY, user_id VARCHAR (50), correct_mushroom VARCHAR (50), misidentified_as VARCHAR (50), weight integer, timestamp TIMESTAMP);"
   );
+
   await db.query(
-    "CREATE TABLE mushine_level_snapshots (id SERIAL PRIMARY KEY, level INTEGER, user_id VARCHAR (50),snapshot JSONB);"
+    "CREATE TABLE mushine_level_snapshots (id SERIAL PRIMARY KEY, level INTEGER UNIQUE, user_id VARCHAR (50),snapshot JSONB);"
   );
 
   await db.query(

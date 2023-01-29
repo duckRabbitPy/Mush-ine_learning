@@ -41,8 +41,7 @@ export const SaveBtn = ({
     if (user_id) {
       const preRoundLevel = returnLvl(currXp);
       const postRoundLevel = returnLvl((currXp ?? 0) + score);
-
-      saveGameData.mutate({ score, trainingData, roundMetaData });
+      await saveGameData.mutateAsync({ score, trainingData, roundMetaData });
       saveSnapShot.mutate();
       if (preRoundLevel < postRoundLevel) {
         setLeveledUp(true);
@@ -72,8 +71,8 @@ export const SaveBtn = ({
       )}
 
       {gameOver && saveGameData.isSuccess && (
-        <Text color="white" marginBottom={50}>
-          Score saved! Return to home{" "}
+        <Text color="white" marginBottom={50} textAlign="center">
+          Score saved! Return to home
         </Text>
       )}
 

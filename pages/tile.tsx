@@ -141,7 +141,7 @@ const Tile = () => {
                 alt="tile game"
                 className={"pulse"}
                 priority
-              ></Image>
+              />
 
               <DifficultySetting
                 setMaxIncorrect={setMaxIncorrect}
@@ -164,6 +164,7 @@ const Tile = () => {
             onClick={handleNextBtn}
             width="fit-content"
             visibility={roundOver ? "visible" : "hidden"}
+            mt={5}
           >
             Next
           </Button>
@@ -175,7 +176,12 @@ const Tile = () => {
               )}
 
               {!gameOver && round !== 0 && !getMushroomSet.isLoading && (
-                <Heading color="white" fontSize={"sm"} fontFamily="rounded">
+                <Heading
+                  color="white"
+                  fontSize={"sm"}
+                  fontFamily="rounded"
+                  m={5}
+                >
                   What mushroom is this?
                 </Heading>
               )}

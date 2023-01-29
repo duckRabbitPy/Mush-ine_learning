@@ -29,6 +29,7 @@ const Home: NextPage = () => {
       <Flex direction={"column"} justifyContent="center" align="center">
         <Heading
           as={"h1"}
+          mt={10}
           p={5}
           textAlign="center"
           size="4xl"
@@ -36,7 +37,7 @@ const Home: NextPage = () => {
           fontFamily="honeyMushroom"
           letterSpacing="wide"
         >
-          Mush-ine learning! 🍄
+          Mush-ine learning 🍄
         </Heading>
 
         <AuthStatus />

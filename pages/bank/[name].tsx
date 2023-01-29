@@ -44,11 +44,13 @@ export const getStaticProps: GetStaticProps = async (context) => {
     return { props: {} };
   }
 
-  const images = await cloudinary.api.resources({
-    type: "upload",
-    prefix: `mushroom_images/${mushroomName}`,
-    max_results: 10,
-  });
+  const images = await cloudinary.api
+    .resources({
+      type: "upload",
+      prefix: `mushroom_images/${mushroomName}`,
+      max_results: 10,
+    })
+    .catch((e) => console.log(console.error(e)));
 
   const mushroomSrcList = images.resources.map((img: CloudImage) => img.url);
 
@@ -96,8 +98,6 @@ const InfoBank = ({
                   height={1000}
                   onClick={() => setExpandIndex(index)}
                   style={{ cursor: "pointer" }}
-                  placeholder="blur"
-                  blurDataURL="/loading.gif"
                   priority
                 />
               ))}
@@ -116,8 +116,6 @@ const InfoBank = ({
                   alt="mushroom image"
                   width={2000}
                   height={2000}
-                  placeholder="blur"
-                  blurDataURL="/loading.gif"
                   priority
                 />
               ))}

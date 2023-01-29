@@ -10,15 +10,17 @@ import {
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
-import { RoundMetadata } from "../utils/serverSideUtils";
-
+import {
+  ForageMushroom,
+  RoundMetadata,
+  TrainingData,
+} from "../utils/serverSideUtils";
 import { ProgressIndicator } from "./components/Progress";
 import { baseDifficulty, useGameState } from "../hooks/useGameState";
 import { TopLevelWrapper } from "./components/TopLvlWrapper";
 import { useSound } from "../hooks/useSound";
 import { SaveBtn } from "./components/SaveBtn";
 import { DifficultySetting } from "./components/DifficultySetting";
-import { updateForageTrainingData } from "../utils/pureFunctions";
 import { brandColors } from "./_app";
 
 export const reactQueryConfig = {
@@ -71,11 +73,6 @@ const Forage = () => {
       setScore(score + maxIncorrect * 2);
       setProgress((prev) => prev.concat(true));
     } else {
-      const trainingResult = forageMushrooms
-        ? updateForageTrainingData(forageMushrooms, trainingData)
-        : [];
-
-      setTrainingData(trainingResult);
       setProgress((prev) => prev.concat(false));
     }
 
@@ -98,7 +95,17 @@ const Forage = () => {
     setRound(round + 1);
   };
 
-  function handleSelection(forageMushroom: any) {
+  function handleSelection(forageMushroom: ForageMushroom) {
+    if (
+      correctMushroom?.name &&
+      correctMushroom?.name !== forageMushroom?.name
+    ) {
+      const newTrainingData: TrainingData = {
+        misidentifiedMushroom: correctMushroom.name,
+        weightingData: { [forageMushroom.name]: 10 },
+      };
+      setTrainingData([...trainingData, newTrainingData]);
+    }
     if (!inputAnswer) {
       setInputAnswer(forageMushroom.name);
     }
@@ -109,7 +116,7 @@ const Forage = () => {
     <TopLevelWrapper backgroundColor={brandColors.blackBlue}>
       <Flex gap={2} direction="column" alignItems="center">
         <HomeBtn w="-moz-fit-content" mt={3} />
-        <Flex direction="column" gap={2} alignItems="center">
+        <Flex direction="column" gap={2} mt={2} alignItems="center">
           {!gameOver && !getForageMushrooms.isRefetching && (
             <>
               {
@@ -122,7 +129,8 @@ const Forage = () => {
                   Forage
                 </Heading>
               }
-              {correctMushroom?.name && (
+
+              {!gameOver && (
                 <Heading
                   size={"md"}
                   mt={2}
@@ -130,6 +138,7 @@ const Forage = () => {
                   p={2}
                   color="white"
                   fontFamily="rounded"
+                  visibility={correctMushroom?.name ? "visible" : "hidden"}
                 >
                   Find 🔎 and click on 👉🏼 the{" "}
                   <span style={{ color: brandColors.lightGreen }}>
@@ -139,11 +148,13 @@ const Forage = () => {
                 </Heading>
               )}
 
-              <ProgressIndicator
-                round={round}
-                score={score}
-                progress={progress}
-              />
+              {round > 0 && (
+                <ProgressIndicator
+                  round={round}
+                  score={score}
+                  progress={progress}
+                />
+              )}
 
               {round === 0 && !getForageMushrooms.data ? (
                 <Flex direction="column" gap="10">
@@ -158,7 +169,7 @@ const Forage = () => {
                     blurDataURL={"/forage.png"}
                     className={"pulse"}
                     priority
-                  ></Image>
+                  />
 
                   <DifficultySetting
                     setMaxIncorrect={setMaxIncorrect}

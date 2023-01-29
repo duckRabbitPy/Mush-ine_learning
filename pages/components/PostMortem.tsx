@@ -11,18 +11,22 @@ export type PostMortemProps = {
 };
 
 export const PostMortem = ({ trainingData }: PostMortemProps) => {
-  const uniqueMisidentified = [...new Set(trainingData)].flatMap((f) =>
-    f.misidentifiedMushroom ? [f.misidentifiedMushroom] : []
-  );
+  const uniqueMisidentified = trainingData.reduce<string[]>((acc, curr) => {
+    const name = curr.misidentifiedMushroom;
+    if (!name || acc.includes(name)) return acc;
+    return acc.concat(name);
+  }, []);
 
   const thumbnails =
     trpc.retrieveMushroomImgSrcs.useQuery(uniqueMisidentified).data;
 
   return (
     <Container display="flex" alignItems={"center"} flexDirection="column">
-      <Heading size="medium" color={brandColors.red} mb={10}>
-        Mushrooms misidentified
-      </Heading>
+      {uniqueMisidentified.length > 0 && (
+        <Heading size="medium" color={brandColors.red} mb={5} mt={5}>
+          Mushrooms misidentified
+        </Heading>
+      )}
       <SimpleGrid columns={2} gap={2}>
         {uniqueMisidentified.map((misidentifiedMushroom) => (
           <Container key={misidentifiedMushroom} color={brandColors.red}>
@@ -34,7 +38,8 @@ export const PostMortem = ({ trainingData }: PostMortemProps) => {
                   alt={misidentifiedMushroom}
                   height={100}
                   width={200}
-                ></Image>
+                  priority
+                />
               )}
               <CustomBtn
                 brandColor={brandColors.blueGrey}

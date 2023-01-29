@@ -1,34 +1,4 @@
 import { InsightSortOptions } from "../global_enums";
-import { ForageMushroom, TrainingData } from "./serverSideUtils";
-
-export function updateForageTrainingData(
-  testMushrooms: ForageMushroom[],
-  trainingData: TrainingData[] | undefined
-) {
-  const trainingResult: TrainingData = {
-    misidentifiedMushroom: null,
-    weightingData: null,
-  };
-
-  const weightingObj: Record<string, number> = {};
-
-  testMushrooms?.forEach((mushroom) => {
-    if (!mushroom.correctMatch) {
-      weightingObj[mushroom.name as keyof typeof weightingObj] = 10;
-    }
-  });
-
-  trainingResult.misidentifiedMushroom = testMushrooms?.filter(
-    (m) => m.correctMatch
-  )[0].name;
-
-  trainingResult.weightingData = weightingObj;
-
-  const trainingDataCopy = trainingData?.slice() ?? [];
-  trainingDataCopy.push(trainingResult);
-
-  return trainingDataCopy;
-}
 
 export function shuffleArrayCopy<Type>(unshuffledArr: Type[]) {
   const arr = unshuffledArr.slice();

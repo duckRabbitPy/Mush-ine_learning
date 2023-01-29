@@ -1,19 +1,16 @@
 import {
   Container,
   Flex,
-  Grid,
   Heading,
   Input,
   Radio,
   RadioGroup,
   SimpleGrid,
   Spinner,
-  Square,
   Stack,
   Text,
-  Tooltip,
 } from "@chakra-ui/react";
-import Link from "next/link";
+
 import {
   Chart,
   PointElement,
@@ -32,7 +29,6 @@ import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
 import Image from "next/image";
 import TopLevelWrapper from "./components/TopLvlWrapper";
-import { BarChart, chartColors } from "./components/BarChart";
 import { useState } from "react";
 import CustomBtn from "./components/CustomBtn";
 import { GetStaticProps } from "next/types";
@@ -40,6 +36,8 @@ import { brandColors } from "./_app";
 import { appRouter } from "../server/routers/_app";
 import Fuse from "fuse.js";
 import { InsightSortOptions } from "../global_enums";
+import HeatMap from "./components/HeatMap";
+import MisidentifiedAsChart from "./components/MisidentifiedAsChart";
 
 Chart.register(
   BarElement,
@@ -144,6 +142,10 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
 
               const accuracy = heatMapAccuracy(heatmap);
 
+              if (heatmap.length < 1) {
+                return null;
+              }
+
               return (
                 <Container
                   key={mushroomName}
@@ -189,7 +191,6 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                       >
                         Study
                       </CustomBtn>
-
                       <Container padding={0} justifyContent="space-between">
                         <Heading
                           size="sm"
@@ -201,34 +202,7 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                           Success heatmap
                         </Heading>
 
-                        <Grid gridTemplateColumns={"repeat(7, 0fr)"}>
-                          {heatmap.map((result, i) => (
-                            <Tooltip
-                              key={i}
-                              label={new Date(result.timestamp).toLocaleString(
-                                "en",
-                                { dateStyle: "medium", timeStyle: "short" }
-                              )}
-                              backgroundColor={
-                                result.correct_answer
-                                  ? brandColors.green
-                                  : brandColors.red
-                              }
-                            >
-                              <Square
-                                size="40px"
-                                key={i}
-                                bg={
-                                  result.correct_answer
-                                    ? brandColors.green
-                                    : brandColors.red
-                                }
-                              >
-                                <span style={{ opacity: 0.3 }}>{i + 1}</span>
-                              </Square>
-                            </Tooltip>
-                          ))}
-                        </Grid>
+                        <HeatMap heatmap={heatmap} />
                       </Container>
                     </Flex>
 
@@ -248,44 +222,9 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                         Misidentified as
                       </Heading>
 
-                      <ol>
-                        {Object.keys(sortedMisIdentifiedAs).map((name, i) => {
-                          return (
-                            <li key={name}>
-                              <Link
-                                href={`/bank/${name}`}
-                                passHref
-                                target="_blank"
-                              >
-                                {name}{" "}
-                                <Square
-                                  bg={chartColors[i]}
-                                  size="10px"
-                                  display="inline-flex"
-                                />
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ol>
-                      {Object.keys(sortedMisIdentifiedAs).length > 0 ? (
-                        <div
-                          style={{
-                            height: "200px",
-                            marginTop: "3rem",
-                          }}
-                        >
-                          <BarChart
-                            kvp={sortedMisIdentifiedAs}
-                            max={5}
-                            yAxisTitle="frequency"
-                          />
-                        </div>
-                      ) : (
-                        <Text color="blue.600" padding="2rem">
-                          No misidentification data!
-                        </Text>
-                      )}
+                      <MisidentifiedAsChart
+                        misIdentifiedAs={sortedMisIdentifiedAs}
+                      />
                     </Flex>
                   </Container>
                 </Container>
