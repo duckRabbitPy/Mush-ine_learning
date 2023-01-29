@@ -39,7 +39,7 @@ export const PostMortem = ({ trainingData }: PostMortemProps) => {
                   height={100}
                   width={200}
                   priority
-                ></Image>
+                />
               )}
               <CustomBtn
                 brandColor={brandColors.blueGrey}
