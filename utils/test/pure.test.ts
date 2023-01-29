@@ -34,6 +34,7 @@ describe("sort insight data sorts in three different modes", () => {
     ["prince", { horse: 500 }],
     ["horse", { blusher: 100, horse: 400, medusa: 1000 }],
     ["blusher", { prince: 100, horse: 400, medusa: 1000 }],
+    ["medusa", { horse: 200 }],
   ];
 
   const heatMaps: Heatmaps = {
@@ -63,6 +64,7 @@ describe("sort insight data sorts in three different modes", () => {
       { correct_answer: false, timestamp: "2023-01-15T17:47:18.357Z" },
       { correct_answer: true, timestamp: "2023-01-15T18:47:18.357Z" },
     ],
+    medusa: [],
   };
 
   it("sorts alphabetically", () => {
@@ -89,7 +91,17 @@ describe("sort insight data sorts in three different modes", () => {
       heatMaps,
       InsightSortOptions.LowAccuracyFirst
     );
+    console.log(result);
     expect(result?.[0]?.[0]).toEqual("prince");
+  });
+
+  it("(medusa) entry that lacks heatmap data is excluded from accuracy sorted results", () => {
+    const result = sortInsightData(
+      chartData,
+      heatMaps,
+      InsightSortOptions.LowAccuracyFirst
+    );
+    expect(result?.length).toEqual(4);
   });
 });
 
