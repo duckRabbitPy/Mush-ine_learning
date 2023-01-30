@@ -12,6 +12,7 @@ export const TopLevelWrapper = ({ children, backgroundColor }: Props) => (
       backgroundColor,
       height: "fit-content",
       minHeight: "100vh",
+      overflowY: "scroll",
     }}
   >
     {children}
