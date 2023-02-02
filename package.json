@@ -9,7 +9,7 @@
     "test:pure:utils": "yarn vitest run ./utils/test/pure.test.ts --silent=false",
     "test:server:utils": "yarn vitest run ./utils/test/serverUtils.test.ts --silent=false",
     "test:trpc": "yarn vitest run ./server/routers/test/trpc.test.ts --silent=false",
-    "check:types": "tsc --noEmit",
+    "type:check": "tsc --noEmit",
     "start": "next start",
     "lint": "next lint",
     "initNames:on:file": "npx ts-node --skip-project ./scripts/init.ts",

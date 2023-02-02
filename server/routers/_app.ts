@@ -40,11 +40,11 @@ export const appRouter = router({
 
     return JSON.parse(mushroomNames).mushroomNames as string[];
   }),
-  retrieveMushroomImgSrcs: publicProcedure
+  retrieveThumbnailSrcs: publicProcedure
     .input(z.array(z.string()))
     .query(async ({ input }) => {
       const srcPromises = input.map((mushroomNames) => {
-        return getMushroomImgPaths(mushroomNames, 1).then((srcArr) => {
+        return getMushroomImgPaths(mushroomNames, "low", 1).then((srcArr) => {
           return { [mushroomNames]: srcArr[0] };
         });
       });
