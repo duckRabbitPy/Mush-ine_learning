@@ -58,9 +58,9 @@ describe("Auth middleware", async () => {
 });
 
 describe("TRPC calls relying on Cloudinary calls", async () => {
-  it("retrieveMushroomImgSrcs return correct number of images", async () => {
+  it("retrieveThumbnailSrcs returns correct number of images", async () => {
     const caller = appRouter.createCaller(userNoAuth);
-    const result = await caller.retrieveMushroomImgSrcs([
+    const result = await caller.retrieveThumbnailSrcs([
       "horse",
       "medusa",
       "prince",

@@ -53,7 +53,7 @@ export const getStaticProps: GetStaticProps = async () => {
   if (!mushroomNames) {
     throw new Error("Mushroom names not available at build time");
   }
-  const thumbnails = await caller.retrieveMushroomImgSrcs(mushroomNames);
+  const thumbnails = await caller.retrieveThumbnailSrcs(mushroomNames);
 
   return {
     props: {
@@ -131,6 +131,10 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
         {!snapshot.isLoading &&
           !snapshot?.data?.snapshot &&
           "⚠️ Not enough data for insights"}
+
+        {insightData &&
+          sortedInsightData?.length === 0 &&
+          "No matching search results"}
 
         <SimpleGrid gap="100px">
           {heatmaps &&

@@ -20,6 +20,13 @@ export type RoundMetadata = {
   correct_mushroom: MushroomName;
 };
 
+export const ImageQuality = {
+  low: "q_5",
+  medium: "q_60",
+  high: "q_80",
+  highest: "q_100",
+} as const;
+
 export async function getStoredMushroomNames() {
   return storedMushrooms.mushroomNames;
 }
@@ -60,6 +67,7 @@ export async function buildForageMushrooms(
 
 export async function getMushroomImgPaths(
   mushroomName: string,
+  quality: keyof typeof ImageQuality,
   max?: number
 ): Promise<string[]> {
   const images: { resources: CloudImage[] } = await cloudinary.api.resources({
@@ -70,7 +78,7 @@ export async function getMushroomImgPaths(
 
   const srcArr = images.resources
     .map((img: CloudImage) => {
-      return img.url?.replace("upload", "upload/q_80");
+      return img.url?.replace("upload", `upload/${ImageQuality[quality]}`);
     })
     .flatMap((f) => (f ? [f] : []));
 
@@ -131,7 +139,7 @@ export async function getMushroomSet(
     return null;
   }
   const correctMushroom = randomArrItem(mushroomNamePool);
-  const mushroomImgSrcs = await getMushroomImgPaths(correctMushroom);
+  const mushroomImgSrcs = await getMushroomImgPaths(correctMushroom, "high");
 
   const correctIndex = mushroomNamePool.findIndex((x) => x === correctMushroom);
   mushroomNamePool.splice(correctIndex, 1);

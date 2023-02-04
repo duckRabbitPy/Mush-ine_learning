@@ -1,4 +1,12 @@
-import { Button, Flex, Heading, SimpleGrid, Spinner } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Flex,
+  Heading,
+  HStack,
+  SimpleGrid,
+  Spinner,
+} from "@chakra-ui/react";
 import Image from "next/image";
 import { trpc } from "../utils/trpc";
 import HomeBtn from "./components/HomeBtn";
@@ -46,6 +54,7 @@ const Tile = () => {
   );
 
   const correctMushroom = getMushroomSet.data?.correctMushroom;
+  const src = getMushroomSet.data?.mushroomImgSrcs[0];
   const options = getMushroomSet.data?.options;
 
   const { correctSound, incorrectSound, startSound } = useSound();
@@ -109,12 +118,7 @@ const Tile = () => {
 
   return (
     <TopLevelWrapper backgroundColor={brandColors.blackBlue}>
-      <Flex
-        gap={5}
-        direction="column"
-        alignItems="center"
-        paddingBottom="200px"
-      >
+      <Flex gap={5} direction="column" alignItems="center">
         <HomeBtn w="-moz-fit-content" mt={3} />
         <Heading
           color="white"
@@ -176,19 +180,18 @@ const Tile = () => {
               )}
 
               {!gameOver && round !== 0 && !getMushroomSet.isLoading && (
-                <Heading
-                  color="white"
-                  fontSize={"sm"}
-                  fontFamily="rounded"
-                  m={5}
-                >
-                  What mushroom is this?
-                </Heading>
-              )}
-              <SimpleGrid columns={1} gap={1} width="fit-content">
-                {getMushroomSet.data?.mushroomImgSrcs
-                  .map((src) => {
-                    return (
+                <>
+                  <Heading
+                    color="white"
+                    fontSize={"sm"}
+                    fontFamily="rounded"
+                    m={5}
+                  >
+                    What mushroom is this?
+                  </Heading>
+
+                  <HStack>
+                    {src ? (
                       <Image
                         key={src}
                         src={src}
@@ -197,22 +200,27 @@ const Tile = () => {
                         width={350}
                         priority
                       />
-                    );
-                  })
-                  .filter((_, index) => index === 0)}
-              </SimpleGrid>
+                    ) : (
+                      <Container height={350} />
+                    )}
+                  </HStack>
+                </>
+              )}
 
               <Flex direction={"column"} gap={1}>
-                <SaveBtn
-                  gameOver={gameOver}
-                  score={score}
-                  trainingData={trainingData}
-                  roundMetaData={roundMetaData}
-                />
+                {gameOver && (
+                  <SaveBtn
+                    gameOver={gameOver}
+                    score={score}
+                    trainingData={trainingData}
+                    roundMetaData={roundMetaData}
+                  />
+                )}
                 <SimpleGrid
                   columns={{ base: 2, md: 3 }}
                   gap={{ base: 0.5, md: 1 }}
                   height="fit-content"
+                  marginBottom="50px"
                 >
                   {round > 0 &&
                     options?.map((name) => (

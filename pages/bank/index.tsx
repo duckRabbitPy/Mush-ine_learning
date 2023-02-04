@@ -10,7 +10,7 @@ import { brandColors } from "../_app";
 export const getStaticProps: GetStaticProps = async () => {
   const caller = appRouter.createCaller({ user: undefined });
   const mushroomNames = await caller.getAllMushroomNames();
-  const thumbnails = await caller.retrieveMushroomImgSrcs(mushroomNames);
+  const thumbnails = await caller.retrieveThumbnailSrcs(mushroomNames);
   return {
     props: {
       mushroomNames,
@@ -33,7 +33,7 @@ const BankMenu = ({
         <Heading mb={10} mt={5} color="white" fontFamily={"honeyMushroom"}>
           Mushroom Info Bank
         </Heading>
-        <Container mb="10" width={{ base: "70vw", md: "50vw", lg: "40vw" }}>
+        <Container mb="10" width={{ base: "70vw", md: "50vw" }}>
           {mushroomNames?.map((name) => (
             <Link key={name} href={`/bank/${name}`}>
               <Flex m={5} alignItems="top">
@@ -49,6 +49,7 @@ const BankMenu = ({
                   width="100%"
                   minHeight="80px"
                   borderRadius="0px 5px 5px 0px"
+                  fontSize={{ base: "small", lg: "medium" }}
                 >
                   {name}
                 </Button>

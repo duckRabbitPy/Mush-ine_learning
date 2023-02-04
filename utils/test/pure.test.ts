@@ -91,7 +91,6 @@ describe("sort insight data sorts in three different modes", () => {
       heatMaps,
       InsightSortOptions.LowAccuracyFirst
     );
-    console.log(result);
     expect(result?.[0]?.[0]).toEqual("prince");
   });
 

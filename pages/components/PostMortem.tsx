@@ -18,7 +18,7 @@ export const PostMortem = ({ trainingData }: PostMortemProps) => {
   }, []);
 
   const thumbnails =
-    trpc.retrieveMushroomImgSrcs.useQuery(uniqueMisidentified).data;
+    trpc.retrieveThumbnailSrcs.useQuery(uniqueMisidentified).data;
 
   return (
     <Container display="flex" alignItems={"center"} flexDirection="column">

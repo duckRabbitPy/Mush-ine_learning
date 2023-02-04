@@ -1,5 +1,5 @@
 import { Flex, Heading } from "@chakra-ui/react";
-import { BiUser } from "react-icons/bi";
+import { BiUser, BiInfoCircle } from "react-icons/bi";
 import { CiVault } from "react-icons/ci";
 import { BsBook } from "react-icons/bs";
 import { FaRegLightbulb } from "react-icons/fa";
@@ -57,15 +57,25 @@ const Home: NextPage = () => {
           align="center"
           mt={5}
         >
-          <CustomBtn
-            brandColor={brandColors.earthBrown}
-            href="/profile"
-            icon={BiUser}
-            styles={{ disabled: !user?.sub }}
-            tooltipContent={!user?.sub ? "Sign in required" : undefined}
-          >
-            Profile
-          </CustomBtn>
+          <Flex direction={{ base: "column", md: "row" }} align={"center"}>
+            <CustomBtn
+              brandColor={brandColors.darkBlue}
+              href="/about"
+              icon={BiInfoCircle}
+            >
+              About
+            </CustomBtn>
+
+            <CustomBtn
+              brandColor={brandColors.darkBlue}
+              href="/profile"
+              icon={BiUser}
+              styles={{ disabled: !user?.sub }}
+              tooltipContent={!user?.sub ? "Sign in required" : undefined}
+            >
+              Profile
+            </CustomBtn>
+          </Flex>
 
           <Heading
             size="md"
@@ -75,7 +85,7 @@ const Home: NextPage = () => {
           >
             Learning
           </Heading>
-          <Flex direction={{ base: "column", md: "row" }}>
+          <Flex direction={{ base: "column", md: "row" }} align={"center"}>
             <CustomBtn
               brandColor={brandColors.earthBrown}
               href="/insights"
@@ -113,7 +123,7 @@ const Home: NextPage = () => {
           >
             Games
           </Heading>
-          <Flex direction={{ base: "column", md: "row" }}>
+          <Flex direction={{ base: "column", md: "row" }} align={"center"}>
             <CustomBtn brandColor={brandColors.blueGrey} href="forage">
               Forage Game
             </CustomBtn>
