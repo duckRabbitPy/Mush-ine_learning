@@ -126,7 +126,7 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
           </Stack>
         </RadioGroup>
 
-        {snapshot.isLoading && <Spinner color={brandColors.earthBrown} />}
+        {snapshot.isLoading && <Spinner color={brandColors.blueGrey} />}
 
         {!snapshot.isLoading &&
           !snapshot?.data?.snapshot &&
