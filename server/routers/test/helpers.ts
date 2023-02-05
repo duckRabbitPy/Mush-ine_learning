@@ -1,7 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { z } from "zod";
 import { cacheCloudinaryMushrooms } from "../../../scripts/init";
-import { getMushroomImgPaths } from "../../../utils/serverSideUtils";
 import db from "../../database/connection";
 import { getCachedMushroomNames } from "../../database/model";
 

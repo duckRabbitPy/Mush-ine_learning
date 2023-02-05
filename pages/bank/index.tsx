@@ -10,6 +10,11 @@ import { brandColors } from "../_app";
 export const getStaticProps: GetStaticProps = async () => {
   const caller = appRouter.createCaller({ user: undefined });
   const mushroomNames = await caller.getAllMushroomNames();
+  if (!mushroomNames) {
+    throw Error(
+      "Mushroom names could not be retrieved from cloudinary db cache"
+    );
+  }
   const thumbnails = await caller.retrieveThumbnailSrcs(mushroomNames);
   return {
     props: {
