@@ -66,15 +66,15 @@ const Home: NextPage = () => {
               About
             </CustomBtn>
 
-            <CustomBtn
-              brandColor={brandColors.darkBlue}
-              href="/profile"
-              icon={BiUser}
-              styles={{ disabled: !user?.sub }}
-              tooltipContent={!user?.sub ? "Sign in required" : undefined}
-            >
-              Profile
-            </CustomBtn>
+            {user?.sub && (
+              <CustomBtn
+                brandColor={brandColors.darkBlue}
+                href="/profile"
+                icon={BiUser}
+              >
+                Profile
+              </CustomBtn>
+            )}
           </Flex>
 
           <Heading
@@ -90,7 +90,7 @@ const Home: NextPage = () => {
               brandColor={brandColors.earthBrown}
               href="/insights"
               icon={FaRegLightbulb}
-              styles={{ disabled: !user?.sub }}
+              styles={{ isDisabled: !user?.sub }}
               tooltipContent={!user?.sub ? "Sign in required" : undefined}
             >
               Insights
@@ -100,7 +100,7 @@ const Home: NextPage = () => {
               brandColor={brandColors.earthBrown}
               href="/study"
               icon={BsBook}
-              styles={{ disabled: !user?.sub }}
+              styles={{ isDisabled: !user?.sub }}
               tooltipContent={!user?.sub ? "Sign in required" : undefined}
             >
               Recommended study

@@ -59,7 +59,7 @@ const Profile = () => {
         <HomeBtn />
 
         {xpQuery.isLoading || snapshot.isLoading ? (
-          <Spinner color="white" />
+          <Spinner color={brandColors.blueGrey} margin="1rem" />
         ) : (
           <>
             <Text
