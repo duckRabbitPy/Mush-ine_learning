@@ -1,7 +1,8 @@
-import { v2 as cloudinary } from "cloudinary";
-import storedMushrooms from "../server/fileSystemData/mushroomNames.json";
-
 import { randomArrItem, shuffleArrayCopy } from "./pureFunctions";
+import {
+  getCachedMushroomImages,
+  getCachedMushroomNames,
+} from "../server/database/model";
 
 export type ForageMushroom = {
   name: string;
@@ -27,10 +28,6 @@ export const ImageQuality = {
   highest: "q_100",
 } as const;
 
-export async function getStoredMushroomNames() {
-  return storedMushrooms.mushroomNames;
-}
-
 export async function buildForageMushrooms(
   mushroomNames: string[],
   correctMatch: string,
@@ -41,23 +38,13 @@ export async function buildForageMushrooms(
 
   const forageMushrooms = options.map((mushroomName, index) => {
     if (index > max) return null;
-    return cloudinary.api
-      .resources({
-        type: "upload",
-        prefix: `mushroom_images/${mushroomName}`,
-        max_results: 1,
-      })
-      .then((cloudinaryResult: CloudinaryResult) => {
-        return {
-          name: mushroomName,
-          src:
-            cloudinaryResult.resources[0].url?.replace(
-              "upload",
-              "upload/q_80"
-            ) || "/shroomschool.png",
-          correctMatch: mushroomName === correctMatch,
-        };
-      });
+    return getMushroomImgPaths(mushroomName, "high", 9).then((srcArr) => {
+      return {
+        name: mushroomName,
+        src: randomArrItem(srcArr) || "/shroomschool.png",
+        correctMatch: mushroomName === correctMatch,
+      };
+    });
   });
 
   const testMushroomArr = await Promise.all(forageMushrooms);
@@ -68,15 +55,16 @@ export async function buildForageMushrooms(
 export async function getMushroomImgPaths(
   mushroomName: string,
   quality: keyof typeof ImageQuality,
-  max?: number
+  numVariations: number = 1
 ): Promise<string[]> {
-  const images: { resources: CloudImage[] } = await cloudinary.api.resources({
-    type: "upload",
-    prefix: `mushroom_images/${mushroomName}`,
-    max_results: max || 9,
-  });
+  const allImages = await getCachedMushroomImages();
+  if (!allImages) return [];
 
-  const srcArr = images.resources
+  const images = allImages
+    .filter((image) => image?.folder?.includes(mushroomName))
+    .splice(0, numVariations);
+
+  const srcArr = images
     .map((img: CloudImage) => {
       return img.url?.replace("upload", `upload/${ImageQuality[quality]}`);
     })
@@ -90,7 +78,8 @@ export async function getForageMushrooms(
   maxIncorrect: number,
   snapshot: Record<MushroomName, SummedWeights> | null | undefined
 ) {
-  const allMushroomNames = await getStoredMushroomNames();
+  const allMushroomNames = await getCachedMushroomNames();
+  if (!allMushroomNames) return null;
 
   const correctMatch = randomArrItem(allMushroomNames);
 
@@ -130,7 +119,8 @@ export async function getMushroomSet(
   numOptions: number,
   snapshot: Record<MushroomName, SummedWeights> | null | undefined
 ) {
-  const allMushroomNames = await getStoredMushroomNames();
+  const allMushroomNames = await getCachedMushroomNames();
+  if (!allMushroomNames) return null;
   const mushroomNamePool = allMushroomNames.filter(
     (mushroomName) => !omitArr.includes(mushroomName)
   );
@@ -138,8 +128,9 @@ export async function getMushroomSet(
   if (!mushroomNamePool.length) {
     return null;
   }
+
   const correctMushroom = randomArrItem(mushroomNamePool);
-  const mushroomImgSrcs = await getMushroomImgPaths(correctMushroom, "high");
+  const mushroomImgSrcs = await getMushroomImgPaths(correctMushroom, "high", 9);
 
   const correctIndex = mushroomNamePool.findIndex((x) => x === correctMushroom);
   mushroomNamePool.splice(correctIndex, 1);

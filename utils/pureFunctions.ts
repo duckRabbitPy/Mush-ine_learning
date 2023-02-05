@@ -104,7 +104,7 @@ export function heatMapAccuracy(heatmap: TimeAndResult[]) {
 
 export function sortInsightData(
   chartData: [string, SummedWeights][] | undefined,
-  heatmaps: Heatmaps | undefined,
+  heatmaps: Heatmaps | undefined | null,
   filter: InsightSortOptions
 ) {
   if (!heatmaps || !chartData) return chartData;

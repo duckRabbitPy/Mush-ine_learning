@@ -104,17 +104,17 @@ describe("TRPC calls relying on Cloudinary calls", async () => {
     });
 
     it("all forage mushroom properties non null", async () => {
-      expect(isValidResult(result[0], validationSchema)).toEqual(true);
+      expect(isValidResult(result?.[0], validationSchema)).toEqual(true);
     });
 
     it("one forage mushroom has correctMatch set to true", async () => {
-      const hasCorrectMatch = result.some((mushroom) => mushroom.correctMatch);
+      const hasCorrectMatch = result?.some((mushroom) => mushroom.correctMatch);
       expect(hasCorrectMatch).toEqual(true);
     });
 
     it("remaining forage mushrooms have correctMatch set to false", async () => {
       const hasThreefalse =
-        result.reduce((acc, curr) => {
+        result?.reduce((acc, curr) => {
           if (curr.correctMatch === false) {
             acc++;
           }
@@ -193,7 +193,7 @@ describe("TRPC calls associated with in GameData", async () => {
     });
 
     const result = await caller.getHeatMaps();
-    const singleEntry = result["blusher"][0];
+    const singleEntry = result?.["blusher"][0];
     expect(isValidResult(singleEntry, validationSchema)).toEqual(true);
   });
 

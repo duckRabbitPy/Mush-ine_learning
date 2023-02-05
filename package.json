@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && yarn initNames:on:file",
+    "build": "yarn cache:images && next build",
     "test": "yarn vitest run --silent=false",
     "test:pure:utils": "yarn vitest run ./utils/test/pure.test.ts --silent=false",
     "test:server:utils": "yarn vitest run ./utils/test/serverUtils.test.ts --silent=false",
@@ -12,7 +12,7 @@
     "type:check": "tsc --noEmit",
     "start": "next start",
     "lint": "next lint",
-    "initNames:on:file": "npx ts-node --skip-project ./scripts/init.ts",
+    "cache:images": "npx ts-node --skip-project ./scripts/init.ts",
     "preci": "rm -rf node_modules",
     "ci": "yarn install --frozen-lockfile"
   },

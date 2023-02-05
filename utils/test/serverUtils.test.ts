@@ -89,7 +89,7 @@ describe("test getForageMushrooms", async () => {
 
 describe("test getMushroomImgPaths", async () => {
   it("get all image paths returns strings containing cloudinary domain", async () =>
-    getMushroomImgPaths("medusa").then((res) =>
+    getMushroomImgPaths("medusa", "low", 3).then((res) =>
       expect(res.every((i) => i.match(/cloudinary/))).toBe(true)
     ));
 });

@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
-import * as fs from "fs";
 dotenv.config({ path: ".env.local" });
 import { v2 as cloudinary } from "cloudinary";
+import db from "../server/database/connection";
 
 export type SubfolderResult = {
   name: string;
@@ -17,19 +17,32 @@ export async function getMushroomNamesFromCloud() {
   return images ? images.folders.map((i) => i.name) : [];
 }
 
-export default async function storeMushroomNamesOnFile() {
-  const mushroomNames = await getMushroomNamesFromCloud();
-  const json = JSON.stringify({ mushroomNames });
-
-  fs.writeFileSync(
-    __dirname + "/../server/fileSystemData/mushroomNames.json",
-    json,
-    "utf-8"
-  );
+export async function getAllMushroomSrcsFromCloud() {
+  const images = await cloudinary.search
+    .expression("mushroom_images/*")
+    .max_results(1000)
+    .execute();
+  return images;
 }
 
+export async function cacheCloudinaryMushrooms() {
+  const mushroomImages = await getAllMushroomSrcsFromCloud();
+  const mushroomNames = await getMushroomNamesFromCloud();
+  const jsonNames = JSON.stringify({ mushroomNames });
+  const jsonImages = JSON.stringify({ mushroomImages });
+
+  await db.query(
+    "DROP TABLE IF EXISTS mushine_cloudinary_cache; CREATE TABLE mushine_cloudinary_cache (id SERIAL PRIMARY KEY, names JSONB, images JSONB);"
+  );
+
+  await db.query(
+    "INSERT INTO mushine_cloudinary_cache (names, images) VALUES ($1, $2)",
+    [jsonNames, jsonImages]
+  );
+}
+``;
 try {
-  storeMushroomNamesOnFile();
+  cacheCloudinaryMushrooms();
 } catch (e) {
   console.log(e);
 }
