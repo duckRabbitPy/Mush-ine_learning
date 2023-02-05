@@ -7,7 +7,6 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
-import { v2 as cloudinary } from "cloudinary";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -15,6 +14,7 @@ import { useState } from "react";
 import HomeBtn from "../components/HomeBtn";
 import { BsGrid3X3GapFill } from "react-icons/bs";
 import { appRouter } from "../../server/routers/_app";
+import { getMushroomImgPaths } from "../../utils/serverSideUtils";
 
 export async function getStaticPaths() {
   const caller = appRouter.createCaller({ user: undefined });
@@ -38,21 +38,13 @@ export async function getStaticPaths() {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const mushroomName = context.params?.name;
+  const mushroomName = context.params?.name as string | undefined;
 
   if (!mushroomName) {
     return { props: {} };
   }
 
-  const images = await cloudinary.api
-    .resources({
-      type: "upload",
-      prefix: `mushroom_images/${mushroomName}`,
-      max_results: 10,
-    })
-    .catch((e) => console.log(console.error(e)));
-
-  const mushroomSrcList = images.resources.map((img: CloudImage) => img.url);
+  const mushroomSrcList = await getMushroomImgPaths(mushroomName, "high", 15);
 
   return {
     props: {

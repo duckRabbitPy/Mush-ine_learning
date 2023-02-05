@@ -29,6 +29,14 @@ type Activity = {
   roundcount: number;
 };
 
+type CachedNames = {
+  names: { mushroomNames: string[] };
+};
+
+type CachedImages = {
+  images: { mushroomImages: { resources: CloudImage[] } };
+};
+
 export async function createUser(user_id: string) {
   // TODO should also check for exisitng user in db here
   const queryResult = db.query(
@@ -38,6 +46,24 @@ export async function createUser(user_id: string) {
 
   return queryResult
     .then((result) => result.rows[0].user_id)
+    .catch((error: Error) => console.log(error));
+}
+
+export async function getCachedMushroomNames() {
+  const queryResult = db.query(
+    "SELECT names FROM mushine_cloudinary_cache"
+  ) as Promise<QueryResult<CachedNames>>;
+  return queryResult
+    .then((result) => result.rows[0].names.mushroomNames)
+    .catch((error: Error) => console.log(error));
+}
+
+export async function getCachedMushroomImages() {
+  const queryResult = db.query(
+    "SELECT images FROM mushine_cloudinary_cache"
+  ) as Promise<QueryResult<CachedImages>>;
+  return queryResult
+    .then((result) => result.rows[0].images.mushroomImages.resources)
     .catch((error: Error) => console.log(error));
 }
 

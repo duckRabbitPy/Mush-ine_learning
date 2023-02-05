@@ -1,5 +1,4 @@
 import { number, z } from "zod";
-import { promises as fs } from "fs";
 import {
   randomArrItem,
   reduceAnswerCount,
@@ -9,7 +8,6 @@ import {
   getForageMushrooms,
   getMushroomImgPaths,
   getMushroomSet,
-  getStoredMushroomNames,
 } from "../../utils/serverSideUtils";
 import {
   updateScore,
@@ -24,21 +22,14 @@ import {
   getHeatmapData,
   getMostTroublesome,
   getActivity,
+  getCachedMushroomNames,
 } from "../database/model";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
-import { v2 as cloudinary } from "cloudinary";
-
-import path from "path";
 
 export const appRouter = router({
   getAllMushroomNames: publicProcedure.query(async () => {
-    const jsonDirectory = path.join(process.cwd(), "server/fileSystemData");
-    const mushroomNames = await fs.readFile(
-      jsonDirectory + "/mushroomNames.json",
-      "utf8"
-    );
-
-    return JSON.parse(mushroomNames).mushroomNames as string[];
+    const mushroomNames = await getCachedMushroomNames();
+    return mushroomNames;
   }),
   retrieveThumbnailSrcs: publicProcedure
     .input(z.array(z.string()))
@@ -164,7 +155,10 @@ export const appRouter = router({
       return mushroomSet;
     }),
   saveLevelSnapShot: protectedProcedure.mutation(async ({ ctx }) => {
-    const mushrooms = await getStoredMushroomNames();
+    const mushrooms = await getCachedMushroomNames();
+    if (!mushrooms) {
+      return null;
+    }
     const snapshot = await saveLevelSnapshot(mushrooms, ctx.user_id);
     return snapshot;
   }),
@@ -189,7 +183,8 @@ export const appRouter = router({
       return snapshot;
     }),
   getHeatMaps: protectedProcedure.query(async ({ ctx }) => {
-    const mushroomNames = await getStoredMushroomNames();
+    const mushroomNames = await getCachedMushroomNames();
+    if (!mushroomNames) return null;
     const heatmaps = await getHeatmapData(mushroomNames, ctx.user_id);
     return heatmaps;
   }),
@@ -216,18 +211,12 @@ export const appRouter = router({
     }
 
     const chosenMushroomName = randomArrItem(mostTroublesomeData);
+    const studyImgSrcs = await getMushroomImgPaths(
+      chosenMushroomName,
+      "high",
+      10
+    );
 
-    const cloudinaryResult = await cloudinary.api.resources({
-      type: "upload",
-      prefix: `mushroom_images/${chosenMushroomName}`,
-      max_results: 10,
-    });
-
-    const images = cloudinaryResult.resources as CloudImage[];
-
-    const studyImgSrcs = images
-      .map((img: CloudImage) => img.url)
-      .flatMap((f) => (f ? [f] : []));
     return { studyImgSrcs, chosenMushroomName };
   }),
 });
