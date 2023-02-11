@@ -12,6 +12,7 @@ type CustomBtnProps = {
   icon?: IconType;
   styles?: ButtonProps;
   tooltipContent?: string;
+  openLinkInNewTab?: boolean;
 };
 
 export const CustomBtn = ({
@@ -21,11 +22,12 @@ export const CustomBtn = ({
   icon,
   tooltipContent,
   styles,
+  openLinkInNewTab,
 }: CustomBtnProps) => {
   const { clickSound } = useSound();
 
   const btnContent = href ? (
-    <Link href={href}>
+    <Link href={href} target={openLinkInNewTab ? "_blank" : undefined}>
       <Button
         m={2}
         color={"white"}

@@ -1,6 +1,8 @@
 import { useUser } from "@auth0/nextjs-auth0";
-import { Flex, Text, Button } from "@chakra-ui/react";
+import { Flex, Text, Button, Icon } from "@chakra-ui/react";
 import Link from "next/link";
+import { BiUserCheck } from "react-icons/bi";
+import { FiUserX } from "react-icons/fi";
 import { brandColors } from "../_app";
 
 const AuthStatus = () => {
@@ -8,12 +10,15 @@ const AuthStatus = () => {
   const message = user
     ? `Signed in as ${user.name || "registered guest"}`
     : "Not signed in";
-  const textColor = user ? brandColors.darkGreen : brandColors.red;
+  const iconColour = user ? brandColors.darkGreen : brandColors.red;
   return (
-    <Flex align="center">
-      <Text color={textColor} p={1}>
-        {message}
-      </Text>
+    <Flex align="center" p={5}>
+      {user ? (
+        <Icon as={BiUserCheck} size="xl" />
+      ) : (
+        <Icon as={FiUserX} size="xl" />
+      )}
+      <Text p={1}>{message}</Text>
       <Link href={user ? "/api/auth/logout" : "/api/auth/login"}>
         <Button
           m={2}

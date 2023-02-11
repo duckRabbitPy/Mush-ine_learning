@@ -2,7 +2,8 @@ import { Bar } from "react-chartjs-2";
 
 type BarchartProps = {
   kvp: Record<string, number | string>;
-  yAxisTitle: string;
+  yAxisTitle?: string;
+  showYticks?: boolean;
   max?: number;
 };
 
@@ -14,7 +15,7 @@ export const chartColors = [
   "#ffa600",
 ] as const;
 
-export function BarChart({ kvp, max, yAxisTitle }: BarchartProps) {
+export function BarChart({ kvp, max, yAxisTitle, showYticks }: BarchartProps) {
   const labels = Object.keys(kvp).slice(0, max ?? undefined);
   const data = Object.values(kvp).slice(0, max ?? undefined);
   return (
@@ -46,7 +47,8 @@ export function BarChart({ kvp, max, yAxisTitle }: BarchartProps) {
               display: false,
             },
             ticks: {
-              display: false,
+              display: !!showYticks,
+              maxTicksLimit: showYticks ? 3 : undefined,
             },
             suggestedMin: 0,
             title: {

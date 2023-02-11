@@ -215,7 +215,9 @@ const Insights = ({ thumbnails }: { thumbnails: Thumbnails }) => {
                       color="blue"
                       display="flex"
                       flexDirection="column"
+                      justifyContent="space-between"
                       alignItems="center"
+                      gap={10}
                     >
                       <Heading
                         size="sm"

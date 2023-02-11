@@ -1,19 +1,23 @@
 import { Heading, VStack, Text, Container } from "@chakra-ui/react";
 import Image from "next/image";
 import HomeBtn from "./components/HomeBtn";
+import { BsGithub } from "react-icons/bs";
 import TopLevelWrapper from "./components/TopLvlWrapper";
 import { brandColors } from "./_app";
+
+import CustomBtn from "./components/CustomBtn";
 
 const About = () => {
   return (
     <TopLevelWrapper backgroundColor={brandColors.sand}>
-      <VStack padding={"5% 20% 5% 20%"} gap={5}>
+      <VStack padding={{ base: "10%", md: "5% 20% 5% 20%" }} gap={5}>
         <HomeBtn />
         <Heading
-          fontSize={"7xl"}
+          fontSize={{ base: "5xl", md: "7xl" }}
           color={brandColors.darkBlue}
           fontFamily="honeyMushroom"
           letterSpacing="wide"
+          textAlign={"center"}
           pt={5}
           pb={30}
         >
@@ -43,6 +47,27 @@ const About = () => {
             informed expert opinion.
           </b>
         </Text>
+
+        <Container pb={"2rem"}>
+          <CustomBtn
+            href="https://github.com/duckRabbitPy"
+            icon={BsGithub}
+            brandColor={brandColors.blueGrey}
+            openLinkInNewTab
+          >
+            Follow me on Github!
+          </CustomBtn>
+
+          <CustomBtn
+            href="https://github.com/duckRabbitPy/Mush-ine_learning"
+            icon={BsGithub}
+            brandColor={brandColors.darkBlue}
+            openLinkInNewTab
+          >
+            View source code
+          </CustomBtn>
+        </Container>
+
         <Heading fontFamily="honeyMushroom" letterSpacing="wide">
           Game modes
         </Heading>

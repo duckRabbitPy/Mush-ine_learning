@@ -35,10 +35,10 @@ const BankMenu = ({
     <TopLevelWrapper backgroundColor={brandColors.blackBlue}>
       <Flex direction="column" alignItems={"center"} height={"fit-content"}>
         <HomeBtn mt={5} />
-        <Heading mb={10} mt={5} color="white" fontFamily={"honeyMushroom"}>
+        <Heading mb={5} mt={5} color="white" fontFamily={"honeyMushroom"}>
           Mushroom Info Bank
         </Heading>
-        <Container mb="10" width={{ base: "70vw", md: "50vw" }}>
+        <Container mb="10" width={{ base: "80vw", md: "50vw" }}>
           {mushroomNames?.map((name) => (
             <Link key={name} href={`/bank/${name}`}>
               <Flex m={5} alignItems="top">
@@ -54,7 +54,7 @@ const BankMenu = ({
                   width="100%"
                   minHeight="80px"
                   borderRadius="0px 5px 5px 0px"
-                  fontSize={{ base: "small", lg: "medium" }}
+                  fontSize={{ base: "xs", lg: "medium", xl: "large" }}
                 >
                   {name}
                 </Button>

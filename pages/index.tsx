@@ -26,11 +26,15 @@ const Home: NextPage = () => {
         />
       </Head>
 
-      <Flex direction={"column"} justifyContent="center" align="center">
+      <Flex
+        direction={"column"}
+        justifyContent="center"
+        align="center"
+        pb={"5rem"}
+      >
         <Heading
           as={"h1"}
           mt={10}
-          p={5}
           textAlign="center"
           size="4xl"
           color={brandColors.darkBlue}
