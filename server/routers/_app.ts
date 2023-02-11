@@ -213,7 +213,7 @@ export const appRouter = router({
     const chosenMushroomName = randomArrItem(mostTroublesomeData);
     const studyImgSrcs = await getMushroomImgPaths(
       chosenMushroomName,
-      "high",
+      "highest",
       10
     );
 

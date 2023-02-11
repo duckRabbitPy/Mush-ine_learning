@@ -22,9 +22,9 @@ export type RoundMetadata = {
 };
 
 export const ImageQuality = {
-  low: "q_5",
-  medium: "q_60",
-  high: "q_80",
+  low: "q_5,w_250",
+  medium: "q_60,w_250",
+  high: "q_80,w_250",
   highest: "q_100",
 } as const;
 
