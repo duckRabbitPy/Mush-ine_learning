@@ -98,8 +98,9 @@ const Forage = () => {
   function handleSelection(forageMushroom: ForageMushroom) {
     if (
       correctMushroom?.name &&
-      correctMushroom?.name !== forageMushroom?.name
+      correctMushroom.name !== forageMushroom?.name
     ) {
+      // Incorrect answer given, update training data
       const newTrainingData: TrainingData = {
         misidentifiedMushroom: correctMushroom.name,
         weightingData: { [forageMushroom.name]: 10 },
@@ -109,6 +110,7 @@ const Forage = () => {
     if (!inputAnswer) {
       setInputAnswer(forageMushroom.name);
     }
+
     forageMushroom.correctMatch ? correctSound?.play() : incorrectSound?.play();
   }
 
@@ -244,6 +246,7 @@ const Forage = () => {
                               ? `2px solid ${brandColors.lightGreen}`
                               : undefined,
                         }}
+                        priority
                       />
 
                       <Text

@@ -101,7 +101,7 @@ export const SaveBtn = ({
         </Card>
       )}
 
-      {gameOver && saveGameData.isSuccess && (
+      {gameOver && (saveGameData.isSuccess || !user_id) && (
         <PostMortem trainingData={trainingData} />
       )}
     </>

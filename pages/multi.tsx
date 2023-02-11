@@ -161,6 +161,7 @@ const Multi = () => {
                       alt="testMushroom"
                       height={150}
                       width={150}
+                      priority
                     />
                   );
                 })}
