@@ -10,14 +10,10 @@ const AuthStatus = () => {
   const message = user
     ? `Signed in as ${user.name || "registered guest"}`
     : "Not signed in";
-  const iconColour = user ? brandColors.darkGreen : brandColors.red;
+
   return (
     <Flex align="center" p={5}>
-      {user ? (
-        <Icon as={BiUserCheck} size="xl" />
-      ) : (
-        <Icon as={FiUserX} size="xl" />
-      )}
+      {user ? <Icon as={BiUserCheck} /> : <Icon as={FiUserX} />}
       <Text p={1}>{message}</Text>
       <Link href={user ? "/api/auth/logout" : "/api/auth/login"}>
         <Button

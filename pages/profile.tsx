@@ -148,18 +148,20 @@ const Profile = () => {
             </Card>
           </Container>
         )}
-        <Card p={5} mb={10} width="60%">
-          <Heading fontSize="large" mb={5} mt={5} fontFamily="rounded">
-            Rounds complete level {snapshot.data?.level}
-          </Heading>
-          <Container
-            display={"flex"}
-            flexDirection="column"
-            alignItems="center"
-          >
-            {activity && <BarChart kvp={activity} showYticks />}
-          </Container>
-        </Card>
+        {activity && (
+          <Card p={5} mb={10} width="60%">
+            <Heading fontSize="large" mb={5} mt={5} fontFamily="rounded">
+              Rounds complete level {snapshot.data?.level}
+            </Heading>
+            <Container
+              display={"flex"}
+              flexDirection="column"
+              alignItems="center"
+            >
+              <BarChart kvp={activity} showYticks />
+            </Container>
+          </Card>
+        )}
       </Flex>
     </TopLevelWrapper>
   );
