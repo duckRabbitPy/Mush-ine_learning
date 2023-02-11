@@ -26,6 +26,8 @@ const Multi = () => {
     setProgress,
     score,
     setScore,
+    numImagesLoaded,
+    setNumImagesLoaded,
     maxIncorrect,
     setMaxIncorrect,
   } = useGameState();
@@ -47,6 +49,7 @@ const Multi = () => {
   const { correctSound, incorrectSound, startSound } = useSound();
 
   const handleSelection = async (name: string) => {
+    setNumImagesLoaded(0);
     if (name === correctMushroom) {
       correctSound?.play();
       setScore(score + maxIncorrect * 5);
@@ -56,14 +59,17 @@ const Multi = () => {
     } else {
       incorrectSound?.play();
 
-      const newResult: TrainingData = {
-        misidentifiedMushroom: correctMushroom ?? null,
-        weightingData: { [name]: 20 },
-      };
+      if (correctMushroom) {
+        const newResult: TrainingData = {
+          misidentifiedMushroom: correctMushroom,
+          weightingData: { [name]: 20 },
+        };
 
-      const trainingDataCopy = trainingData?.slice() ?? [];
-      trainingDataCopy.push(newResult);
-      setTrainingData(trainingDataCopy);
+        const trainingDataCopy = trainingData?.slice() ?? [];
+        trainingDataCopy.push(newResult);
+        setTrainingData(trainingDataCopy);
+      }
+
       setProgress((prev) => {
         return prev.concat(false);
       });
@@ -84,6 +90,9 @@ const Multi = () => {
       return correctMushroom ? [...prev, correctMushroom] : prev;
     });
   };
+
+  const finishedLoadingImages =
+    numImagesLoaded >= (getMushroomSet.data?.mushroomImgSrcs.length ?? -1);
 
   return (
     <TopLevelWrapper backgroundColor={brandColors.blackBlue}>
@@ -126,7 +135,7 @@ const Multi = () => {
                 alt="multi game"
                 priority
                 className={"pulse"}
-              ></Image>
+              />
 
               <DifficultySetting
                 setMaxIncorrect={setMaxIncorrect}
@@ -161,6 +170,14 @@ const Multi = () => {
                       alt="testMushroom"
                       height={150}
                       width={150}
+                      onLoadingComplete={() => {
+                        setNumImagesLoaded((complete: number) => complete + 1);
+                      }}
+                      style={{
+                        visibility: finishedLoadingImages
+                          ? "visible"
+                          : "hidden",
+                      }}
                       priority
                     />
                   );

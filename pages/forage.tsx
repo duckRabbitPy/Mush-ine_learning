@@ -45,6 +45,8 @@ const Forage = () => {
     setProgress,
     score,
     setScore,
+    numImagesLoaded,
+    setNumImagesLoaded,
     maxIncorrect,
     setMaxIncorrect,
   } = useGameState();
@@ -67,8 +69,11 @@ const Forage = () => {
     round > 5;
   const answerCorrect = inputAnswer === correctMushroom?.name;
   const { correctSound, incorrectSound, startSound } = useSound();
+  const finishedLoadingImages =
+    numImagesLoaded >= (getForageMushrooms?.data?.length ?? -1);
 
   const handleNextBtn = async () => {
+    setNumImagesLoaded(0);
     if (answerCorrect) {
       setScore(score + maxIncorrect * 2);
       setProgress((prev) => prev.concat(true));
@@ -86,9 +91,7 @@ const Forage = () => {
     });
 
     setOmitArr((prev) => {
-      return omitArr && correctMushroom?.name
-        ? [...prev, correctMushroom.name]
-        : prev;
+      return correctMushroom?.name ? [...prev, correctMushroom.name] : prev;
     });
 
     setInputAnswer(null);
@@ -137,7 +140,7 @@ const Forage = () => {
                   size={"md"}
                   mt={2}
                   mb={2}
-                  p={2}
+                  p={5}
                   color="white"
                   fontFamily="rounded"
                   visibility={correctMushroom?.name ? "visible" : "hidden"}
@@ -160,7 +163,7 @@ const Forage = () => {
 
               {round === 0 && !getForageMushrooms.data ? (
                 <Flex direction="column" gap="10">
-                  <Text color="white">
+                  <Text color="white" p={5}>
                     You will be shown {} images. Identify the target mushroom.
                   </Text>
                   <Image
@@ -219,7 +222,13 @@ const Forage = () => {
               {!gameOver &&
                 getForageMushrooms.data?.map((forageMushroom, index) => {
                   return (
-                    <Container key={`${forageMushroom.name}${index}`} p={0}>
+                    <Container
+                      key={`${forageMushroom.name}${index}`}
+                      p={0}
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                    >
                       <Image
                         tabIndex={0}
                         onKeyDown={(e) => {
@@ -230,13 +239,21 @@ const Forage = () => {
                         onClick={() => {
                           handleSelection(forageMushroom);
                         }}
+                        onLoadingComplete={() => {
+                          setNumImagesLoaded(
+                            (complete: number) => complete + 1
+                          );
+                        }}
                         src={forageMushroom.src}
                         alt="forageMushroom"
-                        height={250}
-                        width={250}
+                        height={200}
+                        width={200}
                         style={{
                           cursor: "pointer",
                           borderRadius: "5px",
+                          visibility: finishedLoadingImages
+                            ? "visible"
+                            : "hidden",
                           opacity:
                             inputAnswer && !forageMushroom.correctMatch
                               ? "0.6"

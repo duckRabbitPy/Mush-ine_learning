@@ -43,8 +43,7 @@ const Profile = () => {
   const metaArr = trpc.retrieveRoundMetadata.useQuery().data;
 
   const { xpToNextLevel, boundaryAhead, boundaryBehind } = currLevelInfo(
-    xpQuery.data,
-    snapshot.data?.level
+    xpQuery.data
   );
   const activity = trpc.retrieveActivity.useQuery().data;
 
@@ -95,71 +94,75 @@ const Profile = () => {
               />
             </Card>
 
-            <Card p={5} width="100%">
-              <Heading fontSize="large" mb={2} mt={5} fontFamily="rounded">
-                Stats for level {snapshot.data?.level}
-              </Heading>
-              <SimpleGrid
-                columns={{ base: 1, md: 3 }}
-                m={{ base: 0, md: 5 }}
-                gap={5}
-                p={2}
-              >
-                {Object.entries(metaArr ?? {}).map(([name, data]) => {
-                  return (
-                    <Card
-                      key={name}
-                      fontFamily="rounded"
-                      variant={"outline"}
-                      p={2}
-                    >
-                      <Heading
-                        fontSize={{ base: "medium", md: "2xl" }}
-                        style={{ textTransform: "capitalize" }}
-                        fontFamily={"honeyMushroom"}
-                        fontWeight="thin"
-                      >
-                        {name}
-                      </Heading>
-                      <Text
-                        color="blue.500"
+            {metaArr && (
+              <Card p={5} width="100%">
+                <Heading fontSize="large" mb={2} mt={5} fontFamily="rounded">
+                  Stats for level {snapshot.data?.level ?? 0}
+                </Heading>
+                <SimpleGrid
+                  columns={{ base: 1, md: 3 }}
+                  m={{ base: 0, md: 5 }}
+                  gap={5}
+                  p={2}
+                >
+                  {Object.entries(metaArr).map(([name, data]) => {
+                    return (
+                      <Card
+                        key={name}
                         fontFamily="rounded"
-                        fontSize={{ base: "medium", md: "xl" }}
+                        variant={"outline"}
+                        p={2}
                       >
-                        {data?.percentageCorrect?.toFixed(0) ?? 0}% Correct
-                      </Text>
-                      <Text fontSize={{ base: "small", md: "l" }}>
-                        {" "}
-                        <span style={{ color: brandColors.green }}>
-                          {data?.correct ?? 0}
-                        </span>{" "}
-                        correct ids
-                      </Text>
-                      <Text fontSize={{ base: "small", md: "l" }}>
-                        <span style={{ color: brandColors.red }}>
-                          {data?.incorrect ?? 0}
-                        </span>{" "}
-                        incorrect ids
-                      </Text>
-                    </Card>
-                  );
-                })}
-              </SimpleGrid>
-            </Card>
+                        <Heading
+                          fontSize={{ base: "medium", md: "2xl" }}
+                          style={{ textTransform: "capitalize" }}
+                          fontFamily={"honeyMushroom"}
+                          fontWeight="thin"
+                        >
+                          {name}
+                        </Heading>
+                        <Text
+                          color="blue.500"
+                          fontFamily="rounded"
+                          fontSize={{ base: "medium", md: "xl" }}
+                        >
+                          {data?.percentageCorrect?.toFixed(0) ?? 0}% Correct
+                        </Text>
+                        <Text fontSize={{ base: "small", md: "l" }}>
+                          {" "}
+                          <span style={{ color: brandColors.green }}>
+                            {data?.correct ?? 0}
+                          </span>{" "}
+                          correct ids
+                        </Text>
+                        <Text fontSize={{ base: "small", md: "l" }}>
+                          <span style={{ color: brandColors.red }}>
+                            {data?.incorrect ?? 0}
+                          </span>{" "}
+                          incorrect ids
+                        </Text>
+                      </Card>
+                    );
+                  })}
+                </SimpleGrid>
+              </Card>
+            )}
           </Container>
         )}
-        <Card p={5} mb={10} width="60%">
-          <Heading fontSize="large" mb={5} mt={5} fontFamily="rounded">
-            Rounds complete level {snapshot.data?.level}
-          </Heading>
-          <Container
-            display={"flex"}
-            flexDirection="column"
-            alignItems="center"
-          >
-            {activity && <BarChart kvp={activity} showYticks />}
-          </Container>
-        </Card>
+        {activity && (
+          <Card p={5} mb={10} width="60%">
+            <Heading fontSize="large" mb={5} mt={5} fontFamily="rounded">
+              Rounds complete level {snapshot.data?.level ?? 0}
+            </Heading>
+            <Container
+              display={"flex"}
+              flexDirection="column"
+              alignItems="center"
+            >
+              <BarChart kvp={activity} showYticks />
+            </Container>
+          </Card>
+        )}
       </Flex>
     </TopLevelWrapper>
   );

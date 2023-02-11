@@ -63,14 +63,15 @@ const Tile = () => {
     if (name !== correctMushroom) {
       incorrectSound?.play();
 
-      const newResult: TrainingData = {
-        misidentifiedMushroom: correctMushroom ?? null,
-        weightingData: { [name]: 5 },
-      };
-
-      const trainingDataCopy = trainingData?.slice() ?? [];
-      trainingDataCopy.push(newResult);
-      setTrainingData(trainingDataCopy);
+      if (correctMushroom) {
+        const newResult: TrainingData = {
+          misidentifiedMushroom: correctMushroom,
+          weightingData: { [name]: 5 },
+        };
+        const trainingDataCopy = trainingData?.slice() ?? [];
+        trainingDataCopy.push(newResult);
+        setTrainingData(trainingDataCopy);
+      }
 
       setRoundMetaData((prev: RoundMetadata[]) => {
         if (!correctMushroom) return prev;
@@ -105,11 +106,7 @@ const Tile = () => {
 
     setRound(round + 1);
     setOmitArr((prev) => {
-      if (omitArr && correctMushroom) {
-        const newOmitArr = [...prev, correctMushroom];
-        return newOmitArr;
-      }
-      return prev;
+      return correctMushroom ? [...prev, correctMushroom] : prev;
     });
 
     setRoundOver(false);
@@ -136,11 +133,11 @@ const Tile = () => {
             />
           )}
           {round < 1 && (
-            <Flex direction="column" gap="10" minHeight={300}>
+            <Flex direction="column" gap="10" minHeight={200}>
               <Image
                 src="/tile.png"
-                height={200}
-                width={200}
+                height={350}
+                width={350}
                 blurDataURL={"/tile.png"}
                 alt="tile game"
                 className={"pulse"}
@@ -196,8 +193,8 @@ const Tile = () => {
                         key={src}
                         src={src}
                         alt="testMushroom"
-                        height={350}
-                        width={350}
+                        height={250}
+                        width={250}
                         priority
                       />
                     ) : (
@@ -226,7 +223,7 @@ const Tile = () => {
                     options?.map((name) => (
                       <Button
                         size={{ base: "xs", md: "sm", lg: "md" }}
-                        disabled={roundOver}
+                        isDisabled={roundOver}
                         key={name}
                         onClick={() => handleSelection(name)}
                       >

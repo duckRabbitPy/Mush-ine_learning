@@ -26,6 +26,7 @@ export function useGameState() {
   const [inputAnswer, setInputAnswer] = useState<string | null>(null);
   const [progress, setProgress] = useState<boolean[]>([]);
   const [score, setScore] = useState(0);
+  const [numImagesLoaded, setNumImagesLoaded] = useState(0);
   const [maxIncorrect, setMaxIncorrect] = useState<number>(
     baseDifficulty.medium
   );
@@ -46,6 +47,8 @@ export function useGameState() {
     setProgress,
     score,
     setScore,
+    numImagesLoaded,
+    setNumImagesLoaded,
     maxIncorrect,
     setMaxIncorrect,
   };
