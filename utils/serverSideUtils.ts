@@ -11,8 +11,8 @@ export type ForageMushroom = {
 };
 
 export type TrainingData = {
-  misidentifiedMushroom: string | null;
-  weightingData: Record<string, number> | null;
+  misidentifiedMushroom: string;
+  weightingData: Record<string, number>;
 };
 
 export type RoundMetadata = {
@@ -22,9 +22,8 @@ export type RoundMetadata = {
 };
 
 export const ImageQuality = {
-  low: "q_5,w_250",
-  medium: "q_60,w_250",
-  high: "q_80,w_250",
+  low: "q_60,w_250,h_250",
+  high: "q_80,w_250,h_250",
   highest: "q_100",
 } as const;
 

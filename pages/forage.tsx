@@ -45,6 +45,8 @@ const Forage = () => {
     setProgress,
     score,
     setScore,
+    numImagesLoaded,
+    setNumImagesLoaded,
     maxIncorrect,
     setMaxIncorrect,
   } = useGameState();
@@ -67,8 +69,11 @@ const Forage = () => {
     round > 5;
   const answerCorrect = inputAnswer === correctMushroom?.name;
   const { correctSound, incorrectSound, startSound } = useSound();
+  const finishedLoadingImages =
+    numImagesLoaded >= (getForageMushrooms?.data?.length ?? -1);
 
   const handleNextBtn = async () => {
+    setNumImagesLoaded(0);
     if (answerCorrect) {
       setScore(score + maxIncorrect * 2);
       setProgress((prev) => prev.concat(true));
@@ -219,7 +224,13 @@ const Forage = () => {
               {!gameOver &&
                 getForageMushrooms.data?.map((forageMushroom, index) => {
                   return (
-                    <Container key={`${forageMushroom.name}${index}`} p={0}>
+                    <Container
+                      key={`${forageMushroom.name}${index}`}
+                      p={0}
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                    >
                       <Image
                         tabIndex={0}
                         onKeyDown={(e) => {
@@ -230,13 +241,21 @@ const Forage = () => {
                         onClick={() => {
                           handleSelection(forageMushroom);
                         }}
+                        onLoadingComplete={() => {
+                          setNumImagesLoaded(
+                            (complete: number) => complete + 1
+                          );
+                        }}
                         src={forageMushroom.src}
                         alt="forageMushroom"
-                        height={250}
-                        width={250}
+                        height={200}
+                        width={200}
                         style={{
                           cursor: "pointer",
                           borderRadius: "5px",
+                          visibility: finishedLoadingImages
+                            ? "visible"
+                            : "hidden",
                           opacity:
                             inputAnswer && !forageMushroom.correctMatch
                               ? "0.6"

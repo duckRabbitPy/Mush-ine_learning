@@ -54,8 +54,8 @@ export const appRouter = router({
         score: z.number(),
         trainingData: z.array(
           z.object({
-            misidentifiedMushroom: z.string().nullable(),
-            weightingData: z.record(z.string(), z.number()).nullable(),
+            misidentifiedMushroom: z.string(),
+            weightingData: z.record(z.string(), z.number()),
           })
         ),
         roundMetaData: z.array(
