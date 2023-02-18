@@ -13,7 +13,7 @@ const levelBoundaryMap = { ...generateLvlBoundaries() };
 it("level boundary generator returns a sorted array of ascending values", () => {
   const boundaries = generateLvlBoundaries();
   const isAscending = boundaries.every(
-    (x, y, arr) => y === 0 || x >= arr[y - 1]
+    (curr, index, arr) => index === 0 || curr >= arr[index - 1]
   );
   expect(isAscending).toEqual(true);
 });
@@ -106,79 +106,75 @@ describe("sort insight data sorts in three different modes", () => {
 
 describe("case curr level undefined", () => {
   const currXp = 0;
-  const currLevel = undefined;
   it("boundary ahead correct", () => {
-    const { boundaryAhead } = currLevelInfo(currXp, currLevel);
+    const { boundaryAhead } = currLevelInfo(currXp);
     assert.equal(boundaryAhead, levelBoundaryMap[0]);
   });
 
   it("correct boundary behind", () => {
-    const { boundaryBehind } = currLevelInfo(currXp, currLevel);
+    const { boundaryBehind } = currLevelInfo(currXp);
     assert.equal(boundaryBehind, 0);
   });
 
   it("correct xpToNextLevel", () => {
-    const { xpToNextLevel } = currLevelInfo(currXp, currLevel);
+    const { xpToNextLevel } = currLevelInfo(currXp);
     assert.equal(xpToNextLevel, levelBoundaryMap[0] - currXp);
   });
 });
 
 describe("case curr level 0", () => {
   const currXp = 0;
-  const currLevel = 0;
 
   it("boundary ahead correct", () => {
-    const { boundaryAhead } = currLevelInfo(currXp, currLevel);
+    const { boundaryAhead } = currLevelInfo(currXp);
     assert.equal(boundaryAhead, levelBoundaryMap[0]);
   });
 
   it("correct boundary behind", () => {
-    const { boundaryBehind } = currLevelInfo(currXp, currLevel);
+    const { boundaryBehind } = currLevelInfo(currXp);
     assert.equal(boundaryBehind, 0);
   });
 
   it("correct xpToNextLevel", () => {
-    const { xpToNextLevel } = currLevelInfo(currXp, currLevel);
+    const { xpToNextLevel } = currLevelInfo(currXp);
     assert.equal(xpToNextLevel, levelBoundaryMap[0] - currXp);
   });
 });
 
-describe("case curr level 3", () => {
+describe("case curr level 4", () => {
   const currXp = 1190;
-  const currLevel = 3;
 
   it("correct boundary ahead", () => {
-    const { boundaryAhead } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryAhead, levelBoundaryMap[4]);
-  });
-
-  it("correct boundary behind", () => {
-    const { boundaryBehind } = currLevelInfo(currXp, currLevel);
-    assert.equal(boundaryBehind, levelBoundaryMap[3]);
-  });
-
-  it("correct xpToNextLevel", () => {
-    const { xpToNextLevel } = currLevelInfo(currXp, currLevel);
-    assert.equal(xpToNextLevel, levelBoundaryMap[4] - currXp);
-  });
-});
-
-describe("case curr level 4", () => {
-  const currXp = 1300;
-  const currLevel = 4;
-  it("boundary ahead correct", () => {
-    const { boundaryAhead } = currLevelInfo(currXp, currLevel);
+    const { boundaryAhead } = currLevelInfo(currXp);
     assert.equal(boundaryAhead, levelBoundaryMap[5]);
   });
 
   it("correct boundary behind", () => {
-    const { boundaryBehind } = currLevelInfo(currXp, currLevel);
+    const { boundaryBehind } = currLevelInfo(currXp);
     assert.equal(boundaryBehind, levelBoundaryMap[4]);
   });
 
   it("correct xpToNextLevel", () => {
-    const { xpToNextLevel } = currLevelInfo(currXp, currLevel);
+    const { xpToNextLevel } = currLevelInfo(currXp);
     assert.equal(xpToNextLevel, levelBoundaryMap[5] - currXp);
+  });
+});
+
+describe("case curr level 5", () => {
+  const currXp = 1300;
+  it("boundary ahead correct", () => {
+    const { boundaryAhead } = currLevelInfo(currXp);
+    assert.equal(boundaryAhead, levelBoundaryMap[6]);
+  });
+
+  it("correct boundary behind", () => {
+    const { boundaryBehind } = currLevelInfo(currXp);
+    assert.equal(boundaryBehind, levelBoundaryMap[5]);
+  });
+
+  it("correct xpToNextLevel", () => {
+    const { xpToNextLevel } = currLevelInfo(currXp);
+    assert.equal(xpToNextLevel, levelBoundaryMap[6] - currXp);
   });
 });
 
@@ -200,10 +196,15 @@ describe("Level correctly determined based on XP", () => {
     const lvl = returnLvl(currXp);
     assert.equal(lvl, 2);
   });
-
   it("level correct 450 xp", () => {
     const currXp = 450;
     const lvl = returnLvl(currXp);
     assert.equal(lvl, 3);
+  });
+
+  it("level correct 1190 xp", () => {
+    const currXp = 1190;
+    const lvl = returnLvl(currXp);
+    assert.equal(lvl, 4);
   });
 });

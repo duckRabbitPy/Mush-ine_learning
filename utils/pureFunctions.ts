@@ -49,24 +49,25 @@ export function reduceAnswerCount(
   );
 }
 
-export function currLevelInfo(
-  currXp: number | undefined,
-  currLevel: number | undefined
-) {
+export function currLevelInfo(currXp: number | undefined) {
+  const currLevel = returnLvl(currXp);
   const levelBoundaries = generateLvlBoundaries();
+
   const boundaryAhead = levelBoundaries[currLevel ? currLevel + 1 : 0];
   const boundaryBehind =
     currLevel && currLevel > 0 ? levelBoundaries[currLevel] : 0;
+
   const xpToNextLevel = boundaryAhead - (currXp ?? 0);
   return { xpToNextLevel, boundaryAhead, boundaryBehind };
 }
 
 export function returnLvl(xp: number | undefined | null | void) {
   const XP = xp ?? 0;
+
   let levelBoundaries = generateLvlBoundaries();
 
-  const level = levelBoundaries.reduce((acc, curr, i, arr) => {
-    if (curr <= XP && XP < arr[i + 1]) {
+  const level = levelBoundaries.reduce((acc, curr, i) => {
+    if (XP >= curr) {
       acc = i + 1;
     }
     return acc;

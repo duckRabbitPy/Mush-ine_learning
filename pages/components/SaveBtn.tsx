@@ -60,7 +60,7 @@ export const SaveBtn = ({
           w="-moz-fit-content"
           alignSelf="center"
           backgroundColor={brandColors.skyBlue}
-          disabled={saveGameData.isLoading}
+          isDisabled={saveGameData.isLoading}
           visibility={
             gameOver && !saveGameData.isSuccess ? "visible" : "hidden"
           }
