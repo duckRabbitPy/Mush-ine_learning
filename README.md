@@ -34,7 +34,9 @@ I particularly enjoyed the developer experience of using Typescript and having t
 
 <p align="center"><img width="626" alt="Screenshot 2023-02-12 at 12 13 34" src="https://user-images.githubusercontent.com/78092825/218310399-6245060b-225f-458b-befe-4476b5712fc1.png"></p>
 
+Deploying with Vercel and running on Github actions on pull requests has also been a nice experience
 
+<p align="center"><img width="716" alt="Screenshot 2023-02-18 at 11 45 53" src="https://user-images.githubusercontent.com/78092825/219863922-1a3f9d0a-0a2e-4349-94ac-d322f3068e74.png"></p>
 
 
 
