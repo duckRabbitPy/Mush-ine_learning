@@ -12,7 +12,13 @@ export function ProgressIndicator({ progress, score, round }: progressProps) {
         <Text color="white">Score: {score}</Text>
         {round && <Text color="white">Round: {round}</Text>}
         {progress.map((r, i) =>
-          r ? <Text key={i}>✅</Text> : <Text key={i}>❌</Text>
+          r ? (
+            <Text key={i} flexWrap="wrap">
+              ✅
+            </Text>
+          ) : (
+            <Text key={i}>❌</Text>
+          )
         )}
       </Flex>
     </>

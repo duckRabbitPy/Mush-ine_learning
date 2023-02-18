@@ -73,20 +73,20 @@ const InfoBank = ({
   return (
     <div>
       <Container mt={5} width={"100%"} maxWidth={expandIndex ? "70%" : "60ch"}>
-        <HomeBtn style={{ alignSelf: "center" }} />
-        <Link href="/bank">
-          <Button m={2}>Bank menu </Button>
-        </Link>
-        <Link
-          href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}
-          target="_blank"
-        >
-          {expandIndex === null && (
-            <Button m={2} bgColor="burlywood">
-              More Info
-            </Button>
-          )}
-        </Link>
+        <Container p={0}>
+          <HomeBtn style={{ alignSelf: "center" }} />
+          <Link href="/bank">
+            <Button m={2}>Bank menu </Button>
+          </Link>
+          <Link
+            href={`https://www.wildfooduk.com/mushroom-guide/${mushroomName}`}
+            target="_blank"
+          >
+            {expandIndex === null && (
+              <Button bgColor="burlywood">More Info</Button>
+            )}
+          </Link>
+        </Container>
         <Heading mb={2}>{mushroomName} mushroom</Heading>
         <Flex direction={"column"} alignItems={"center"}>
           {expandIndex === null && (

@@ -142,7 +142,7 @@ const Forage = () => {
                   size={"md"}
                   mt={2}
                   mb={2}
-                  p={2}
+                  p={5}
                   color="white"
                   fontFamily="rounded"
                   visibility={correctMushroom?.name ? "visible" : "hidden"}
@@ -165,7 +165,7 @@ const Forage = () => {
 
               {round === 0 && !getForageMushrooms.data ? (
                 <Flex direction="column" gap="10">
-                  <Text color="white">
+                  <Text color="white" p={5}>
                     You will be shown {} images. Identify the target mushroom.
                   </Text>
                   <Image
