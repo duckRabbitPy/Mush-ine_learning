@@ -106,11 +106,7 @@ const Tile = () => {
 
     setRound(round + 1);
     setOmitArr((prev) => {
-      if (omitArr && correctMushroom) {
-        const newOmitArr = [...prev, correctMushroom];
-        return newOmitArr;
-      }
-      return prev;
+      return correctMushroom ? [...prev, correctMushroom] : prev;
     });
 
     setRoundOver(false);

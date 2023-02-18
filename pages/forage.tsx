@@ -91,9 +91,7 @@ const Forage = () => {
     });
 
     setOmitArr((prev) => {
-      return omitArr && correctMushroom?.name
-        ? [...prev, correctMushroom.name]
-        : prev;
+      return correctMushroom?.name ? [...prev, correctMushroom.name] : prev;
     });
 
     setInputAnswer(null);
