@@ -5,6 +5,7 @@ import { freshDatabase, isValidResult } from "./helpers";
 import { createTestContext } from "../../context";
 import { v2 as cloudinary } from "cloudinary";
 import { appRouter } from "../_app";
+import { getMushroomNamesFromCloud } from "../../../scripts/init";
 
 cloudinary.config({
   cloud_name: import.meta.env.VITE_cloud_name,
@@ -121,6 +122,51 @@ describe("TRPC calls relying on Cloudinary calls", async () => {
           return acc;
         }, 0) === 3;
       expect(hasThreefalse).toEqual(true);
+    });
+  });
+});
+
+describe("check mushroom omission array argument works for forage, multi and tile games", async () => {
+  const allNames = await getMushroomNamesFromCloud();
+  const caller = appRouter.createCaller(userNoAuth);
+
+  it("if all mushrooms omitted, there are no correct mushrooms returned in forage game", async () => {
+    const result = await caller.retrieveForageMushrooms({
+      omitArr: allNames,
+      maxIncorrect: 3,
+    });
+
+    expect(result?.filter((Mushroom) => Mushroom.correctMatch)).is.empty;
+  });
+  it("the only two non-omitted mushrooms available one of non-omitted is chosen as correct in forage game matches", async () => {
+    const result = await caller.retrieveForageMushrooms({
+      omitArr: allNames.filter((name) => name !== "horse" && name !== "medusa"),
+      maxIncorrect: 3,
+    });
+
+    expect(
+      ["horse", "medusa"].includes(
+        result?.filter((mushroom) => mushroom.correctMatch)[0].name ??
+          "no name found"
+      )
+    );
+
+    it("if all mushrooms omitted, there are no correct mushrooms returned in multi and tile game", async () => {
+      const result = await caller.retrieveMushroomSet({
+        numOptions: 3,
+        omitArr: allNames,
+      });
+
+      expect(result?.correctMushroom).undefined;
+    });
+
+    it("the only non-omitted mushroom is chosen as correct in multi and tile game", async () => {
+      const result = await caller.retrieveMushroomSet({
+        numOptions: 3,
+        omitArr: allNames.filter((name) => name !== "horse"),
+      });
+
+      expect(result?.correctMushroom).toBe("horse");
     });
   });
 });

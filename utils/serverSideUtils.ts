@@ -78,9 +78,12 @@ export async function getForageMushrooms(
   snapshot: Record<MushroomName, SummedWeights> | null | undefined
 ) {
   const allMushroomNames = await getCachedMushroomNames();
-  if (!allMushroomNames) return null;
 
-  const correctMatch = randomArrItem(allMushroomNames);
+  if (!allMushroomNames) return null;
+  const untestedNames = allMushroomNames.filter(
+    (name) => !omitArr.includes(name)
+  );
+  const correctMatch = randomArrItem(untestedNames);
 
   const mushroomNamePool = allMushroomNames
     .filter((mushroomName) => !omitArr.includes(mushroomName))
