@@ -10,12 +10,23 @@ export async function createContext(opts: trpcNext.CreateNextContextOptions) {
   };
 }
 
-export function createTestContext({ withAuth }: { withAuth: boolean }) {
-  const user = {
+export function createTestContext({
+  withAuth,
+  asSecondUser,
+}: {
+  withAuth: boolean;
+  asSecondUser?: boolean;
+}) {
+  const user1 = {
     name: withAuth ? process.env.TEST_USERNAME : undefined,
     sub: withAuth ? process.env.TEST_SUB : undefined,
   };
 
+  const user2 = {
+    name: withAuth ? `${process.env.TEST_USERNAME}2` : undefined,
+    sub: withAuth ? `${process.env.TEST_SUB}2` : undefined,
+  };
+  const user = asSecondUser ? user2 : user1;
   return {
     user,
   };
