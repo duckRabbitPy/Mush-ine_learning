@@ -236,10 +236,7 @@ export async function saveLevelSnapshot(
   const currLevel = await getCurrentLevel(user_id);
 
   const queryResult = db.query(
-    `INSERT INTO mushine_level_snapshots (level, user_id, snapshot) VALUES ($1, $2, $3)
-    ON CONFLICT (level)
-    DO UPDATE SET snapshot = EXCLUDED.snapshot
-    RETURNING level, snapshot;`,
+    `INSERT INTO mushine_level_snapshots (level, user_id, snapshot, timestamp) VALUES ($1, $2, $3, to_timestamp(${Date.now()} / 1000.0)) RETURNING level, snapshot;`,
     [currLevel, user_id, snapshot]
   ) as Promise<QueryResult<Pick<Mushine_level_snapshot, "snapshot" | "level">>>;
 
@@ -267,10 +264,11 @@ export async function getCurrentLevel(user_id: string) {
 
 export async function getLevelSnapshot(level: number, user_id: string) {
   const queryResult = db.query(
-    `SELECT snapshot, level FROM mushine_level_snapshots WHERE level = $1 AND user_id = $2`,
+    `SELECT snapshot, level FROM mushine_level_snapshots WHERE level = $1 AND user_id = $2 ORDER BY timestamp desc`,
     [level, user_id]
   ) as Promise<QueryResult<Pick<Mushine_level_snapshot, "snapshot" | "level">>>;
 
+  queryResult.then((r) => console.log(r.rows[0]));
   return queryResult
     .then((result) => result.rows[0])
     .catch((error: Error) => console.log(error));

@@ -14,6 +14,7 @@ cloudinary.config({
 });
 
 const userWithAuth = createTestContext({ withAuth: true });
+const user2WithAuth = createTestContext({ withAuth: true, asSecondUser: true });
 const userNoAuth = createTestContext({ withAuth: false });
 
 const TRAINING_DATA: GameData = {
@@ -191,7 +192,7 @@ describe("TRPC calls associated with in GameData", async () => {
     expect(isValidResult(result, validationSchema)).toEqual(true);
   });
 
-  it("snapshot upserted on level conflict", async () => {
+  it("lastest snapshot returned", async () => {
     const caller = appRouter.createCaller(userWithAuth);
     await caller.saveGameData({ ...TRAINING_DATA, score: 0 });
     await caller.saveGameData({ ...TRAINING_DATA, score: 0 });
@@ -217,6 +218,27 @@ describe("TRPC calls associated with in GameData", async () => {
 
     const saveResult = await caller.saveLevelSnapShot();
     const result = saveResult?.snapshot["field"];
+    expect(isValidResult(result, validationSchema)).toEqual(true);
+  });
+
+  it("snapshot inserted with new user", async () => {
+    const caller = appRouter.createCaller(userWithAuth);
+    const caller2 = appRouter.createCaller(user2WithAuth);
+
+    await caller.saveGameData({ ...TRAINING_DATA, score: 0 });
+    await caller2.saveGameData({ ...TRAINING_DATA, score: 0 });
+
+    await caller.saveLevelSnapShot();
+    await caller2.saveLevelSnapShot();
+
+    const caller2SnapshotResult = await caller2.retrieveLevelSnapShot();
+
+    const validationSchema = z.object({
+      horse: z.literal(10),
+      medusa: z.literal(10),
+    });
+    const result = caller2SnapshotResult?.snapshot["field"];
+
     expect(isValidResult(result, validationSchema)).toEqual(true);
   });
 

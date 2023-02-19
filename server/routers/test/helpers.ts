@@ -27,7 +27,7 @@ export async function freshDatabase() {
   );
 
   await db.query(
-    "DROP TABLE IF EXISTS mushine_level_snapshots; CREATE TABLE mushine_level_snapshots (id SERIAL PRIMARY KEY, level INTEGER UNIQUE, user_id VARCHAR (50),snapshot JSONB);"
+    "DROP TABLE IF EXISTS mushine_level_snapshots; CREATE TABLE mushine_level_snapshots (id SERIAL PRIMARY KEY, level INTEGER, user_id VARCHAR (50), snapshot JSONB, timestamp TIMESTAMP);"
   );
 
   await db.query(
