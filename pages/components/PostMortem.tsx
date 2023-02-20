@@ -45,6 +45,7 @@ export const PostMortem = ({ trainingData }: PostMortemProps) => {
                 brandColor={brandColors.blueGrey}
                 href={`/bank/${misidentifiedMushroom}`}
                 styles={{ size: "xs" }}
+                openLinkInNewTab
               >
                 Study
               </CustomBtn>
