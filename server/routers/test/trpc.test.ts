@@ -192,7 +192,7 @@ describe("TRPC calls associated with in GameData", async () => {
     expect(isValidResult(result, validationSchema)).toEqual(true);
   });
 
-  it("lastest snapshot returned", async () => {
+  it("latest snapshot returned", async () => {
     const caller = appRouter.createCaller(userWithAuth);
     await caller.saveGameData({ ...TRAINING_DATA, score: 0 });
     await caller.saveGameData({ ...TRAINING_DATA, score: 0 });
